@@ -10,7 +10,9 @@ from django.db import models
 from django.utils import timezone
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+
 # Create your models here.
+
 
 class UploadedFile(models.Model):
     file = models.FileField(max_length=200)
@@ -21,6 +23,7 @@ class UploadedFile(models.Model):
         options={"quality": 60},
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -39,6 +42,7 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.save(using=self._db)
         return user
+
 
 class User(AbstractBaseUser, PermissionsMixin):
 
@@ -59,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         ordering = ("-created_at",)
 
+
 class UserProfile(models.Model):
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
 
@@ -66,24 +71,60 @@ class UserProfile(models.Model):
     profile_photo = models.OneToOneField(
         UploadedFile, on_delete=models.SET_NULL, null=True, related_name="profile"
     )
-    age = models.IntegerField(default=0)
-    gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
     first_name = models.CharField(default="", max_length=30)
     last_name = models.CharField(default="", max_length=30)
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
+    pan_number = models.CharField(default="",max_length=12)
+    address = models.TextField()
+
 
 class UserSetting(models.Model):
-    DEVICE_TYPE_CHOICES = [("Apple","Apple"),("Android","Android")]
+    DEVICE_TYPE_CHOICES = [("Apple", "Apple"), ("Android", "Android")]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
     notification_preference = models.BooleanField(default=True)
     device_token = models.CharField(default="", max_length=500, null=True, blank=True)
-    device_type = models.CharField(default="", max_length=20, choices=DEVICE_TYPE_CHOICES)
+    device_type = models.CharField(
+        default="", max_length=20, choices=DEVICE_TYPE_CHOICES
+    )
+
+
+class ZerodhaData(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="zerodha_data"
+    )
+    user_type = models.CharField(default="individual", max_length=50, blank=True)
+    email = models.EmailField(max_length=255, unique=True, null=True)
+    user_name = models.CharField(default="", max_length=100, blank=True)
+    user_shortname = models.CharField(default="", max_length=50, blank=True)
+    broker = models.CharField(default="", max_length=30, blank=True)
+    exchanges = ArrayField(models.CharField(max_length=10, blank=True))
+    products = ArrayField(models.CharField(max_length=10, blank=True))
+    order_types = ArrayField(models.CharField(max_length=10, blank=True))
+    avatar_url = models.URLField()
+    user_id = models.CharField(default="", max_length=20)
+    api_key = models.CharField(default="", max_length=30)
+    access_token = models.CharField(default="", max_length=100)
+    public_token = models.CharField(default="", max_length=100)
+    refresh_token = models.CharField(default="", max_length=100)
+    enctoken = models.CharField(default="", max_length=100)
+    login_time = models.DateTimeField()
+
 
 class Notification(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
     )
+    NOTIFICATION_TYPES = [
+        ("News", "News"),
+        ("Stock-Listing", "Stock-Listing"),
+        ("Others", "Others"),
+    ]
     head = models.TextField()
     body = models.TextField()
+    notification_type = models.CharField(
+        default="", max_length=20, choices=NOTIFICATION_TYPES
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
