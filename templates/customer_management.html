@@ -1,0 +1,607 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Customer Management{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Customer Management</h4>
+                <div class="AddButton">
+                    <a href="customer-add.html" class="Button ">+ Add Customer</a>
+                </div>
+            </div>
+            <div class="InnerBox">
+                <div class="FlexMain">
+                    <div class="Search">
+                        <form action="">
+                            <input type="text" placeholder="Enter Customer ID">
+                            <button>Search</button>
+                            <button class="Reset">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="TableList">
+                    <table style="width: 120%;">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Customer ID</th>
+                                <th>Name</th>
+                                <th>Contact Number</th>
+                                <th>Email Id</th>
+                                <th>Pan Number</th>
+                                <th>Age</th>
+                                <th>Date of Birth</th>
+                                <th>Registered on</th>
+                                <th>action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>U-10</td>
+                                <td>Anuradha</td>
+                                <td>+91 9825645451</td>
+                                <td>anu12@gmail.com</td>
+                                <td>SN12732J</td>
+                                <td>22 Years</td>
+                                <td>22-Oct-2022</td>
+                                <td>22-Oct-2022</td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>U-10</td>
+                                <td>Anuradha</td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    3
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    4
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    5
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    6
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    7
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    8
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    9
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    10
+                                </td>
+                                <td>
+                                    U-10
+                                </td>
+                                <td>
+                                    Anuradha
+                                </td>
+                                <td>
+                                    +91 9825645451
+                                </td>
+                                <td>
+                                    anu12@gmail.com
+                                </td>
+                                <td>
+                                    SN12732J
+                                </td>
+                                <td>
+                                    22 Years
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    22-Oct-2022
+                                </td>
+                                <td>
+                                    <a class="Blue" href="customer-detail.html">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a class="Blue" href="customer-edit.html">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </a>
+                                    <a class="Blue"
+                                       href="javascript:void(0)"
+                                       data-toggle="modal"
+                                       data-target="#Delete">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
+                                    <label class="Switch">
+                                        <input type="checkbox" checked="">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="Pagination">
+                    <p>
+                        Show
+                        <select>
+                            <option>
+                                5
+                            </option>
+                            <option>
+                                10
+                            </option>
+                            <option>
+                                20
+                            </option>
+                            <option>
+                                30
+                            </option>
+                            <option>
+                                40
+                            </option>
+                            <option>
+                                50
+                            </option>
+                        </select>
+                        Entries
+                    </p>
+                    <ul>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-angle-double-left"></i></a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-angle-left"></i></a>
+                        </li>
+                        <li class="active">
+                            <a href="javascript:void(0);">1</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">2</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">3</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-angle-right"></i></a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-angle-double-right"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ModalBox">
+        <div id="BlockModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Block
+                            </h3>
+                            <p>
+                                Are you sure you want to block this Customer ?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="UnblockModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Unblock
+                            </h3>
+                            <p>
+                                Are you sure you want to Unblock this Customer ?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Delete" class="modal fade in" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Delete
+                            </h3>
+                            <p>
+                                Are you sure you want to Delete this Customers ?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

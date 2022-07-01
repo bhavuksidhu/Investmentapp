@@ -1,0 +1,313 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Customer Details{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Customer Details</h4>
+                <div class="BackPage">
+                    <a href="customer-management.html"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
+                </div>
+            </div>
+            <div class="CommonTabs">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#Personal">Personal Information</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Linked">Investment Insight</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Monitoring">Journal Insight</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="Personal">
+                        <div class="CustomerBox">
+                            <h6 class="Register">
+                                <span>Registered on 22 Feb '21</span>
+                            </h6>
+                            <div class="CustomerHead">
+                                <figure>
+                                    <img src="images/user2.svg">
+                                </figure>
+                                <figcaption>
+                                    <div class="MainHeading">
+                                        <h4>
+                                            <span class="Strong">Customer Id :</span> <samp> CUS-030</samp> <a href="customer-edit.html"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                        </h4>
+                                        <div class="MainActions">
+                                            <p>
+                                                Status : <span>Active</span>
+                                            </p>
+                                            <label class="Switch">
+                                                <input type="checkbox" checked="">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <h4>
+                                        <span class="Strong">Name :</span> <samp> Anuradha Pratihar</samp>
+                                    </h4>
+                                    <article>
+                                        <aside>
+                                            <h6>Details :</h6>
+                                            <p>
+                                                <span>Email Address :</span> anu12@gmail.com
+                                            </p>
+                                            <p>
+                                                <span>Mobile Number :</span> +91-9866755677
+                                            </p>
+                                            <p>
+                                                <span>Gender :</span>Female
+                                            </p>
+                                            <p>
+                                                <span>Age :</span> 24
+                                            </p>
+                                            <p>
+                                                <span>Date of Birth :</span>  03-Oct-1978
+                                            </p>
+                                            <p>
+                                                <span>PAN Number :</span>RTFE3424F
+                                            </p>
+                                            <p>
+                                                <span>Alternate Mobile Number :</span>+91-54435335435
+                                            </p>
+                                            <p>
+                                                <span>Address :</span>Raj Nagar, New Delhi-110001
+                                            </p>
+                                        </aside>
+                                    </article>
+                                </figcaption>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="Linked">
+                        <div class="CustomerBox">
+                            <div class="Filter">
+                                <div class="form-group">
+                                    <label>Search</label>
+                                    <input type="text" class="form-control" placeholder="Search">
+                                </div>
+                                <div class="form-group">
+                                    <label>From</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button>Apply</button>
+                                </div>
+                            </div>
+                            <div class="TableList">
+                                <table style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Order  Id</th>
+                                            <th>Date of Purchase</th>
+                                            <th>
+                                                Stock Name
+                                            </th>
+                                            <th>
+                                                Purchased Quantity
+                                            </th>
+                                            <th>
+                                                Price Per stock
+                                            </th>
+                                            <th>
+                                                Admin's Commission
+                                            </th>
+                                            <th>
+                                                Total Amount
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                1
+                                            </td>
+                                            <td>
+                                                ORD123
+                                            </td>
+                                            <td>
+                                                22-Oct-2022
+                                            </td>
+                                            <td>
+                                                Stock-1
+                                            </td>
+                                            <td>
+                                                06
+                                            </td>
+                                            <td>
+                                                200 INR
+                                            </td>
+                                            <td>
+                                                200 INR
+                                            </td>
+                                            <td>
+                                                400 INR
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                2
+                                            </td>
+                                            <td>
+                                                ORD123
+                                            </td>
+                                            <td>
+                                                22-Oct-2022
+                                            </td>
+                                            <td>
+                                                Stock-1
+                                            </td>
+                                            <td>
+                                                06
+                                            </td>
+                                            <td>
+                                                200 INR
+                                            </td>
+                                            <td>
+                                                200 INR
+                                            </td>
+                                            <td>
+                                                400 INR
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                3
+                                            </td>
+                                            <td>
+                                                ORD123
+                                            </td>
+                                            <td>
+                                                22-Oct-2022
+                                            </td>
+                                            <td>
+                                                Stock-1
+                                            </td>
+                                            <td>
+                                                06
+                                            </td>
+                                            <td>
+                                                200 INR
+                                            </td>
+                                            <td>
+                                                200 INR
+                                            </td>
+                                            <td>
+                                                400 INR
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="Monitoring">
+                        <div class="CustomerBox">
+                            <div class="Filter">
+                                <div class="form-group">
+                                    <label>
+                                        Search
+                                    </label>
+                                    <input type="text" class="form-control" placeholder="Search">
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        From
+                                    </label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        To
+                                    </label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        &nbsp;
+                                    </label>
+                                    <button>
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="TableList">
+                                <table style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                S.No
+                                            </th>
+                                            <th>
+                                                Date of Invest
+                                            </th>
+                                            <th>
+                                                Amount Invested
+                                            </th>
+                                            <th>
+                                                You have invested rather than spending on
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                1
+                                            </td>
+                                            <td>
+                                                22-Oct-2022
+                                            </td>
+                                            <td>
+                                                Stock-1
+                                            </td>
+                                            <td>
+                                                PIZZA
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                1
+                                            </td>
+                                            <td>
+                                                22-Oct-2022
+                                            </td>
+                                            <td>
+                                                Stock-1
+                                            </td>
+                                            <td>
+                                                PIZZA
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                1
+                                            </td>
+                                            <td>
+                                                22-Oct-2022
+                                            </td>
+                                            <td>
+                                                Stock-1
+                                            </td>
+                                            <td>
+                                                PIZZA
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
