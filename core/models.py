@@ -73,10 +73,10 @@ class UserProfile(models.Model):
     )
     first_name = models.CharField(default="", max_length=30)
     last_name = models.CharField(default="", max_length=30)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True)
     gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
     pan_number = models.CharField(default="",max_length=12)
-    address = models.TextField()
+    address = models.TextField(default="")
 
 
 class UserSetting(models.Model):
@@ -90,7 +90,7 @@ class UserSetting(models.Model):
 
 
 class ZerodhaData(models.Model):
-    user = models.OneToOneField(
+    local_user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="zerodha_data"
     )
     user_type = models.CharField(default="individual", max_length=50, blank=True)
