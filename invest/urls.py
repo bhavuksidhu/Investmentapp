@@ -1,4 +1,4 @@
-"""invest URL Configuration
+"""medical URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -13,9 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("adminpanel/",include("adminpanel.urls",namespace="adminpanel")),
+    path('api/', include("api.urls",namespace="api")),
+
+    #Schema/Docs
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,20 +2,20 @@
 {% block body %}
     <div class="Header">
         <div class="Logo">
-            <img src="images/inner-logo.png">
+            <img src="/media/images/inner-logo.png">
         </div>
         <div class="Navigation">
             <div class="Avater">
                 <a href="javascript:void(0);">
                     <figure>
-                        <img src="images/user5.jpg">
+                        <img src="/media/images/user5.jpg">
                     </figure>
                     Anuradha
                 </a>
                 <ul>
                     <li>
                         <figure>
-                            <img src="images/user5.jpg">
+                            <img src="/media/images/user5.jpg">
                         </figure>
                         <h4>
                             Anuradha <span>Administrator</span>
@@ -34,45 +34,48 @@
     </div>
     <div class="SidenavBar">
         <div class="Logo">
-            <img src="images/inner-logo.png">
+            <img src="/media/images/inner-logo.png">
         </div>
         <ul>
-            <li class="active">
-                <a href="dashboad.html">
+            <li>
+                <a href={% url "adminpanel:dashboard" %}>
                     <span><i class="fa fa-tachometer" aria-hidden="true"></i></span> Dashboard
                 </a>
             </li>
             <li>
-                <a href="customer-management.html">
+                <a href={% url "adminpanel:customer-management" %}>
                     <span><i class="fa fa-users" aria-hidden="true"></i></span> Customer Management
                 </a>
             </li>
             <li>
-                <a href="investing-management.html">
+                <a href={% url "adminpanel:investing-reports" %}>
                     <span><i class="fa fa-money" aria-hidden="true"></i></span> Investing Reports
                 </a>
             </li>
             <li>
-                <a href="comission-management.html">
+                <a href={% url "adminpanel:comission-management" %}>
                     <span><i class="fa fa-inr" aria-hidden="true"></i></span> Comission Management
                 </a>
             </li>
             <li>
-                <a href="static-content-management.html">
+                <a href={% url "adminpanel:static-content-management" %}>
                     <span><i class="fa fa-font"></i></span> Content Management
                 </a>
             </li>
             <li>
-                <a href="settings.html">
+                <a href={% url "adminpanel:settings" %}>
                     <span><i class="fa fa-cogs" aria-hidden="true"></i></span> Settings
                 </a>
             </li>
             <li>
-                <a href="login.html">
+                <a href={% url "adminpanel:logout" %}>
                     <span><i class="fa fa-sign-out"></i></span> Logout
                 </a>
             </li>
         </ul>
     </div>
     {% block content %}{% endblock %}
+    <script>
+        document.querySelector(`[href='${window.location.pathname}']`).parentElement.classList.add("active");
+    </script>
 {% endblock %}
