@@ -1,0 +1,104 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="WelcomeBack">
+                {% include "fragments/messages.html" %}
+                <h2>Dashboard</h2>
+            </div>
+            <div class="InnerBox">
+                <div class="Filter">
+                    <div class="form-group">
+                        <label>From</label>
+                        <input type="date" id="from_date" class="form-control" value={{from_date}}>
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="date" id="to_date" class="form-control" value={{to_date}}>
+                    </div>
+                    <div class="form-group ">
+                        <label>From</label>
+                        <select class="form-control" id="from_period">
+                            <option {% if from_period == "Today"%} selected {% endif %}>
+                                Today
+                            </option>
+                            <option {% if from_period == "This Week"%} selected {% endif %}>
+                                This Week
+                            </option>
+                            <option {% if from_period == "This Month"%} selected {% endif %}>
+                                This Month
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button id="apply_filter">Apply</button>
+                        <button class="Reset"
+                                onclick="window.location.href='{% url "adminpanel:dashboard" %}';">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="WelcomeBack">
+                <h2>Today</h2>
+            </div>
+            <div class="DashboardBox">
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="Box BoxOne">
+                            <article>
+                                <p>Onboarded Users</p>
+                                <h1>{{total_active_users}}</h1>
+                            </article>
+                            <div class="Shape">
+                                <span class="Icon"><i class="fa fa-user" aria-hidden="true"></i></span>
+                                <!-- <span class="FirstCircle"></span>
+                                <span class="SecondCircle"></span> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="Box BoxTwo">
+                            <article>
+                                <p>Total Revenue Generated</p>
+                                <h1>{{total_revenue}}</h1>
+                            </article>
+                            <div class="Shape">
+                                <span class="Icon"><i class="fa fa-inr" aria-hidden="true"></i></span>
+                                <!-- <span class="FirstCircle"></span>
+                                <span class="SecondCircle"></span> -->
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    document.getElementById("apply_filter").onclick = function(){
+        let base_url = "{% url "adminpanel:dashboard" %}";
+        let from_date = document.getElementById("from_date").value;
+        let to_date = document.getElementById("to_date").value;
+        let from_period = document.getElementById("from_period").value;
+
+        if(from_date && to_date){
+            query = `?from_date=${from_date}&to_date=${to_date}`
+        }
+        else{
+            query = `?from_period=${from_period}`
+        }
+
+        window.location.href = `${base_url}${query}`
+
+    }
+
+    </script>
+{% endblock %}
