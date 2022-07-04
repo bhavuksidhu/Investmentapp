@@ -149,8 +149,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Walnut Medical API",
-    "DESCRIPTION": "Backedn APIs to work with app",
+    "TITLE": "Invest Thrift API",
+    "DESCRIPTION": "Backend APIs to work with app",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api",

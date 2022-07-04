@@ -1,8 +1,10 @@
 from django.db import models
 
 class ContactData(models.Model):
-    company_address = models.TextField()
+    company_email = models.EmailField(null=True)
     company_number = models.CharField(max_length=20, unique=True, null=True)
+    company_address = models.TextField()
+    
 
 # Create your models here.
 class StaticData(models.Model):
