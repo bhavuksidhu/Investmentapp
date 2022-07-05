@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+with open("creds.json","r",encoding="utf-8") as f:
+    creds = json.load(f)
+    KITE_CREDS = creds["KITE_CREDS"]
 
 
 # Quick-start development settings - unsuitable for production
@@ -83,9 +88,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'invest',
-        'USER': 'dbuser',
-        'PASSWORD': 'dbpass',
-        'HOST': 'rahdoeswork.xyz',
+        'USER': 'invest_user',
+        'PASSWORD': '(PtWZ5nh}m6]?W8s',
+        'HOST': '13.127.159.81',
         'PORT': '5432'
     }
 }
@@ -115,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = "Asia/Kolkata"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 

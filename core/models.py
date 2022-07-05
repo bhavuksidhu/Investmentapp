@@ -1,4 +1,4 @@
-from datetime import datetime
+import uuid
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -7,7 +7,6 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.utils import timezone
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -50,6 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=20, unique=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     objects = UserManager()
@@ -74,7 +74,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(default="", max_length=30)
     date_of_birth = models.DateField(null=True)
     gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
-    pan_number = models.CharField(default="",max_length=12)
+    pan_number = models.CharField(default="", max_length=12)
     address = models.TextField(default="")
 
 
@@ -92,22 +92,25 @@ class ZerodhaData(models.Model):
     local_user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="zerodha_data"
     )
-    user_type = models.CharField(default="individual", max_length=50, blank=True,null=True)
+    user_type = models.CharField(
+        default="individual", max_length=50, blank=True, null=True
+    )
     email = models.EmailField(max_length=255, unique=True, null=True)
-    user_name = models.CharField(default="", max_length=100, blank=True,null=True)
-    user_shortname = models.CharField(default="", max_length=50, blank=True,null=True)
-    broker = models.CharField(default="", max_length=30, blank=True,null=True)
-    exchanges = ArrayField(models.CharField(max_length=10, blank=True),null=True)
-    products = ArrayField(models.CharField(max_length=10, blank=True),null=True)
-    order_types = ArrayField(models.CharField(max_length=10, blank=True),null=True)
-    avatar_url = models.URLField()
-    user_id = models.CharField(default="", max_length=20,null=True)
-    api_key = models.CharField(default="", max_length=30,null=True)
-    access_token = models.CharField(default="", max_length=100,null=True)
-    public_token = models.CharField(default="", max_length=100,null=True)
-    refresh_token = models.CharField(default="", max_length=100,null=True)
-    enctoken = models.CharField(default="", max_length=100,null=True)
+    user_name = models.CharField(default="", max_length=100, blank=True, null=True)
+    user_shortname = models.CharField(default="", max_length=50, blank=True, null=True)
+    broker = models.CharField(default="", max_length=30, blank=True, null=True)
+    exchanges = ArrayField(models.CharField(max_length=10, blank=True), null=True)
+    products = ArrayField(models.CharField(max_length=10, blank=True), null=True)
+    order_types = ArrayField(models.CharField(max_length=10, blank=True), null=True)
+    avatar_url = models.URLField(null=True)
+    user_id = models.CharField(default="", max_length=20, null=True)
+    api_key = models.CharField(default="", max_length=30, null=True)
+    access_token = models.TextField(default="", null=True)
+    public_token = models.TextField(default="", null=True)
+    refresh_token = models.TextField(default="", null=True)
+    enctoken = models.TextField(default="", null=True)
     login_time = models.DateTimeField(null=True)
+    meta = models.JSONField(null=True)
 
 
 class Notification(models.Model):

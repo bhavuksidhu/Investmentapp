@@ -263,12 +263,7 @@ class UserSettingViewSet(GetPostViewSet):
             raise NoDataException
 
 
-@extend_schema(summary="About Us endpoint")
 class AboutUsViewSet(GetViewSet):
-    """
-    Returns AboutUs as a JSON objects, returns empty JSON if no AboutUs data is present.
-    """
-
     serializer_class = AboutUsSerializer
 
     def get_queryset(self):
