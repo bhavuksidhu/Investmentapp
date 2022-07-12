@@ -169,7 +169,7 @@ class CheckStatus(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
-        if timezone.now().day == zerodha_data.login_time.day:
+        if timezone.localtime().day == zerodha_data.login_time.day:
             return Response(
                 {
                     "errors": None,
