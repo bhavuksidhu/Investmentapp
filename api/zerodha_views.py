@@ -1,22 +1,12 @@
-import datetime
 import urllib.parse
 
-from adminpanel.models import FAQ, ContactData, StaticData
-from core.models import (
-    Notification,
-    UploadedFile,
-    User,
-    UserProfile,
-    UserSetting,
-    ZerodhaData,
-)
+from core.models import User, ZerodhaData
 from django.conf import settings
-from django.utils.datastructures import MultiValueDictKeyError
-from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
+from django.utils import timezone
+from drf_spectacular.utils import extend_schema, inline_serializer
 from kiteconnect import KiteConnect
 from rest_framework import serializers, status
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -135,7 +125,7 @@ class KYCView(APIView):
 
         redirect_params = urllib.parse.quote(f"uuid={uuid}")
         redirect_url = f"https://kite.zerodha.com/connect/login?v=3&api_key={KITE_CREDS['api_key']}&redirect_params={redirect_params}"
-        
+
         return Response(
             {
                 "errors": "None",
@@ -179,7 +169,7 @@ class CheckStatus(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
-        if datetime.datetime.today().day == zerodha_data.login_time.day:
+        if timezone.now().day == zerodha_data.login_time.day:
             return Response(
                 {
                     "errors": None,
