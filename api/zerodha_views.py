@@ -26,7 +26,7 @@ KITE_CREDS = settings.KITE_CREDS
 kite = KiteConnect(api_key=KITE_CREDS["api_key"])
 
 
-class ZerodhaRedirect(APIView):
+class Redirect(APIView):
     @extend_schema(
         request=None,
         responses=inline_serializer(
@@ -115,7 +115,7 @@ class ZerodhaRedirect(APIView):
         )
 
 
-class ZerodhaKYCView(APIView):
+class KYCView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -146,7 +146,7 @@ class ZerodhaKYCView(APIView):
         )
 
 
-class ZerodhaCheckStatus(APIView):
+class CheckStatus(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 

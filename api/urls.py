@@ -16,7 +16,7 @@ from api.views import (
     UserProfileViewSet,
     UserSettingViewSet,
 )
-from api.zerodha_views import ZerodhaCheckStatus, ZerodhaKYCView, ZerodhaRedirect
+from api.zerodha_urls import urlpatterns as zerodha_urls
 
 app_name = "api"
 
@@ -47,11 +47,5 @@ urlpatterns = [
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     # Routers
     path("", include(router.urls)),
-    path(
-        "zerodha/check-status",
-        ZerodhaCheckStatus.as_view(),
-        name="zerodha-check-status",
-    ),
-    path("zerodha/get-kyc-url", ZerodhaKYCView.as_view(), name="zerodha-get-kyc-url"),
-    path("zerodha/redirect", ZerodhaRedirect.as_view(), name="zerodha-redirect"),
+    path("zerodha/",include(zerodha_urls)),
 ]
