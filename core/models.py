@@ -46,6 +46,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True, null=True)
+    firebase_token = models.TextField(default="")
     phone_number = models.CharField(max_length=20, unique=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -74,7 +75,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(default="", max_length=30)
     date_of_birth = models.DateField(null=True)
     gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
-    pan_number = models.CharField(default="", max_length=12)
+    pan_number = models.CharField(default="", max_length=12, unique=True)
     address = models.TextField(default="")
 
 

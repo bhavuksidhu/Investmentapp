@@ -10,7 +10,7 @@ from api.views import (
     NotificationViewSet,
     PrivacyPolicyViewSet,
     RegisterView,
-    SendOTPView,
+    ResetPasswordView,
     TermsNConditionsViewSet,
     UserProfilePhotoViewSet,
     UserProfileViewSet,
@@ -24,7 +24,9 @@ router = DefaultRouter()
 
 router.register(r"profile", UserProfileViewSet, basename="profile")
 router.register(r"settings", UserSettingViewSet, basename="settings")
-router.register(r"profile/profile-photo", UserProfilePhotoViewSet, basename="profile-photo")
+router.register(
+    r"profile/profile-photo", UserProfilePhotoViewSet, basename="profile-photo"
+)
 router.register(r"notifications", NotificationViewSet, basename="notifications")
 router.register(r"static/about-us", AboutUsViewSet, basename="about-us")
 router.register(
@@ -41,11 +43,11 @@ router.register(r"static/faqs", FAQViewSet, basename="faqs")
 
 urlpatterns = [
     # Direct urls
-    path("auth/send-otp/", SendOTPView.as_view(), name="send-otp"),
+    path("auth/reset-password/", ResetPasswordView.as_view(), name="reset-password"),
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     # Routers
     path("", include(router.urls)),
-    path("zerodha/",include(zerodha_urls)),
+    path("zerodha/", include(zerodha_urls)),
 ]

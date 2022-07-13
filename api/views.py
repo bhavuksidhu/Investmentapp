@@ -2,7 +2,7 @@ from adminpanel.models import FAQ, ContactData, StaticData
 from core.models import Notification, UploadedFile, User, UserProfile, UserSetting
 from django.utils.datastructures import MultiValueDictKeyError
 from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
-from rest_framework import serializers, status
+from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -18,7 +18,7 @@ from api.serializers import (
     NotificationSerializer,
     PrivacyPolicySerializer,
     RegisterUserSerializer,
-    SendOTPSerializer,
+    ResetPasswordSerializer,
     TermsNConditionsSerializer,
     UploadedFileSerializer,
     UserProfileSerializer,
@@ -26,21 +26,43 @@ from api.serializers import (
 )
 from api.utils import NoDataException, parse_serializer_errors
 
-from .custom_viewsets import (
-    GetPostUsingIdViewSet,
-    GetPostViewSet,
-    GetViewSet,
-    ListGetPostUpdateDestroyViewSet,
-    ListGetUpdateViewSet,
-)
+from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
 
 
-class SendOTPView(APIView):
-    serializer_class = SendOTPSerializer
+class ResetPasswordView(APIView):
+    serializer_class = ResetPasswordSerializer
 
     def post(self, request: Request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            if "email" in request.data:
+                try:
+                    user = User.objects.get(email=request.data["email"])
+                except User.DoesNotExist:
+                    user = None
+            if "phone_number" in request.data:
+                try:
+                    user = User.objects.get(phone_number=request.data["phone_number"])
+                except User.DoesNotExist:
+                    user = None
+            if user:
+                if not request.data["new_password"]:
+                    return Response(
+                        {
+                            "errors": "Empty password",
+                            "status": status.HTTP_400_BAD_REQUEST,
+                        }
+                    )
+                user = request.user
+                user.set_password = request.data["new_password"]
+                user.save()
+            else:
+                return Response(
+                    {
+                        "errors": "No user found",
+                        "status": status.HTTP_400_BAD_REQUEST,
+                    }
+                )
             return Response(
                 {
                     "errors": None,
@@ -63,9 +85,10 @@ class RegisterView(APIView):
         request=inline_serializer(
             name="register_request",
             fields={
-                "otp": serializers.CharField(max_length=6),
+                "firebase_token": serializers.CharField(),
                 "phone_number": serializers.CharField(max_length=20),
                 "email": serializers.EmailField(allow_blank=True),
+                "password": serializers.CharField(max_length=20),
                 "profile": UserProfileSerializer(),
             },
         ),
@@ -80,42 +103,33 @@ class RegisterView(APIView):
     )
     def post(self, request: Request, *args, **kwargs):
         try:
-            otp = request.data.pop("otp")
+            firebase_token = request.data["firebase_token"]
         except:
             return Response(
                 {
-                    "errors": "OTP not found",
+                    "errors": "Firebase token not present",
                     "token": None,
                     "status": status.HTTP_400_BAD_REQUEST,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if otp == "123456":
-            serializer = self.serializer_class(data=request.data)
-            if serializer.is_valid():
-                user = serializer.save()
-                token = str(Token.objects.get_or_create(user=user)[0])
-                return Response(
-                    {
-                        "errors": None,
-                        "token": token,
-                        "status": status.HTTP_200_OK,
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {
-                        "errors": parse_serializer_errors(serializer),
-                        "token": None,
-                        "status": status.HTTP_400_BAD_REQUEST,
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token = str(Token.objects.get_or_create(user=user)[0])
+            return Response(
+                {
+                    "errors": None,
+                    "token": token,
+                    "status": status.HTTP_200_OK,
+                },
+                status=status.HTTP_200_OK,
+            )
         else:
             return Response(
                 {
-                    "errors": "OTP mismatch",
+                    "errors": serializer.errors,
                     "token": None,
                     "status": status.HTTP_400_BAD_REQUEST,
                 },
@@ -136,7 +150,7 @@ class LoginView(APIView):
         ),
     )
     def post(self, request: Request, *args, **kwargs):
-        if "otp" in request.data:
+        if "password" in request.data:
             if "phone_number" in request.data and request.data["phone_number"]:
                 phone_number = request.data["phone_number"]
                 try:
@@ -172,9 +186,9 @@ class LoginView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
 
-            if request.data["otp"] == "123456":
+            if user.check_password(request.data["password"]):
+
                 token = str(Token.objects.get_or_create(user=user)[0])
                 return Response(
                     {
@@ -184,10 +198,19 @@ class LoginView(APIView):
                     },
                     status=status.HTTP_200_OK,
                 )
+            else:
+                return Response(
+                    {
+                        "errors": "Invalid Password",
+                        "token": None,
+                        "status": status.HTTP_400_BAD_REQUEST,
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {
-                    "errors": "No OTP present in request body.",
+                    "errors": "No Password present in body",
                     "token": None,
                     "status": status.HTTP_400_BAD_REQUEST,
                 },
@@ -291,7 +314,7 @@ class ContactDataViewSet(GetViewSet):
         return ContactData.objects.last()
 
 
-class FAQViewSet(GetViewSet):
+class FAQViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = FAQSerializer
 
     def get_queryset(self):

@@ -16,6 +16,7 @@ class GetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+        print(serializer)
         return Response(serializer.data)
 
 

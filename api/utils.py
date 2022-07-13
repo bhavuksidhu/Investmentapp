@@ -2,9 +2,26 @@ from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
 
+from core.models import User, ZerodhaData
+from django.utils import timezone
+
 
 def parse_serializer_errors(serializer):
     return " ".join("".join(x).title() for e, x in serializer.errors.items())
+
+def check_kyc_status(user: User):
+    try:
+        zerodha_data: ZerodhaData = ZerodhaData.objects.get(local_user=user)
+    except ZerodhaData.DoesNotExist:
+        return False
+
+    if not zerodha_data.login_time:
+        return False
+
+    if timezone.localtime().day == zerodha_data.login_time.day:
+        return True
+    else:
+        return False
 
 
 class NoDataException(APIException):

@@ -2,7 +2,6 @@ import urllib.parse
 
 from core.models import User, ZerodhaData
 from django.conf import settings
-from django.utils import timezone
 from drf_spectacular.utils import extend_schema, inline_serializer
 from kiteconnect import KiteConnect
 from rest_framework import serializers, status
@@ -11,6 +10,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .custom_views import ZerodhaView
+
+from api.utils import check_kyc_status
 
 KITE_CREDS = settings.KITE_CREDS
 kite = KiteConnect(api_key=KITE_CREDS["api_key"])
@@ -151,25 +153,8 @@ class CheckStatus(APIView):
         ),
     )
     def get(self, request: Request, *args, **kwargs):
-        try:
-            zerodha_data: ZerodhaData = ZerodhaData.objects.get(local_user=request.user)
-        except ZerodhaData.DoesNotExist:
-            return Response(
-                {
-                    "errors": "KYC NOT DONE",
-                    "status": status.HTTP_404_NOT_FOUND,
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        if not zerodha_data.login_time:
-            return Response(
-                {
-                    "errors": "KYC NOT DONE",
-                    "status": status.HTTP_404_NOT_FOUND,
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        if timezone.localtime().day == zerodha_data.login_time.day:
+        kyc_done = check_kyc_status(user=request.user)
+        if kyc_done:
             return Response(
                 {
                     "errors": None,
@@ -180,8 +165,10 @@ class CheckStatus(APIView):
         else:
             return Response(
                 {
-                    "errors": "KYC Expired",
-                    "status": status.HTTP_401_UNAUTHORIZED,
+                    "errors": "KYC NOT DONE OR EXPIRED",
+                    "status": status.HTTP_403_FORBIDDEN,
                 },
-                status=status.HTTP_401_UNAUTHORIZED,
+                status=status.HTTP_403_FORBIDDEN,
             )
+
+

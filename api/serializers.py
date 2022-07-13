@@ -2,7 +2,14 @@ import re
 from mimetypes import guess_type
 
 from adminpanel.models import FAQ, ContactData, StaticData
-from core.models import Notification, UploadedFile, User, UserProfile, UserSetting, ZerodhaData
+from core.models import (
+    Notification,
+    UploadedFile,
+    User,
+    UserProfile,
+    UserSetting,
+    ZerodhaData,
+)
 from drf_spectacular.utils import extend_schema_serializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
@@ -101,12 +108,16 @@ class RegisterUserSerializer(
 
     class Meta:
         model = User
-        fields = ["email", "phone_number", "profile"]
+        fields = ["firebase_token","email", "phone_number","password", "profile"]
 
     def validate(self, data):
         """
         Check that at least one of email or phone is present
         """
+        if not data["password"]:
+            raise serializers.ValidationError(
+                "Password is required"
+            )
         if not data["phone_number"] or not data["email"]:
             raise serializers.ValidationError(
                 "You need to supply user's phone number or email"
@@ -130,13 +141,15 @@ class RegisterUserSerializer(
 
     def create(self, validated_data):
         user = super().create(validated_data)
+        user.set_password(validated_data["password"])
+        user.save()
         UserSetting.objects.create(user=user)
         ZerodhaData.objects.create(local_user=user)
         return user
 
 
 class LoginSerializer(serializers.Serializer):
-    otp = serializers.CharField(max_length=6)
+    password = serializers.CharField(max_length=6)
     phone_number = serializers.CharField(max_length=20, allow_blank=True)
     email = serializers.CharField(max_length=255, allow_blank=True)
 
@@ -147,8 +160,8 @@ class LoginSerializer(serializers.Serializer):
                 "You need to supply user's phone number or email"
             )
 
-        if not data["otp"]:
-            raise serializers.ValidationError("You need to send the OTP")
+        if not data["password"]:
+            raise serializers.ValidationError("You need to send the password")
 
         return data
 
@@ -206,14 +219,19 @@ class NotificationSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class SendOTPSerializer(serializers.Serializer):
+class ResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField()
+    firebase_token = serializers.CharField()
     phone_number = serializers.CharField(
         max_length=20, allow_blank=True, required=False
     )
     email = serializers.CharField(max_length=255, allow_blank=True, required=False)
-
+    
     def validate(self, data):
-
+        if not "firebase_token" in  data:
+            raise serializers.ValidationError(
+                "You need to supply firebase_token"
+            )
         if not "phone_number" in data and not "email" in data:
             raise serializers.ValidationError(
                 "You need to supply user's phone number or email"
