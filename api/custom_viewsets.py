@@ -15,8 +15,10 @@ class GetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        print(serializer)
+        if hasattr(self,"many"):
+            serializer = self.get_serializer(instance,many=True)
+        else:
+            serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
 
@@ -36,8 +38,9 @@ class GetPostViewSet(
 
     def create(self, request, *args, **kwargs):
         try:
+            print("kekek")
             return super().create(request, *args, **kwargs)
-        except IntegrityError:
+        except:
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=False)
             serializer.is_valid(raise_exception=True)

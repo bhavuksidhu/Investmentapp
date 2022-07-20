@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (CustomerDetailView, CustomerManagementView, DashboardView,
                     ForgotPasswordView, LoginView, LogoutView, SettingsView,
-                    StaticContentManagementView,InvestingReportView,ComissionManagementView)
+                    StaticContentManagementView,InvestingReportView,SubscriptionManagementView)
 
 app_name = "adminpanel"
 urlpatterns = [
@@ -14,7 +14,7 @@ urlpatterns = [
     path("customer-management/", CustomerManagementView.as_view(),name="customer-management"),
     path("customer-detail/<int:pk>/", CustomerDetailView.as_view(),name="customer-detail"),
     path("investing-reports/",InvestingReportView.as_view(),name="investing-reports"),
-    path("comission-management/",ComissionManagementView.as_view(),name="comission-management"),
+    path("subscription-management/",SubscriptionManagementView.as_view(),name="subscription-management"),
     path("static-content-management/", StaticContentManagementView.as_view(),name="static-content-management"),
     path("settings/", SettingsView.as_view(),name="settings"),
 ]

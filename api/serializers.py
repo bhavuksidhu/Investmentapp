@@ -1,13 +1,20 @@
+from pyexpat import model
 import re
 from mimetypes import guess_type
 
+from attr import fields
+
 from adminpanel.models import FAQ, ContactData, StaticData
 from core.models import (
+    MarketQuote,
     Notification,
+    Transaction,
     UploadedFile,
     User,
     UserProfile,
     UserSetting,
+    UserSubscriptionHistory,
+    UserSubscription,
     ZerodhaData,
 )
 from drf_spectacular.utils import extend_schema_serializer
@@ -49,9 +56,14 @@ class UserSettingSerializer(serializers.ModelSerializer):
         model = UserSetting
         fields = ["notification_preference", "device_token", "device_type"]
 
+class BasicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email","phone_number"]
+
 
 @extend_schema_serializer(many=False)
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(WritableNestedModelSerializer,serializers.ModelSerializer):
     profile_photo = UploadedFileSerializer(allow_null=True, read_only=True)
 
     class Meta:
@@ -85,6 +97,22 @@ class UserSettingSerializer(serializers.ModelSerializer):
             validated_data["user"] = request.user
         return super().create(validated_data)
 
+@extend_schema_serializer(many=False)
+class UserSubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSubscription
+        fields = ["active", "date_from", "date_to"]
+
+class UserSubscriptionHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSubscriptionHistory
+        fields = ["amount","transaction_id","payment_gateway","notes","created_at"]
+    
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        subscription_id = self.context["request"].user.subscription.id
+        validated_data["subscription_id"] = subscription_id
+        return validated_data
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer()
@@ -99,6 +127,16 @@ class UserSerializer(serializers.ModelSerializer):
             "profile",
             "settings",
         ]
+
+class MarketQuoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MarketQuote
+        fields = ["name","trading_symbol","price","exchange","change"]
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ["trading_symbol","exchange","price","quantity","amount","transaction_type","if_not_invest_then_what","created_at"]
 
 
 class RegisterUserSerializer(
@@ -145,6 +183,7 @@ class RegisterUserSerializer(
         user.save()
         UserSetting.objects.create(user=user)
         ZerodhaData.objects.create(local_user=user)
+        UserSubscription.objects.create(user=user)
         return user
 
 

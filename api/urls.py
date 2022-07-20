@@ -3,15 +3,21 @@ from rest_framework.routers import DefaultRouter
 
 from api.views import (
     AboutUsViewSet,
+    BasicUserViewSet,
     ContactDataViewSet,
     FAQViewSet,
     LoginView,
     LogoutView,
+    MarketFilterViewSet,
     NotificationViewSet,
     PrivacyPolicyViewSet,
     RegisterView,
     ResetPasswordView,
+    SubscribeViewSet,
+    SubscriptionHistoryViewSet,
+    SubscriptionViewSet,
     TermsNConditionsViewSet,
+    TransactionViewSet,
     UserProfilePhotoViewSet,
     UserProfileViewSet,
     UserSettingViewSet,
@@ -23,11 +29,25 @@ app_name = "api"
 router = DefaultRouter()
 
 router.register(r"profile", UserProfileViewSet, basename="profile")
-router.register(r"settings", UserSettingViewSet, basename="settings")
+router.register(r"profile/user-data",BasicUserViewSet,basename="user-data")
 router.register(
     r"profile/profile-photo", UserProfilePhotoViewSet, basename="profile-photo"
 )
+router.register(r"settings", UserSettingViewSet, basename="settings")
 router.register(r"notifications", NotificationViewSet, basename="notifications")
+
+router.register(r"market/filter",MarketFilterViewSet,basename="market-filter")
+
+#Transactions
+router.register(r"transaction",TransactionViewSet,basename="transaction")
+
+#Subscriptions
+router.register(r"subscription/subscribe",SubscribeViewSet,basename="subscribe")
+router.register(r"subscription/detail",SubscriptionViewSet,basename="subscription-detail")
+router.register(r"subscription/history",SubscriptionHistoryViewSet,basename="subscription-history")
+
+
+#Static
 router.register(r"static/about-us", AboutUsViewSet, basename="about-us")
 router.register(
     r"static/privacy-policy", PrivacyPolicyViewSet, basename="privacy-policy"

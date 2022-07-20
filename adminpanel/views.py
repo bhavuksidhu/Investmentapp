@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from core.models import User
+from core.models import User, UserSubscription, UserSubscriptionHistory
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+from django.db.models import Sum
 
 
 # Create your views here.
@@ -75,6 +76,7 @@ class DashboardView(View):
         user_query = User.objects.filter(
             is_superuser=False, is_staff=False, is_active=True
         )
+        subscriber_query = UserSubscriptionHistory.objects.filter()
 
         from_date = request.GET.get("from_date", None)
         to_date = request.GET.get("to_date", None)
@@ -83,6 +85,7 @@ class DashboardView(View):
 
         if from_date and to_date:
             user_query = user_query.filter(created_at__date__range=[from_date, to_date])
+            subscriber_query = subscriber_query.filter(created_at__date__range=[from_date, to_date])
             
         elif from_period:
             today = datetime.today()
@@ -96,13 +99,11 @@ class DashboardView(View):
                 filter_date = filter_date.date()
 
             user_query = user_query.filter(created_at__date__gte=filter_date)
-
-        total_active_users = user_query.count()
-
-        total_revenue = 0
-
-        context["total_active_users"] = total_active_users
-        context["total_revenue"] = total_revenue
+            subscriber_query = subscriber_query.filter(created_at__date__gte=filter_date)            
+            
+        context["total_active_users"] = user_query.count()
+        context["total_revenue"] = subscriber_query.aggregate(Sum('amount'))["amount__sum"]
+        context["total_subscribed_users"] = subscriber_query.count()
         context["from_period"] = from_period
         context["from_date"] = from_date
         context["to_date"] = to_date
@@ -163,8 +164,8 @@ class InvestingReportView(View):
     def get(self, request, *args, **kwargs):
         return render(request, self.template)
 
-class ComissionManagementView(View):
-    template = "comission_management.html"
+class SubscriptionManagementView(View):
+    template = "subscription_management.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template)

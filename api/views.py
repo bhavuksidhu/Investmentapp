@@ -1,6 +1,16 @@
+from datetime import timedelta
+
 from adminpanel.models import FAQ, ContactData, StaticData
-from core.models import Notification, UploadedFile, User, UserProfile, UserSetting
-from django.utils.datastructures import MultiValueDictKeyError
+from core.models import (
+    MarketQuote,
+    Notification,
+    UploadedFile,
+    User,
+    UserProfile,
+    UserSetting,
+    UserSubscription,
+)
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -12,19 +22,24 @@ from rest_framework.views import APIView
 
 from api.serializers import (
     AboutUsSerializer,
+    BasicUserSerializer,
     ContactDataSerializer,
     FAQSerializer,
     LoginSerializer,
+    MarketQuoteSerializer,
     NotificationSerializer,
     PrivacyPolicySerializer,
     RegisterUserSerializer,
     ResetPasswordSerializer,
     TermsNConditionsSerializer,
+    TransactionSerializer,
     UploadedFileSerializer,
     UserProfileSerializer,
     UserSettingSerializer,
+    UserSubscriptionHistorySerializer,
+    UserSubscriptionSerializer,
 )
-from api.utils import NoDataException, parse_serializer_errors
+from api.utils import NoDataException, StandardResultsSetPagination
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
 
@@ -273,6 +288,13 @@ class UserProfileViewSet(GetPostViewSet):
         except UserProfile.DoesNotExist:
             raise NoDataException
 
+class BasicUserViewSet(GetPostViewSet):
+    serializer_class =  BasicUserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.request.user
 
 class UserSettingViewSet(GetPostViewSet):
     serializer_class = UserSettingSerializer
@@ -326,3 +348,100 @@ class NotificationViewSet(ListGetUpdateViewSet):
 
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user)
+
+
+class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    serializer_class = UserSubscriptionHistorySerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        headers = self.get_success_headers(serializer.data)
+
+        subscription: UserSubscription = self.request.user.subscription
+        if subscription.date_to and subscription.date_from:
+            subscription.date_to = subscription.date_to + timedelta(days=365)
+        else:
+            subscription.date_from = timezone.now().date()
+            subscription.date_to = timezone.now().date() + timedelta(days=365)
+
+        subscription.active = True
+        subscription.save()
+
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+
+class SubscriptionViewSet(GetViewSet):
+    serializer_class = UserSubscriptionSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.request.user.subscription
+
+
+class SubscriptionHistoryViewSet(GetViewSet):
+    serializer_class = UserSubscriptionHistorySerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    many = True
+
+    def get_queryset(self):
+        return self.request.user.subscription.history.all()
+
+
+class MarketFilterViewSet(GetViewSet):
+    pagination_class = StandardResultsSetPagination
+    serializer_class = MarketQuoteSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    many = True
+
+    def get_queryset(self):
+        price = self.request.GET.get("price", None)
+        if price:
+            price = float(price)
+            lower_price = price - 10
+        print(MarketQuote.objects.filter(
+            data_from="today", price__lte=price,price__gte=lower_price
+        ).count())
+        return MarketQuote.objects.filter(
+            data_from="today", price__lte=price, price__gte=price - 10
+        )
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="price",
+                location=OpenApiParameter.QUERY,
+                description="Last Price",
+                required=False,
+                type=float,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        price = self.request.GET.get("price", None)
+        print(price)
+        return super().list(request, *args, **kwargs)
+
+
+@extend_schema(parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)])
+class TransactionViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    pagination_class = StandardResultsSetPagination
+    serializer_class = TransactionSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.request.user.transactions.all()

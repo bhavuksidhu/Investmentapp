@@ -1,4 +1,5 @@
 import uuid
+from operator import mod
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -89,6 +90,29 @@ class UserSetting(models.Model):
     )
 
 
+class UserSubscription(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="subscription"
+    )
+    active = models.BooleanField(default=False)
+    date_from = models.DateTimeField(null=True)
+    date_to = models.DateTimeField(null=True)
+
+
+class UserSubscriptionHistory(models.Model):
+    subscription = models.ForeignKey(
+        UserSubscription, on_delete=models.CASCADE, related_name="history"
+    )
+    amount = models.FloatField()
+    transaction_id = models.TextField()
+    payment_gateway = models.TextField()
+    notes = models.TextField(default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
 class ZerodhaData(models.Model):
     local_user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="zerodha_data"
@@ -96,7 +120,7 @@ class ZerodhaData(models.Model):
     user_type = models.CharField(
         default="individual", max_length=50, blank=True, null=True
     )
-    email = models.EmailField(max_length=255, unique=True, null=True)
+    email = models.EmailField(max_length=255, null=True)
     user_name = models.CharField(default="", max_length=100, blank=True, null=True)
     user_shortname = models.CharField(default="", max_length=50, blank=True, null=True)
     broker = models.CharField(default="", max_length=30, blank=True, null=True)
@@ -132,3 +156,74 @@ class Notification(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class ZerodhaTransaction(models.Model):
+    TRANSACTION_CHOICES = [("Buy", "Buy"), ("Sell", "Sell")]
+    VALIDITY_CHOICES = [("DAY", "DAY"), ("IOC", "IOC"), ("TTL", "TTL")]
+
+    trading_symbol = models.CharField(max_length=20, default="")
+    exchange = models.CharField(max_length=10, default="")
+    transaction_type = models.CharField(
+        max_length=5, choices=TRANSACTION_CHOICES, null=True
+    )
+    order_type = models.CharField(max_length=20, default="")
+    quantity = models.IntegerField()
+    product = models.TextField()
+    price = models.FloatField()
+    trigger_price = models.FloatField()
+    disclosed_quantity = models.IntegerField()
+    validity = models.CharField(max_length=5, choices=VALIDITY_CHOICES)
+    validity_ttl = models.IntegerField()
+    iceberg_legs = models.IntegerField()
+    iceberg_quantity = models.FloatField()
+    tag = models.TextField(default="")
+
+    order_id = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class Transaction(models.Model):
+    TRANSACTION_CHOICES = [("Buy", "Buy"), ("Sell", "Sell")]
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="transactions"
+    )
+    zerodha_transaction = models.OneToOneField(
+        ZerodhaTransaction, on_delete=models.CASCADE, related_name="user_transaction"
+    )
+    trading_symbol = models.CharField(max_length=20, default="")
+    exchange = models.CharField(max_length=10, default="")
+    price = models.FloatField()
+    quantity = models.IntegerField()
+    amount = models.FloatField()
+    transaction_type = models.CharField(
+        max_length=5, choices=TRANSACTION_CHOICES, null=True
+    )
+    if_not_invest_then_what = models.TextField(default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class MarketQuote(models.Model):
+    INSTRUMENT_TYPE_CHOICES = [("EQ", "EQ"), ("FUT", "FUT"), ("CE", "CE"), ("PE", "PE")]
+    instrument_token = models.TextField()
+    exchange_token = models.TextField()
+    trading_symbol = models.TextField()
+    name = models.TextField(null=True)
+    price = models.FloatField()
+    expiry = models.DateField(null=True)
+    strike = models.FloatField()
+    tick_size = models.FloatField()
+    lot_size = models.IntegerField()
+    instrument_type = models.CharField(default="", max_length=4)
+    segment = models.TextField()
+    exchange = models.TextField()
+    change = models.FloatField(null=True)
+    data_from = models.CharField(default="today",max_length=15)

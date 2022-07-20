@@ -4,6 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from core.models import User, ZerodhaData
 from django.utils import timezone
+import uuid
 
 
 def parse_serializer_errors(serializer):
@@ -23,6 +24,8 @@ def check_kyc_status(user: User):
     else:
         return False
 
+def uuid_to_alphanumeric():
+    return str(uuid.uuid4()).replace("-","")[:20]
 
 class NoDataException(APIException):
     status_code = status.HTTP_404_NOT_FOUND

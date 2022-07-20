@@ -1621,3 +1621,7 @@ span.SecondCircle {
     font-weight: 500;
     color: #000;
 }
+
+.Box.BoxThree {
+    background-image: linear-gradient(45deg, #f93a5a, #f7778c);
+}
