@@ -50,6 +50,14 @@ class GetPostViewSet(
                 instance._prefetched_objects_cache = {}
 
             return Response(serializer.data)
+    
+    def dispatch(self, request, *args, **kwargs):
+        response =  super().dispatch(request, *args, **kwargs)
+        if "status" in response.data:
+            return response
+        else:
+            response.data["status"] = response.status_code
+        return response
 
 
 @extend_schema(parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)])
