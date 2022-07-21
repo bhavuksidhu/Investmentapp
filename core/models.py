@@ -113,7 +113,7 @@ class UserSubscription(models.Model):
     
     @property
     def total_amount(self):
-        amount = self.amount()
+        amount = self.amount
         return ((amount / 100) * 18)  + amount
 
 
