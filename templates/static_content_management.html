@@ -150,8 +150,7 @@
             </div>
         </div>
     </div>
-</div>
-<script>
+    <script>
 
     $("#add_faq").on("click",function(e){
         addFAQ()
@@ -166,7 +165,7 @@
     })
 
     function createFAQElement(question,answer){
-       let element = `<li style="margin-bottom: 10px"><h6 class="faq_question" style="display:flex; justify-content: space-between;">${question}<span><i class="fa fa-trash delete-FAQ" style="cursor: pointer;"></i></span></h6><p class ="faq_answer"  >${answer}</p></li>`
+       let element = `<li style="margin-bottom: 10px"><h6 class="faq_question" style="display:flex; justify-content: space-between;">${question}<span><i class="fa fa-trash delete-FAQ" style="cursor: pointer;"></i></span></h6><p class ="faq_answer">${answer}</p></li>`
         return element;
     }
 
@@ -187,8 +186,8 @@
             document.querySelector("#answer").value = ""
         }
     }
-</script>
-<script>
+    </script>
+    <script>
     function getContactData(){
         contact_email = document.querySelector("#contact_email").value
         contact_number = document.querySelector("#contact_number").value
@@ -215,8 +214,8 @@
         faqs = getFAQDATA()
         return {"contact_data":contact_data,"about_us":about_us,"terms_and_conditions":terms_and_conditions,"privacy_policy":privacy_policy,"faqs":faqs}
     }
-</script>
-<script>
+    </script>
+    <script>
     function saveStaticData(){
             let url = "{% url 'adminpanel:static-content-management' %}"
             let data = prepareData()
@@ -258,5 +257,5 @@
         }
     
 
-</script>
+    </script>
 {% endblock %}

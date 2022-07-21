@@ -445,3 +445,45 @@ class TransactionViewSet(
 
     def get_queryset(self):
         return self.request.user.transactions.all()
+
+class CheckEmailPassword(APIView):
+    @extend_schema(
+        request=inline_serializer(
+            name="check_email_pass_request",
+            fields={
+                "email": serializers.CharField(allow_null=True),
+                "phone_number": serializers.CharField(allow_null=True),
+            },
+        ),
+        responses=inline_serializer(
+            name="check_email_pass_response",
+            fields={
+                "user_exists": serializers.BooleanField(),
+                "status": serializers.IntegerField()
+            },
+        ),
+    )
+    def post(self, request: Request, *args, **kwargs):
+        exists = False
+        if "email" in request.data:
+            try:
+                User.objects.get(email=request.data["email"])
+                exists = True
+            except User.DoesNotExist:
+                pass
+
+        if "phone_number" in request.data:
+            try:
+                User.objects.get(phone_number=request.data["phone_number"])
+                exists = True
+            except User.DoesNotExist:
+                pass
+        
+        return Response(
+            {
+                "user_exists": exists,
+                "status": status.HTTP_200_OK,
+            },
+            status=status.HTTP_200_OK,
+        )
+        

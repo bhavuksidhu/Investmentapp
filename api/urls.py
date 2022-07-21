@@ -21,6 +21,7 @@ from api.views import (
     UserProfilePhotoViewSet,
     UserProfileViewSet,
     UserSettingViewSet,
+    CheckEmailPassword
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 
@@ -67,6 +68,7 @@ urlpatterns = [
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
+    path("check/email-password/",CheckEmailPassword.as_view(),name="check-email-password"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),
