@@ -1,5 +1,4 @@
 import uuid
-from operator import mod
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -10,6 +9,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from datetime import date
+
 
 # Create your models here.
 
@@ -79,6 +80,11 @@ class UserProfile(models.Model):
     pan_number = models.CharField(default="", max_length=12, unique=True)
     address = models.TextField(default="")
 
+    @property
+    def age(self):
+        today = date.today()
+        return today.year - self.date_of_birth.year - (today.timetuple()[1:3] < self.date_of_birth.timetuple()[1:3])
+
 
 class UserSetting(models.Model):
     DEVICE_TYPE_CHOICES = [("Apple", "Apple"), ("Android", "Android")]
@@ -97,6 +103,18 @@ class UserSubscription(models.Model):
     active = models.BooleanField(default=False)
     date_from = models.DateTimeField(null=True)
     date_to = models.DateTimeField(null=True)
+
+    @property
+    def amount(self):
+        if self.date_to and self.date_from:
+            return ((self.date_to - self.date_from).days / 365 ) * 39
+        else:
+            return 0
+    
+    @property
+    def total_amount(self):
+        amount = self.amount()
+        return ((amount / 100) * 18)  + amount
 
 
 class UserSubscriptionHistory(models.Model):
@@ -210,6 +228,11 @@ class Transaction(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+class Stocks(models.Model):
+    exchange = models.TextField()
+    symbol = models.TextField()
+    series = models.TextField()
+    index_listing = models.TextField()
 
 class MarketQuote(models.Model):
     INSTRUMENT_TYPE_CHOICES = [("EQ", "EQ"), ("FUT", "FUT"), ("CE", "CE"), ("PE", "PE")]

@@ -1,15 +1,18 @@
+import json
 from datetime import datetime, timedelta
 
-from core.models import User, UserSubscription, UserSubscriptionHistory
+from core.models import Stocks, User, UserProfile, UserSubscription, UserSubscriptionHistory
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Sum
+from django.http import FileResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.db.models import Sum
+import pandas as pd
+from adminpanel.models import FAQ, ContactData, StaticData
 
 
 # Create your views here.
@@ -85,8 +88,10 @@ class DashboardView(View):
 
         if from_date and to_date:
             user_query = user_query.filter(created_at__date__range=[from_date, to_date])
-            subscriber_query = subscriber_query.filter(created_at__date__range=[from_date, to_date])
-            
+            subscriber_query = subscriber_query.filter(
+                created_at__date__range=[from_date, to_date]
+            )
+
         elif from_period:
             today = datetime.today()
             if from_period == "Today":
@@ -99,10 +104,16 @@ class DashboardView(View):
                 filter_date = filter_date.date()
 
             user_query = user_query.filter(created_at__date__gte=filter_date)
-            subscriber_query = subscriber_query.filter(created_at__date__gte=filter_date)            
-            
+            subscriber_query = subscriber_query.filter(
+                created_at__date__gte=filter_date
+            )
+
         context["total_active_users"] = user_query.count()
-        context["total_revenue"] = subscriber_query.aggregate(Sum('amount'))["amount__sum"]
+        context["total_revenue"] = subscriber_query.aggregate(Sum("amount"))[
+            "amount__sum"
+        ]
+        if context["total_revenue"] is None:
+            context["total_revenue"] = 0
         context["total_subscribed_users"] = subscriber_query.count()
         context["from_period"] = from_period
         context["from_date"] = from_date
@@ -119,14 +130,19 @@ class CustomerManagementView(ListView):
     template_name = "customer_management.html"
     model = User
     context_object_name = "user_list"
+    paginate_by = 5
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
         if q:
             return (
-                User.objects.select_related()
+                User.objects.select_related("profile")
                 .filter(is_superuser=False)
-                .filter(Q(email__icontains=q) | Q(phone_number__icontains=q))
+                .filter(
+                    Q(email__icontains=q)
+                    | Q(phone_number__icontains=q)
+                    | Q(profile__first_name__icontains=q)
+                )
             )
         else:
             return User.objects.select_related().filter(is_superuser=False)
@@ -136,16 +152,36 @@ class CustomerManagementView(ListView):
         context["q"] = self.request.GET.get("q", None)
         return context
 
+    def post(self, request, *args, **kwargs):
+        todo = request.POST.get("todo", None)
+        user_id = request.POST.get("user_id", None)
+
+        if todo and user_id:
+            try:
+                user: User = User.objects.get(id=int(user_id))
+
+                if todo == "block":
+                    user.is_active = False
+                    user.save()
+                elif todo == "unblock":
+                    user.is_active = True
+                    user.save()
+                elif todo == "delete":
+                    user.delete()
+
+            except User.DoesNotExist:
+                return JsonResponse({"message": "Failed to find user"})
+
+        return JsonResponse({"message": "OK"})
+
 
 class CustomerDetailView(DetailView):
-    template_name = "customer_details.html"
+    template_name = "customer_detail.html"
     mode = User
     context_object_name = "user"
 
     def get_queryset(self):
-        return (
-            User.objects.select_related().filter(id=self.kwargs.get("pk"))
-        )
+        return User.objects.select_related("profile").filter(id=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -158,23 +194,243 @@ class CustomerDetailView(DetailView):
 
         return context
 
+
+class CustomerEditView(DetailView):
+    template_name = "customer_edit.html"
+    mode = User
+    context_object_name = "user"
+
+    def get_queryset(self):
+        return User.objects.select_related("profile").filter(id=self.kwargs.get("pk"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        from_date = self.request.GET.get("from_date", None)
+        to_date = self.request.GET.get("to_date", None)
+
+        context["from_date"] = from_date
+        context["to_date"] = to_date
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        first_name = request.POST.get("first_name", None)
+        last_name = request.POST.get("last_name", None)
+        email = request.POST.get("email", None)
+        phone_number = request.POST.get("phone_number", None)
+        pan_number = request.POST.get("pan_number", None)
+        date_of_birth = request.POST.get("date_of_birth", None)
+        gender = request.POST.get("gender", None)
+        address = request.POST.get("address", None)
+
+        try:
+            user: User = User.objects.get(id=self.kwargs.get("pk"))
+            profile: UserProfile = user.profile
+        except User.DoesNotExist:
+            return self.get(self, request, *args, **kwargs)
+
+        if first_name:
+            profile.first_name = first_name
+        if last_name:
+            profile.last_name = last_name
+        if email:
+            user.email = email
+        if phone_number:
+            user.phone_number = phone_number
+        if pan_number:
+            profile.pan_number = pan_number
+        if date_of_birth:
+            profile.date_of_birth = date_of_birth
+        if gender:
+            profile.gender = gender
+        if address:
+            profile.address = address
+
+        try:
+            profile.save()
+            user.save()
+        except Exception as e:
+            print(e)
+
+        return self.get(self, request, *args, **kwargs)
+
+
+class CustomerAddView(View):
+    template_name = "customer_add.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        first_name = request.POST.get("first_name", None)
+        last_name = request.POST.get("last_name", None)
+        email = request.POST.get("email", None)
+        phone_number = request.POST.get("phone_number", None)
+        pan_number = request.POST.get("pan_number", None)
+        date_of_birth = request.POST.get("date_of_birth", None)
+        gender = request.POST.get("gender", None)
+        address = request.POST.get("address", None)
+
+        # try:
+        #     user :User = User.objects.get(id=self.kwargs.get("pk"))
+        #     profile :UserProfile = user.profile
+        # except User.DoesNotExist:
+        #     return self.get(self,request,*args,**kwargs)
+
+        # if first_name:
+        #     profile.first_name = first_name
+        # if last_name:
+        #     profile.last_name = last_name
+        # if email:
+        #     user.email = email
+        # if phone_number:
+        #     user.phone_number = phone_number
+        # if pan_number:
+        #     profile.pan_number = pan_number
+        # if date_of_birth:
+        #     profile.date_of_birth = date_of_birth
+        # if gender:
+        #     profile.gender = gender
+        # if address:
+        #     profile.address = address
+
+        # try:
+        #     profile.save()
+        #     user.save()
+        # except Exception as e:
+        #     print(e)
+
+        return self.get(self, request, *args, **kwargs)
+
+
 class InvestingReportView(View):
     template = "investing_reports.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template)
 
-class SubscriptionManagementView(View):
-    template = "subscription_management.html"
 
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template)
+class SubscriptionManagementView(ListView):
+    template_name = "subscription_management.html"
+    model = UserSubscription
+    context_object_name = "subscriptions"
+    paginate_by = 5
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", None)
+
+        from_date = self.request.GET.get("from_date", None)
+        to_date = self.request.GET.get("to_date", None)
+
+        query = UserSubscription.objects.select_related()
+
+        if from_date:
+            query = query.filter(date_from__gte=from_date)
+        elif to_date:
+            query = query.filter(date_to__lte=to_date)
+
+        if q:
+            query = query.filter(
+                Q(user__email__icontains=q)
+                | Q(user__phone_number__icontains=q)
+                | Q(user__profile__first_name__icontains=q)
+            )
+
+        return query
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        context["from_date"] = self.request.GET.get("from_date", None)
+        context["to_date"] = self.request.GET.get("to_date", None)
+        return context
+
+
+class StockManagementView(ListView):
+    template_name = "stock_management.html"
+    model = Stocks
+    context_object_name = "stocks"
+    paginate_by = 5
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", None)
+        query = Stocks.objects.all()
+        if q:
+            query = query.filter(
+                Q(symbol__icontains=q)
+            )
+        return query
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        return context
+
+class StockUploadView(View):
+    template_name = "stock_upload.html"
+
+    def get(self,request,*args,**kwargs):
+         return render(request, self.template_name)
+
+    def post(self,request,*args,**kwargs):
+        df = pd.read_excel(request.FILES.get("stock_file"))
+        Stocks.objects.all().delete()
+        [Stocks.objects.create(**x) for x in df.T.to_dict().values()]
+        return redirect("adminpanel:stock-management")
+
+class StockUploadTemplateView(View):
+    def get(self,request,*args,**kwagrs):
+        return FileResponse(open("stocks_template.xlsx","rb"))
+
 
 class StaticContentManagementView(View):
     template = "static_content_management.html"
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template)
+        static_content = StaticData.objects.select_related("contact_data").first()
+        faqs = FAQ.objects.all()
+        context = {"static_content": static_content, "faqs": faqs}
+        return render(request, self.template, context=context)
+
+    def post(self, request, *args, **kwargs):
+        contact_data = request.POST.get("contact_data", None)
+        about_us = request.POST.get("about_us", None)
+        terms_and_conditions = request.POST.get("terms_and_conditions", None)
+        privacy_policy = request.POST.get("privacy_policy", None)
+        faqs = request.POST.get("faqs", None)
+
+        static_content_obj: StaticData = StaticData.objects.select_related(
+            "contact_data"
+        ).first()
+        contact_data_obj: ContactData = static_content_obj.contact_data
+
+        if contact_data:
+            contact_data = json.loads(contact_data)
+            contact_data_obj.company_email = contact_data["contact_email"]
+            contact_data_obj.company_number = contact_data["contact_number"]
+            contact_data_obj.company_address = contact_data["contact_address"]
+
+            contact_data_obj.save()
+
+        if about_us:
+            static_content_obj.about_us = about_us
+
+        if terms_and_conditions:
+            static_content_obj.terms_and_conditions = terms_and_conditions
+
+        if privacy_policy:
+            static_content_obj.privacy_policy = privacy_policy
+
+        static_content_obj.save()
+
+        if faqs:
+            faqs = json.loads(faqs)
+            FAQ.objects.all().delete()
+            for faq in faqs:
+                FAQ.objects.create(question=faq["question"], answer=faq["answer"])
+
+        return JsonResponse({"message": "OK"})
 
 
 class SettingsView(View):

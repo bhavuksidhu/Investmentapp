@@ -423,7 +423,7 @@ input[type="date"] {
 }
 
 .Header .Navigation .Avater {
-    margin: 5px 0 5px 30px;
+    margin: 5px 0 5px 24px;
     position: relative;
     display: inline-block
 }
@@ -1349,11 +1349,11 @@ span.SecondCircle {
     margin-top: 15px
 }
 
-.StaticBoxArea .Save {
+.Save {
     text-align: center;
 }
 
-.StaticBoxArea .Save .Button {
+.Save .Button {
     width: auto;
     padding: 10px 60px;
     background: #299e52;
@@ -1390,7 +1390,7 @@ span.SecondCircle {
     border-radius: 5px;
     box-shadow: none;
     font-weight: 400;
-    font-size: 14px
+    font-size: 14px;
 }
 
 .FlexMain {
@@ -1446,7 +1446,7 @@ span.SecondCircle {
     text-transform: capitalize;
     margin: 0 0 0 30px;
     font-size: 17px;
-    color: #49a0d5;
+    color: #28a745;
     font-weight: 400;
     -webkit-transition: 0.5s all ease-in-out;
     transition: 0.5s all ease-in-out
@@ -1624,4 +1624,100 @@ span.SecondCircle {
 
 .Box.BoxThree {
     background-image: linear-gradient(45deg, #f93a5a, #f7778c);
+}
+
+.Navigation a.Notification {
+    color: #28a745;
+    font-size: 20px;
+}
+
+.card-header span {}
+
+.card-header span a {
+    position: absolute;
+    right: 56px;
+    top: 15px;
+    color: #000;
+    font-size: 14px;
+}
+
+.CommonForm2.CommonForm h4 {
+    font-size: 16px;
+    padding: 15px 20px;
+    background-color: #f1efef;
+    font-weight: 500;
+    color: #000;
+    /* letter-spacing: .5px; */
+    font-family: 'Roboto';
+    margin: 0 0 20px -10px;
+}
+
+.AttachFile h3 {
+    font-size: 23px;
+    font-family: 'Roboto';
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.AttachFile input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.AttachFile .FileMAIN {
+    position: relative;
+}
+
+.Download a {
+    font-weight: 500;
+    background: #FFF;
+    display: inline-block;
+    padding: 12px 50px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #b1b1b1;
+    color: #000;
+}
+
+.AttachFile .FileMAIN span {
+    font-weight: 500;
+    background: #FFF;
+    display: inline-block;
+    padding: 12px 61px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #b1b1b1;
+    color: #000;
+}
+
+.AttachFile .FileMAIN span i {
+    padding-right: 10px;
+}
+
+.Download i {
+    padding-right: 10px;
+}
+
+.Download h3 {
+    font-size: 18px;
+    color: #000;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.Download p {
+    text-transform: capitalize;
+    color: #747474;
+    font-size: 15px;
+}
+
+.Download {
+    margin-bottom: 40PX;
 }

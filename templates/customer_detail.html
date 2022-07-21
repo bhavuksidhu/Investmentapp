@@ -25,56 +25,55 @@
                     <div class="tab-pane active" id="Personal">
                         <div class="CustomerBox">
                             <h6 class="Register">
-                                <span>Registered on 22 Feb '21</span>
+                                <span>Registered on {{user.created_at}}</span>
                             </h6>
                             <div class="CustomerHead">
                                 <figure>
-                                    <img src="/media/images/user2.svg">
+                                    <img src="{{user.profile.profile_photo.url}}">
                                 </figure>
                                 <figcaption>
                                     <div class="MainHeading">
                                         <h4>
-                                            <span class="Strong">Customer Id :</span> <samp> CUS-030</samp> <a href="customer-edit.html"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                            <span class="Strong">Customer Id :</span> <samp> {{user.id}}</samp> <a href={% url "adminpanel:customer-edit" user.id %}><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                                         </h4>
                                         <div class="MainActions">
                                             <p>
-                                                Status : <span>Active</span>
+                                                Status : <span>{% if user.is_active %} Active {% else %} In-Active {% endif %}</span>
                                             </p>
-                                            <label class="Switch">
+
+                                            {% comment %} <label class="Switch">
                                                 <input type="checkbox" checked="">
                                                 <span class="slider"></span>
-                                            </label>
+                                            </label> {% endcomment %}
+
                                         </div>
                                     </div>
                                     <h4>
-                                        <span class="Strong">Name :</span> <samp> Anuradha Pratihar</samp>
+                                        <span class="Strong">Name :</span> <samp>{{user.profile.first_name}} {{user.profile.last_name}}</samp>
                                     </h4>
                                     <article>
                                         <aside>
                                             <h6>Details :</h6>
                                             <p>
-                                                <span>Email Address :</span> anu12@gmail.com
+                                                <span>Email Address :</span> {{user.email}}
                                             </p>
                                             <p>
-                                                <span>Mobile Number :</span> +91-9866755677
+                                                <span>Mobile Number :</span> {{user.phone_number}}
                                             </p>
                                             <p>
-                                                <span>Gender :</span>Female
+                                                <span>Gender :</span> {{user.profile.gender}}
                                             </p>
                                             <p>
-                                                <span>Age :</span> 24
+                                                <span>Age :</span> {{user.profile.age}}
                                             </p>
                                             <p>
-                                                <span>Date of Birth :</span>  03-Oct-1978
+                                                <span>Date of Birth :</span> {{user.profile.date_of_birth}}
                                             </p>
                                             <p>
-                                                <span>PAN Number :</span>RTFE3424F
+                                                <span>PAN Number :</span> {{user.profile.pan_number}}
                                             </p>
                                             <p>
-                                                <span>Alternate Mobile Number :</span>+91-54435335435
-                                            </p>
-                                            <p>
-                                                <span>Address :</span>Raj Nagar, New Delhi-110001
+                                                <span>Address :</span> {{user.profile.address}}
                                             </p>
                                         </aside>
                                     </article>

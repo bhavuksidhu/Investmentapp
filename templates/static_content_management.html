@@ -23,19 +23,31 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Email Address</label>
-                                            <input type="text" class="form-control" placeholder=" Enter Email Address">
+                                            <input type="text"
+                                                   id="contact_email"
+                                                   class="form-control"
+                                                   placeholder=" Enter Email Address"
+                                                   value="{{ static_content.contact_data.company_email }}">
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Mobile Number</label>
-                                            <input type="text" class="form-control" placeholder=" Enter Mobile Number">
+                                            <input type="text"
+                                                   id="contact_number"
+                                                   class="form-control"
+                                                   placeholder=" Enter Mobile Number"
+                                                   value="{{ static_content.contact_data.company_number }}">
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-12" style="min-width:stretch">
                                         <div class="form-group">
                                             <label>Address</label>
-                                            <input type="text" class="form-control" placeholder="Enter Address">
+                                            <input type="text"
+                                                   id="contact_address"
+                                                   class="form-control"
+                                                   placeholder="Enter Address"
+                                                   value="{{ static_content.contact_data.company_address }}">
                                         </div>
                                     </div>
                                 </div>
@@ -53,20 +65,7 @@
                         </div>
                         <div id="collapse2" class="collapse" data-parent="#accordion">
                             <div class="card-body">
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
-                                    Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales
-                                    pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur
-                                    ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci,
-                                    sed rhoncus pronin sapien nunc accuan eget.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
-                                    Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales
-                                    pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur
-                                    ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci,
-                                    sed rhoncus pronin sapien nunc accuan eget.
-                                </p>
+                                <textarea rows="10" class="form-control" id="about_us" spellcheck="false">{{static_content.about_us}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -81,20 +80,7 @@
                         </div>
                         <div id="collapse3" class="collapse" data-parent="#accordion">
                             <div class="card-body">
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
-                                    Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales
-                                    pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur
-                                    ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci,
-                                    sed rhoncus pronin sapien nunc accuan eget.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
-                                    Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales
-                                    pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur
-                                    ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci,
-                                    sed rhoncus pronin sapien nunc accuan eget.
-                                </p>
+                                <textarea rows="10" class="form-control" id="terms_and_conditions" spellcheck="false">{{static_content.terms_and_conditions}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -109,20 +95,7 @@
                         </div>
                         <div id="collapse4" class="collapse" data-parent="#accordion">
                             <div class="card-body">
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
-                                    Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales
-                                    pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur
-                                    ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci,
-                                    sed rhoncus pronin sapien nunc accuan eget.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.
-                                    Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales
-                                    pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur
-                                    ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci,
-                                    sed rhoncus pronin sapien nunc accuan eget.
-                                </p>
+                                <textarea rows="10" class="form-control" id="privacy_policy" spellcheck="false">{{static_content.privacy_policy}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -138,59 +111,152 @@
                         <div id="collapse5" class="collapse" data-parent="#accordion">
                             <div class="card-body">
                                 <ul>
-                                    <li>
-                                        <h6 style="display:flex; justify-content: space-between;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.? <span>
-                                            <i class="fa fa-trash"></i>
-                                        </span></h6>
-                                        <br>
-                                        <p>
-                                            Vestibulum dictum, lorem quis aliquet elementum, dui nisi suscipit ipsum, eu ornare eros risus dignissim risus. Vivamus vestibulum, libero ut viverra scelerisque, lacus purus elementum justo, a efficitur urna dui a sapien. Maecenas ornare nec ante eu convallis. Proin eleifend libero in est vestibulum, sed posuere lectus sagittis.
-                                        </p>
-                                    </li>
-                                    <br>
-                                    <br>
-                                    <li>
-                                        <h6 style="display:flex; justify-content: space-between;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.? <span>
-                                            <i class="fa fa-trash"></i>
-                                        </span></h6>
-                                        <br>
-                                        <p>
-                                            Vestibulum dictum, lorem quis aliquet elementum, dui nisi suscipit ipsum, eu ornare eros risus dignissim risus. Vivamus vestibulum, libero ut viverra scelerisque, lacus purus elementum justo, a efficitur urna dui a sapien. Maecenas ornare nec ante eu convallis. Proin eleifend libero in est vestibulum, sed posuere lectus sagittis.
-                                        </p>
-                                    </li>
-                                    <br>
-                                    <br>
-                                    <li>
-                                        <h6 style="display:flex; justify-content: space-between;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.? <span>
-                                            <i class="fa fa-trash"></i>
-                                        </span></h6>
-                                        <br>
-                                        <p>
-                                            Vestibulum dictum, lorem quis aliquet elementum, dui nisi suscipit ipsum, eu ornare eros risus dignissim risus. Vivamus vestibulum, libero ut viverra scelerisque, lacus purus elementum justo, a efficitur urna dui a sapien. Maecenas ornare nec ante eu convallis. Proin eleifend libero in est vestibulum, sed posuere lectus sagittis.
-                                        </p>
-                                    </li>
-                                    <br>
-                                    <br>
-                                    <li>
-                                        <h6 style="display:flex; justify-content: space-between;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.? <span>
-                                            <i class="fa fa-trash"></i>
-                                        </span></h6>
-                                        <br>
-                                        <p>
-                                            Vestibulum dictum, lorem quis aliquet elementum, dui nisi suscipit ipsum, eu ornare eros risus dignissim risus. Vivamus vestibulum, libero ut viverra scelerisque, lacus purus elementum justo, a efficitur urna dui a sapien. Maecenas ornare nec ante eu convallis. Proin eleifend libero in est vestibulum, sed posuere lectus sagittis.
-                                        </p>
-                                    </li>
-                                    <br>
-                                    <br>
-                                </ul>
-                            </div>
+                                    <div id="faq_container">
+                                        {% for faq in faqs %}
+                                            <li style="margin-bottom: 10px">
+                                                <h6 class="faq_question"
+                                                    style="display:flex;
+                                                           justify-content: space-between;">
+                                                    {{ faq.question }}<span>
+                                                    <i class="fa fa-trash delete-FAQ" style="cursor: pointer;"></i>
+                                                </span>
+                                            </h6>
+                                            <p class ="faq_answer">{{ faq.answer }}</p>
+                                        </li>
+                                    {% endfor %}
+                                </div>
+                                <hr>
+                                <div>
+                                    <div class="form-group">
+                                        <label>Question</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="question"
+                                               placeholder="Enter Question Here">
+                                    </div>
+                                </div>
+                                <label>Answer</label>
+                                <textarea rows="5" class="form-control" id="answer" spellcheck="false"></textarea>
+                                <div class="Save" style="text-align:right">
+                                    <button class="Button" style="padding:5px 20px" id="add_faq">Add FAQ</button>
+                                </div>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div class="Save">
-                    <button class="Button">Save</button>
-                </div>
+            </div>
+            <div class="Save">
+                <button class="Button" id="save_static_data">Save</button>
             </div>
         </div>
     </div>
+</div>
+<script>
+
+    $("#add_faq").on("click",function(e){
+        addFAQ()
+    })
+
+    $(".delete-FAQ").on("click", function(e){
+        e.target.closest("li").remove()
+    })
+
+    $("#save_static_data").on("click",function(e){
+        saveStaticData()
+    })
+
+    function createFAQElement(question,answer){
+       let element = `<li style="margin-bottom: 10px"><h6 class="faq_question" style="display:flex; justify-content: space-between;">${question}<span><i class="fa fa-trash delete-FAQ" style="cursor: pointer;"></i></span></h6><p class ="faq_answer"  >${answer}</p></li>`
+        return element;
+    }
+
+    function addFAQ(){
+        let question = document.querySelector("#question").value
+        let answer = document.querySelector("#answer").value
+
+        if (question && answer){
+            let faq_container = $("#faq_container")
+            let faq = createFAQElement(question,answer)
+            faq_container.append(faq)
+            
+            $(".delete-FAQ").on("click", function(e){
+                e.target.closest("li").remove()
+            })
+
+            document.querySelector("#question").value = ""
+            document.querySelector("#answer").value = ""
+        }
+    }
+</script>
+<script>
+    function getContactData(){
+        contact_email = document.querySelector("#contact_email").value
+        contact_number = document.querySelector("#contact_number").value
+        contact_address = document.querySelector("#contact_address").value
+        return JSON.stringify({"contact_email":contact_email,"contact_number":contact_number,"contact_address":contact_address})
+    }
+
+    function getFAQDATA(){
+        let lis = document.querySelector("#faq_container").querySelectorAll("li")
+        let faqs = []
+        for(i=0;i<lis.length;i++){
+            let question = lis[i].querySelector(".faq_question").textContent.trim()
+            let answer = lis[i].querySelector(".faq_answer").textContent.trim()
+            faqs.push({"question":question,"answer":answer})
+        }
+        return JSON.stringify(faqs)
+    }
+
+    function prepareData(){
+        contact_data = getContactData()
+        about_us = document.querySelector("#about_us").value.trim()
+        terms_and_conditions = document.querySelector("#terms_and_conditions").value.trim()
+        privacy_policy = document.querySelector("#privacy_policy").value.trim()
+        faqs = getFAQDATA()
+        return {"contact_data":contact_data,"about_us":about_us,"terms_and_conditions":terms_and_conditions,"privacy_policy":privacy_policy,"faqs":faqs}
+    }
+</script>
+<script>
+    function saveStaticData(){
+            let url = "{% url 'adminpanel:static-content-management' %}"
+            let data = prepareData()
+            console.log(data)
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                }
+            });
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: data
+                /*,
+                success: function(resp) {
+                    Eggy({
+                        title: 'Success!',
+                        message: 'Updated Successfully.',
+                        type: 'success',
+                        duration: 5000
+                    })
+                },
+                error: function(resp) {
+                    console.log(resp)
+                    Eggy({
+                        title: 'Failed!',
+                        message: `${resp.responseJSON["message"]}`,
+                        type: 'error',
+                        duration: 5000
+                    })
+                }
+                */
+            });
+            setTimeout(reload, 2000);
+        }
+
+    function reload() {
+        document.location.reload();
+        }
+    
+
+</script>
 {% endblock %}
