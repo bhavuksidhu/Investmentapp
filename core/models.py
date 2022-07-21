@@ -231,8 +231,8 @@ class Transaction(models.Model):
 class Stocks(models.Model):
     exchange = models.TextField()
     symbol = models.TextField()
-    series = models.TextField()
-    index_listing = models.TextField()
+    series = models.TextField(default="",null="")
+    index_listing = models.TextField(default="",null="")
 
 class MarketQuote(models.Model):
     INSTRUMENT_TYPE_CHOICES = [("EQ", "EQ"), ("FUT", "FUT"), ("CE", "CE"), ("PE", "PE")]
