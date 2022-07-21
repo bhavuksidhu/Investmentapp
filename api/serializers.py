@@ -110,6 +110,10 @@ class UserSubscriptionHistorySerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         validated_data = super().validate(attrs)
+        if validated_data["amount"] < 0:
+            raise serializers.ValidationError(
+                "Amount needs to be positive!"
+            )
         subscription_id = self.context["request"].user.subscription.id
         validated_data["subscription_id"] = subscription_id
         return validated_data
