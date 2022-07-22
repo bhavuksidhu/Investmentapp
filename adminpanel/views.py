@@ -369,6 +369,7 @@ class StockManagementView(ListView):
         context["q"] = self.request.GET.get("q", "")
         return context
 
+
 class StockUploadView(View):
     template_name = "stock_upload.html"
 
@@ -377,9 +378,18 @@ class StockUploadView(View):
 
     def post(self,request,*args,**kwargs):
         df = pd.read_excel(request.FILES.get("stock_file"))
+        print(df)
+        print(df['exchange'].isnull().values.any())
+        if df['exchange'].isnull().values.any() or df['symbol'].isnull().values.any():
+            messages.add_message(
+                request, messages.ERROR, "Exchance & Symbol columns can't be empty!"
+            )
+            return redirect("adminpanel:stock-upload")
+        
         Stock.objects.all().delete()
         [Stock.objects.create(**x) for x in df.T.to_dict().values()]
         return redirect("adminpanel:stock-management")
+
 
 class StockUploadTemplateView(View):
     def get(self,request,*args,**kwagrs):
