@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
-from core.models import Stocks, User, UserProfile, UserSubscription, UserSubscriptionHistory
+from core.models import Stock, User, UserProfile, UserSubscription, UserSubscriptionHistory
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -349,13 +349,13 @@ class SubscriptionManagementView(ListView):
 
 class StockManagementView(ListView):
     template_name = "stock_management.html"
-    model = Stocks
+    model = Stock
     context_object_name = "stocks"
     paginate_by = 5
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
-        query = Stocks.objects.all()
+        query = Stock.objects.all()
         if q:
             query = query.filter(
                 Q(symbol__icontains=q)
@@ -375,8 +375,8 @@ class StockUploadView(View):
 
     def post(self,request,*args,**kwargs):
         df = pd.read_excel(request.FILES.get("stock_file"))
-        Stocks.objects.all().delete()
-        [Stocks.objects.create(**x) for x in df.T.to_dict().values()]
+        Stock.objects.all().delete()
+        [Stock.objects.create(**x) for x in df.T.to_dict().values()]
         return redirect("adminpanel:stock-management")
 
 class StockUploadTemplateView(View):

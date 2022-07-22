@@ -228,7 +228,7 @@ class Transaction(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
-class Stocks(models.Model):
+class Stock(models.Model):
     exchange = models.TextField()
     symbol = models.TextField()
     series = models.TextField(default="",null="")
