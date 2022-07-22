@@ -6,7 +6,7 @@
             <div class="TitleBox">
                 <h4>Upload Stock List</h4>
                 <div class="BackPage">
-                    <a href={% url "adminpanel:stock-management" %}><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
+                    <a href="{% url "adminpanel:stock-management" %}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
                 </div>
             </div>
             <div class="InnerBox">
@@ -14,40 +14,44 @@
                     <div class="col-sm-7">
                         <div class="Download">
                             <h3>Download Excel</h3>
-                            <p>Download excel template file to insert bulk stocks details:</p>
+                            <p>Download excel template file to insert bulk Stock List:</p>
                         </div>
                     </div>
                     <div class="col-sm-5">
                         <div class="Download">
-                            <a href={% url "adminpanel:stock-upload-template" %}><i class="fa fa-download" aria-hidden="true"></i> Download  </a>
+                            <a href={% url "adminpanel:stock-upload-template" %} class="Button"><i class="fa fa-download" aria-hidden="true"></i> Download  </a>
                         </div>
                     </div>
-                    <div class="col-sm-7">
-                        <div class="Download">
-                            <h3>Upload Excel</h3>
-                            <p>Upload filled excel template file to upload bulk stocks:</p>
-                        </div>
-                    </div>
-                <form action={% url "adminpanel:stock-upload" %} method="POST" enctype= "multipart/form-data">
+                </div>
+            </div>
+            <div class="InnerBox">
+                <form action= {% url "adminpanel:stock-upload" %} method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="col-sm-5">
-                        <div class="form-group">
-                            <div class="AttachFile">
-                                <div class="FileMAIN" style="display:flex">
-                                    <span>
-                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
-                                        <input type="file" name="stock_file">
-                                    </span>
+                    <div class="row formMargin">
+                        <div class="col-sm-7">
+                            <div class="Download">
+                                <h3>Upload Excel</h3>
+                                <p>Upload filled excel template file to upload bulk Stock List:</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <div class="AttachFile">
+                                    <div class="FileMAIN">
+                                        <span>
+                                            <i class="fa fa-upload" aria-hidden="true"></i> Upload
+                                            <input type="file" name="stock_file">
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="Save">
-                    <button href="stock-management.html" class="Button">Upload</button>
+                <div class="Save ">
+                    <button class="Button">Submit</button>
                 </div>
             </form>
-            </div>
         </div>
     </div>
 {% endblock %}

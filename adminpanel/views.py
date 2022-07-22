@@ -230,6 +230,8 @@ class CustomerEditView(DetailView):
         except User.DoesNotExist:
             return self.get(self, request, *args, **kwargs)
 
+        print(first_name)
+
         if first_name:
             profile.first_name = first_name
         if last_name:
@@ -253,7 +255,7 @@ class CustomerEditView(DetailView):
         except Exception as e:
             print(e)
 
-        return self.get(self, request, *args, **kwargs)
+        return redirect("adminpanel:customer-edit",self.kwargs.get("pk"))
 
 
 class CustomerAddView(View):
@@ -462,4 +464,10 @@ class SettingsView(View):
                 request, messages.ERROR, "Password & New Password must be supplied."
             )
 
+        return render(request, self.template)
+
+class NotificationsView(View):
+    template = "notifications.html"
+
+    def get(self, request, *args, **kwargs):
         return render(request, self.template)

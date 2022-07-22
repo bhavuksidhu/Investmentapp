@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (CustomerAddView, CustomerDetailView, CustomerEditView, CustomerManagementView, DashboardView,
-                    ForgotPasswordView, LoginView, LogoutView, SettingsView,
+                    ForgotPasswordView, LoginView, LogoutView, NotificationsView, SettingsView,
                     StaticContentManagementView,InvestingReportView, StockManagementView, StockUploadTemplateView, StockUploadView,SubscriptionManagementView)
 
 app_name = "adminpanel"
@@ -22,4 +22,5 @@ urlpatterns = [
     path("stock-management/",StockManagementView.as_view(),name="stock-management"),
     path("static-content-management/", StaticContentManagementView.as_view(),name="static-content-management"),
     path("settings/", SettingsView.as_view(),name="settings"),
+    path("notifications/",NotificationsView.as_view(),name="notifications")
 ]

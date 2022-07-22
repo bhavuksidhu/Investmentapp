@@ -1360,8 +1360,19 @@ span.SecondCircle {
 }
 
 .CommonForm .form-group {
-    margin: 0 0 20px 0
+    margin: 0 0 20px 0;
+    position: relative;
 }
+
+.CommonForm .form-group span {
+    position: absolute;
+    top: 10px;
+    font-size: 14px;
+    right: 30px;
+    color: #6c757d;
+}
+
+.CommonForm .form-group span i {}
 
 .CommonForm .form-group .form-group {
     margin: 0 0 0 0
@@ -1385,7 +1396,7 @@ span.SecondCircle {
 
 .CommonForm .form-group .form-control {
     height: auto;
-    padding: 10px 10px 10px 15px;
+    padding: 10px 40px 10px 15px;
     border: 1px solid #b3b3b3;
     border-radius: 5px;
     box-shadow: none;
@@ -1420,6 +1431,18 @@ span.SecondCircle {
 
 .ModalBox .modal-dialog .Decline {
     margin: 0
+}
+
+.ModalBox .modal-dialog .Category p {
+    font-size: 16px;
+    color: #6c757d;
+    text-align: center;
+}
+
+.ModalBox .modal-dialog .Category figure {
+    width: 90px;
+    margin: 0 auto;
+    padding-bottom: 20px;
 }
 
 .ModalBox .modal-dialog .Decline h3 {
@@ -1674,27 +1697,22 @@ span.SecondCircle {
 }
 
 .Download a {
-    font-weight: 500;
-    background: #FFF;
-    display: inline-block;
-    padding: 12px 50px;
-    text-align: center;
-    font-size: 14px;
-    border-radius: 6px;
-    border: 1px solid #b1b1b1;
-    color: #000;
+    width: 290px;
+    padding: 12px;
+    margin: 0;
 }
 
 .AttachFile .FileMAIN span {
     font-weight: 500;
     background: #FFF;
     display: inline-block;
-    padding: 12px 61px;
+    padding: 12px;
     text-align: center;
     font-size: 14px;
     border-radius: 6px;
     border: 1px solid #b1b1b1;
     color: #000;
+    width: 290px;
 }
 
 .AttachFile .FileMAIN span i {
@@ -1719,5 +1737,52 @@ span.SecondCircle {
 }
 
 .Download {
-    margin-bottom: 40PX;
+    padding: 20px 0;
+}
+
+.NotificationArea {
+    padding-top: 20px;
+}
+
+.NotificationArea ul li {
+    border-bottom: 1px solid #E6E8EC;
+    padding: 0 0 25px 65px;
+    margin: 0 0 25px 0;
+    position: relative
+}
+
+.NotificationArea ul li:last-child {
+    border: none;
+    margin: 0;
+    padding-bottom: 0
+}
+
+.NotificationArea ul li figure {
+    margin: 0;
+    width: 39px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.NotificationArea ul li h4 {
+    margin: 0 0 7px 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: #141416
+}
+
+.NotificationArea ul li p {
+    font-size: 15px;
+    color: #353945;
+    font-weight: 400;
+    margin: 0 0 10px 0
+}
+
+.NotificationArea ul li h6 {
+    font-size: 14px;
+    color: #777E90;
+    font-weight: 500
 }

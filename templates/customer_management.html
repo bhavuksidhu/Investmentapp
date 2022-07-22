@@ -43,14 +43,14 @@
                             {% for user in user_list %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td class="user_id">{{ user.id }}</td>
+                                    <td class="user_id">CU{{ user.id }}</td>
                                     <td>{{ user.profile.first_name }} {{ user.profile.last_name }}</td>
                                     <td>{{ user.phone_number }}</td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.profile.pan_number }}</td>
                                     <td>{{ user.profile.age }}</td>
                                     <td>{{ user.profile.date_of_birth }}</td>
-                                    <td>{{ user.created_on }}</td>
+                                    <td>{{ user.created_at }}</td>
                                     <td>
                                         <a class="Blue" href="{% url "adminpanel:customer-detail" user.id %}">
                                             <i class="fa fa-eye"></i>
@@ -208,7 +208,7 @@
 
         $(".Delete").on("click", function(e){
             todo = "delete"
-            selected_user_id =e.target.closest("tr").querySelector(".user_id").textContent
+            selected_user_id =e.target.closest("tr").querySelector(".user_id").textContent.replace("CU","")
         })
 
         $(".yesBoss").on("click",function(e){
@@ -217,7 +217,7 @@
     </script>
     <script>
         function updateSelectedUserId(element){
-            selected_user_id = element.closest("tr").querySelector(".user_id").textContent
+            selected_user_id = element.closest("tr").querySelector(".user_id").textContent.replace("CU","")
         }
         function modifyUser(){
             let url = "{% url 'adminpanel:customer-management' %}"
