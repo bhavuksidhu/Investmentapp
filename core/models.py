@@ -235,18 +235,8 @@ class Stock(models.Model):
     index_listing = models.TextField(default="",null="")
 
 class MarketQuote(models.Model):
-    INSTRUMENT_TYPE_CHOICES = [("EQ", "EQ"), ("FUT", "FUT"), ("CE", "CE"), ("PE", "PE")]
     instrument_token = models.TextField()
-    exchange_token = models.TextField()
     trading_symbol = models.TextField()
-    name = models.TextField(null=True)
     price = models.FloatField()
-    expiry = models.DateField(null=True)
-    strike = models.FloatField()
-    tick_size = models.FloatField()
-    lot_size = models.IntegerField()
-    instrument_type = models.CharField(default="", max_length=4)
-    segment = models.TextField()
     exchange = models.TextField()
     change = models.FloatField(null=True)
-    data_from = models.CharField(default="today",max_length=15)

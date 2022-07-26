@@ -395,23 +395,18 @@ class SubscriptionHistoryViewSet(GetViewSet):
         return self.request.user.subscription.history.all()
 
 
-class MarketFilterViewSet(GetViewSet):
+class MarketFilterViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
     pagination_class = StandardResultsSetPagination
     serializer_class = MarketQuoteSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
-    many = True
 
     def get_queryset(self):
         price = self.request.GET.get("price", None)
-        if price:
-            price = float(price)
-            lower_price = price - 10
-        print(MarketQuote.objects.filter(
-            data_from="today", price__lte=price,price__gte=lower_price
-        ).count())
+        price = float(price)
+        lower_price = price - 10
         return MarketQuote.objects.filter(
-            data_from="today", price__lte=price, price__gte=price - 10
+            price__lte=price, price__gte=lower_price
         )
 
     @extend_schema(
@@ -426,8 +421,6 @@ class MarketFilterViewSet(GetViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        price = self.request.GET.get("price", None)
-        print(price)
         return super().list(request, *args, **kwargs)
 
 
