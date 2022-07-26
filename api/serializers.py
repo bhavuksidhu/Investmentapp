@@ -135,7 +135,7 @@ class UserSerializer(serializers.ModelSerializer):
 class MarketQuoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarketQuote
-        fields = ["instrument_token","trading_symbol","price","exchange","change"]
+        fields = ["company_name","trading_symbol","price","exchange","change"]
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

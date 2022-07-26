@@ -1,17 +1,11 @@
 from datetime import timedelta
 
 from adminpanel.models import FAQ, ContactData, StaticData
-from core.models import (
-    MarketQuote,
-    Notification,
-    UploadedFile,
-    User,
-    UserProfile,
-    UserSetting,
-    UserSubscription,
-)
+from core.models import (MarketQuote, Notification, UploadedFile, User,
+                         UserProfile, UserSetting, UserSubscription)
 from django.utils import timezone
-from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
+from drf_spectacular.utils import (OpenApiParameter, extend_schema,
+                                   inline_serializer)
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -19,26 +13,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 
-from api.serializers import (
-    AboutUsSerializer,
-    BasicUserSerializer,
-    ContactDataSerializer,
-    FAQSerializer,
-    LoginSerializer,
-    MarketQuoteSerializer,
-    NotificationSerializer,
-    PrivacyPolicySerializer,
-    RegisterUserSerializer,
-    ResetPasswordSerializer,
-    TermsNConditionsSerializer,
-    TransactionSerializer,
-    UploadedFileSerializer,
-    UserProfileSerializer,
-    UserSettingSerializer,
-    UserSubscriptionHistorySerializer,
-    UserSubscriptionSerializer,
-)
+from api.serializers import (AboutUsSerializer, BasicUserSerializer,
+                             ContactDataSerializer, FAQSerializer,
+                             LoginSerializer, MarketQuoteSerializer,
+                             NotificationSerializer, PrivacyPolicySerializer,
+                             RegisterUserSerializer, ResetPasswordSerializer,
+                             TermsNConditionsSerializer, TransactionSerializer,
+                             UploadedFileSerializer, UserProfileSerializer,
+                             UserSettingSerializer,
+                             UserSubscriptionHistorySerializer,
+                             UserSubscriptionSerializer)
 from api.utils import NoDataException, StandardResultsSetPagination
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
@@ -403,11 +389,19 @@ class MarketFilterViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
 
     def get_queryset(self):
         price = self.request.GET.get("price", None)
+        keyword = self.request.GET.get("keyword",None)
+        
         price = float(price)
         lower_price = price - 10
-        return MarketQuote.objects.filter(
-            price__lte=price, price__gte=lower_price
-        )
+        
+        query =  MarketQuote.objects.filter(
+            price__lte=price, price__gte=lower_price)
+
+        if keyword:
+            query = query.filter(Q(company_name__icontains=keyword)|Q(trading_symbol__icontains=keyword))
+
+        return query
+
 
     @extend_schema(
         parameters=[
@@ -415,8 +409,15 @@ class MarketFilterViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
                 name="price",
                 location=OpenApiParameter.QUERY,
                 description="Last Price",
-                required=False,
+                required=True,
                 type=float,
+            ),
+            OpenApiParameter(
+                name="keyword",
+                location=OpenApiParameter.QUERY,
+                description="Keyword",
+                required=False,
+                type=str,
             ),
         ],
     )

@@ -235,6 +235,7 @@ class Stock(models.Model):
     index_listing = models.TextField(default="",null="")
 
 class MarketQuote(models.Model):
+    company_name = models.TextField(null=True,default="")
     instrument_token = models.TextField()
     trading_symbol = models.TextField()
     price = models.FloatField()
