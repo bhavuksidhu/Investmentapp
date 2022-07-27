@@ -6,13 +6,14 @@ from django.http import HttpResponseNotFound, HttpResponseForbidden
 from drf_spectacular.utils import extend_schema, inline_serializer
 from kiteconnect import KiteConnect
 from rest_framework import serializers, status
-from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
-
+import os
+import uuid
 from api.utils import check_kyc_status
 
 from .custom_views import ZerodhaView
@@ -39,11 +40,13 @@ class Redirect(APIView):
         uuid = request.query_params.get("uuid", None)
 
         if action == "basket":
-            print(request.data)
+            data = kite.generate_session(
+                    request_token, api_secret=KITE_CREDS["secret"]
+                )
             return Response(
                 {
                     "errors": None,
-                    "data": request.data,
+                    "data": data,
                     "status": status.HTTP_200_OK,
                 },
                 status=status.HTTP_200_OK,
@@ -224,3 +227,25 @@ class ExecuteTradeView(APIView):
 
         return Response({"json_data":json.dumps(json_data),"api_key":api_key}, template_name="zerodha/execute-trade.html")
 
+class PostBackView(APIView):
+
+    def post(self, request, *args, **kwargs):
+
+        tag = request.data.get("tag",None)
+        if not tag:
+            return Response(data={"msg":"No Tag"}, status=200)
+        tag = int(tag)
+        try:
+            transaction_obj : Transaction = Transaction.objects.get(id = tag)
+        except Transaction.DoesNotExist:
+            return Response(data={"msg":"No Transaction Obj"}, status=200)
+        
+        if request.data.get("status",None) == "COMPLETE":
+            transaction_obj.verified = True
+            transaction_obj.save()
+        if not os.path.isdir("postbacks"):
+            os.mkdir("postbacks")
+        with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
+            json.dump(request.data,f,ensure_ascii=False)
+        
+        return Response(data={"msg":"Done"}, status=200)
