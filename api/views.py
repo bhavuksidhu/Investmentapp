@@ -1,5 +1,4 @@
 from datetime import timedelta
-from tkinter.messagebox import NO
 
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
 from core.models import (MarketQuote, Notification, Transaction, UploadedFile,
