@@ -39,14 +39,24 @@ class ResetPasswordView(APIView):
         if serializer.is_valid():
             if "email" in request.data:
                 try:
-                    user = User.objects.get(email=request.data["email"])
+                    user :User = User.objects.get(email=request.data["email"])
                 except User.DoesNotExist:
                     user = None
             if "phone_number" in request.data:
                 try:
-                    user = User.objects.get(phone_number=request.data["phone_number"])
+                    user :User = User.objects.get(phone_number=request.data["phone_number"])
                 except User.DoesNotExist:
                     user = None
+            firebase_token = request.data.get("firebase_token")
+
+            if firebase_token != user.firebase_token:
+                return Response(
+                        {
+                            "errors": "Invalid firebase token!",
+                            "status": status.HTTP_400_BAD_REQUEST,
+                        }
+                    )
+        
             if user:
                 if not request.data["new_password"]:
                     return Response(
