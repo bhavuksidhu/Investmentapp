@@ -218,6 +218,7 @@ class CustomerManagementView(ListView):
     def get_queryset(self):
         q = self.request.GET.get("q", None)
         if q:
+            q = q.strip()
             try:
                 user_id = int(q.replace("CU",""))
             except:
