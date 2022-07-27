@@ -38,6 +38,9 @@ class Redirect(APIView):
     def get(self, request: Request, *args, **kwargs):
         action = request.query_params.get("action", None)
         uuid = request.query_params.get("uuid", None)
+        type = request.query_params.get("type", None)
+        zerodha_status = request.query_params.get("status", None)
+        request_token = request.query_params.get("request_token", None)
 
         if action == "basket":
             data = kite.generate_session(
@@ -61,11 +64,6 @@ class Redirect(APIView):
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
-        
-        type = request.query_params.get("type", None)
-        zerodha_status = request.query_params.get("status", None)
-        request_token = request.query_params.get("request_token", None)
 
         if zerodha_status == "cancelled":
             return Response(
