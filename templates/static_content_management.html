@@ -146,7 +146,30 @@
                 </div>
             </div>
             <div class="Save">
-                <button class="Button" id="save_static_data">Save</button>
+                <button class="Button" type="button" id="save_static_data">Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="ModalBox">
+        <div id="SaveModal" class="modal fade in show" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Save
+                            </h3>
+                            <p>
+                                Are you sure you want to Save?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal" class="yesBoss" id="final-save">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -161,6 +184,10 @@
     })
 
     $("#save_static_data").on("click",function(e){
+        $('#SaveModal').modal('toggle');
+    })
+
+    $("#final-save").on("click",function(e){
         saveStaticData()
     })
 
@@ -255,7 +282,5 @@
     function reload() {
         document.location.reload();
         }
-    
-
     </script>
 {% endblock %}
