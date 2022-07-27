@@ -219,13 +219,14 @@ class CustomerManagementView(ListView):
         q = self.request.GET.get("q", None)
         if q:
             q = q.strip()
-            try:
-                user_id = int(q.replace("CU",""))
-            except:
+            if "CU" in q:
+                try:
+                    user_id = int(q.replace("CU",""))
+                except:
+                    user_id = None
+            else:
                 user_id = None
 
-            print(user_id)
-            
             if user_id:
                 return (
                     User.objects.select_related("profile")
