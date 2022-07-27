@@ -1,6 +1,7 @@
 from datetime import timedelta
+from turtle import title
 
-from adminpanel.models import FAQ, ContactData, StaticData
+from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
 from core.models import (MarketQuote, Notification, UploadedFile, User,
                          UserProfile, UserSetting, UserSubscription)
 from django.utils import timezone
@@ -119,6 +120,7 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             token = str(Token.objects.get_or_create(user=user)[0])
+            AdminNotification.objects.create(title = f"New user signed-up!",content=f"A new user has signed up, ID : CU{user.id}.")
             return Response(
                 {
                     "errors": None,
@@ -356,6 +358,8 @@ class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         subscription.active = True
         subscription.save()
+
+        AdminNotification.objects.create(title = f"Subscription Purchased!",content=f"User - CU{request.user.id}, has just purchased a subscription!")
 
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers

@@ -1,4 +1,6 @@
 from django.db import models
+import uuid
+from core.models import User
 
 class ContactData(models.Model):
     company_email = models.EmailField(null=True)
@@ -16,3 +18,16 @@ class StaticData(models.Model):
 class FAQ(models.Model):
     question = models.TextField()
     answer = models.TextField()
+
+class AdminNotification(models.Model):
+    title = models.TextField()
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+class PasswordReset(models.Model):
+    uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    

@@ -5,16 +5,13 @@
         <div class="WrapperBox">
             <div class="TitleBox">
                 <h4>Customer Management</h4>
-                {% comment %} <div class="AddButton">
-                    <a href={% url "adminpanel:customer-add" %} class="Button ">+ Add Customer</a>
-                </div> {% endcomment %}
             </div>
             <div class="InnerBox">
                 <div class="FlexMain">
                     <div class="Search">
                         <form action={% url "adminpanel:customer-management"%} method="GET">
                             <input type="text"
-                                   placeholder="Enter Customer Name/Email/Phone Number"
+                                   placeholder="Enter Customer ID/Name/Email/Phone Number"
                                    id="search_value" name="q" style="min-width:400px" {% if q %} value={{q}} {% endif %}>
                             <button id="search">Search</button>
                             <button class="Reset">

@@ -11,15 +11,15 @@
                 <form action={% url "adminpanel:subscription-management"%} method="GET" style="display:flex">
                     <div class="form-group">
                         <label>Search</label>
-                        <input type="text" class="form-control" placeholder="Search" value="{{q}}">
+                        <input type="text" class="form-control" placeholder="Search" value="{{q}}" name="q">
                     </div>
                     <div class="form-group">
                         <label>From</label>
-                        <input type="date" class="form-control" value="{{from_date}}">
+                        <input type="date" class="form-control" value="{{from_date}}" max="{{today_date}}" name="from_date">
                     </div>
                     <div class="form-group">
                         <label>To</label>
-                        <input type="date" class="form-control" value="{{to_date}}">
+                        <input type="date" class="form-control" value="{{to_date}}" max="{{today_date}}" name="to_date">
                     </div>
                     <div class="form-group">
                         <label>&nbsp;</label>
@@ -56,7 +56,7 @@
                         <tr>
                             <td>{{forloop.counter}}</td>
                             <td>{{subscription.id}}</td>
-                            <td>{{subscription.user.id}}</td>
+                            <td>CU{{subscription.user.id}}</td>
                             <td>{{subscription.user.profile.first_name}} {{subscription.user.profile.first_name}}</td>
                             <td>{{subscription.user.email}}</td>
                             <td>{{subscription.date_from}}</td>
@@ -65,7 +65,11 @@
                             <td>18 %</td>
                             <td>{{subscription.total_amount}} INR</td>
                             <td>Online</td>
+                            {% if subscription.active %}
                             <td>Complete</td>
+                            {% else %}
+                            <td>Incomplete</td>
+                            {% endif %}
                             {% comment %} <td>
                                 <label class="Switch">
                                     <input type="checkbox">
@@ -170,4 +174,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('input[type="date"]').on("change", function (e) {
+        let from_date = Date.parse(document.querySelector('input[name="from_date"]').value)
+        let to_date = Date.parse(document.querySelector('input[name="to_date"]').value)
+
+        if (to_date < from_date){
+            document.querySelector('input[name="to_date"]').value = ""
+        }
+    });
+</script>
 {% endblock %}

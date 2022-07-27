@@ -12,39 +12,55 @@
         </div>
         <div class="InnerBox">
             <div class="NotificationArea">
+                {% if notification_list %}
+                <ul>
+                    {% for notification in notification_list %}
+                    <li>
+                        <h4>{{notification.title}}</h4>
+                        <p>{{notification.content}}</p>
+                        <h6>{{notification.created_at}}</h6>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <h4 style="text-align:center">No New Notifications</h4>
+                {% endif %}
+            </div>
+            {% if is_paginated %}
+            <div class="Pagination">
                 <ul>
                     <li>
-                        <figure><img src="/media/images/user5.jpg"></figure>
-                        <h4>Anu Pratihar</h4>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-                        <h6>24 Feb '21 , 2:00 PM</h6>
+                        <a href="?page=1"><i class="fa fa-angle-double-left"></i></a>
                     </li>
+                    {% if page_obj.has_previous %}
+                        <li>
+                            <a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                        </li>
+                    {% endif %}
+                    {% for n in page_obj.paginator.page_range %}
+                        {% if page_obj.number == n %}
+                            <li class="page-item active">
+                                <li class="active">
+                                    <a href="javascript:void(0);">{{n}}</a>
+                                </li>
+                            </li>
+                        {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                            <li>
+                                <a href="?page={{ n }}">{{ n }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li>
+                            <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                        </li>
+                    {% endif %}
                     <li>
-                        <figure><img src="/media/images/user5.jpg"></figure>
-                        <h4>Anu Pratihar</h4>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-                        <h6>24 Feb '21 , 2:00 PM</h6>
-                    </li>
-                    <li>
-                        <figure><img src="/media/images/user5.jpg"></figure>
-                        <h4>Anu Pratihar</h4>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-                        <h6>24 Feb '21 , 2:00 PM</h6>
-                    </li>
-                    <li>
-                        <figure><img src="/media/images/user5.jpg"></figure>
-                        <h4>Anu Pratihar</h4>
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-                        <h6>24 Feb '21 , 2:00 PM</h6>
+                        <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
                     </li>
                 </ul>
-                <!-- <div class="text-center">
-                    <a href="javacsript:void(0)" class="LoadingNotification"><img
-                            src="images/loading.png">Loading Notifictions</a>
-                </div> -->
             </div>
-
-
+        {% endif %}
         </div>
     </div>
 </div>

@@ -19,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 with open("creds.json", "r", encoding="utf-8") as f:
     creds = json.load(f)
     KITE_CREDS = creds["KITE_CREDS"]
+    GMAIL_CREDS = creds["GMAIL_CREDS"]
 
 
 # Quick-start development settings - unsuitable for production
@@ -162,3 +163,11 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": r"/api",
     "COMPONENT_SPLIT_REQUEST": True,
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'investthrift@gmail.com'
+EMAIL_HOST_PASSWORD = GMAIL_CREDS["app_password"]
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'

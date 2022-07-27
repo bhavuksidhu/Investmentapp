@@ -11,22 +11,32 @@
                 <div class="Filter">
                     <div class="form-group">
                         <label>From</label>
-                        <input type="date" id="from_date" class="form-control" value={{from_date}}>
+                        <input type="date"
+                               id="from_date"
+                               class="form-control"
+                               value="{{ from_date }}"
+                               name="from_date"
+                               max="{{ today_date }}">
                     </div>
                     <div class="form-group">
                         <label>To</label>
-                        <input type="date" id="to_date" class="form-control" value={{to_date}}>
+                        <input type="date"
+                               id="to_date"
+                               class="form-control"
+                               value="{{ to_date }}"
+                               name="to_date"
+                               max="{{ today_date }}">
                     </div>
                     <div class="form-group ">
                         <label>From</label>
                         <select class="form-control" id="from_period">
-                            <option {% if from_period == "Today"%} selected {% endif %}>
+                            <option {% if from_period == "Today" %} selected{% endif %}>
                                 Today
                             </option>
-                            <option {% if from_period == "This Week"%} selected {% endif %}>
+                            <option {% if from_period == "This Week" %} selected{% endif %}>
                                 This Week
                             </option>
-                            <option {% if from_period == "This Month"%} selected {% endif %}>
+                            <option {% if from_period == "This Month" %} selected{% endif %}>
                                 This Month
                             </option>
                         </select>
@@ -45,13 +55,12 @@
                 <h2>Today</h2>
             </div>
             <div class="DashboardBox">
-
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="Box BoxOne">
                             <article>
                                 <p>Onboarded Users</p>
-                                <h1>{{total_active_users}}</h1>
+                                <h1>{{ total_active_users }}</h1>
                             </article>
                             <div class="Shape">
                                 <span class="Icon"><i class="fa fa-user" aria-hidden="true"></i></span>
@@ -64,11 +73,10 @@
                         <div class="Box BoxThree">
                             <article>
                                 <p>Total subscribed users</p>
-                                <h1>{{total_subscribed_users}}</h1>
+                                <h1>{{ total_subscribed_users }}</h1>
                             </article>
                             <div class="Shape">
                                 <span class="Icon"><i class="fa fa-users" aria-hidden="true"></i></span>
-                              
                             </div>
                         </div>
                     </div>
@@ -76,7 +84,7 @@
                         <div class="Box BoxTwo">
                             <article>
                                 <p>Total Revenue Generated</p>
-                                <h1>{{total_revenue}}</h1>
+                                <h1>{{ total_revenue }}</h1>
                             </article>
                             <div class="Shape">
                                 <span class="Icon"><i class="fa fa-inr" aria-hidden="true"></i></span>
@@ -85,31 +93,52 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
-
         </div>
     </div>
-
+    <script>let last_changed = null;</script>
     <script>
-    document.getElementById("apply_filter").onclick = function(){
-        let base_url = "{% url "adminpanel:dashboard" %}";
-        let from_date = document.getElementById("from_date").value;
-        let to_date = document.getElementById("to_date").value;
-        let from_period = document.getElementById("from_period").value;
-
-        if(from_date && to_date){
-            query = `?from_date=${from_date}&to_date=${to_date}`
+        document.getElementById("apply_filter").onclick = function(){
+            let base_url = "{% url "adminpanel:dashboard" %}";
+            let from_date = document.getElementById("from_date").value;
+            let to_date = document.getElementById("to_date").value;
+            let from_period = document.getElementById("from_period").value;
+            
+            if(last_changed){
+                if (last_changed == "date") {
+                        query = `?from_date=${from_date}&to_date=${to_date}`
+                    }
+                    else{
+                        query = `?from_period=${from_period}`
+                    }
+            }else{
+                if(from_date || to_date){
+                    query = `?from_date=${from_date}&to_date=${to_date}`
+                }
+                else{
+                    query = `?from_period=${from_period}`
+                }
+            }
+            window.location.href = `${base_url}${query}`
         }
-        else{
-            query = `?from_period=${from_period}`
-        }
 
-        window.location.href = `${base_url}${query}`
+    </script>
+    <script>
+        $('input[type="date"]').on("change", function (e) {
+            last_changed = "date"
 
-    }
+            let from_date = Date.parse(document.querySelector('input[name="from_date"]').value)
+            let to_date = Date.parse(document.querySelector('input[name="to_date"]').value)
+    
+            if (to_date < from_date){
+                document.querySelector('input[name="to_date"]').value = ""
+            }
+        });
+
+        $('#from_period').on("change", function (e) {
+            last_changed = "period"
+        });
 
     </script>
 {% endblock %}

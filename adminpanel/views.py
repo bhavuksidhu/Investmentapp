@@ -1,18 +1,33 @@
 import json
 from datetime import datetime, timedelta
 
-from core.models import Stock, User, UserProfile, UserSubscription, UserSubscriptionHistory
+import pandas as pd
+from core.models import (
+    Stock,
+    User,
+    UserProfile,
+    UserSubscription,
+    UserSubscriptionHistory,
+)
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.db.models import Q, Sum
-from django.http import FileResponse, JsonResponse
+from django.http import FileResponse, HttpResponseNotFound, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-import pandas as pd
-from adminpanel.models import FAQ, ContactData, StaticData
+
+from adminpanel.models import (
+    FAQ,
+    AdminNotification,
+    ContactData,
+    PasswordReset,
+    StaticData,
+)
 
 
 # Create your views here.
@@ -68,6 +83,73 @@ class ForgotPasswordView(View):
     def get(self, request, *args, **kwargs):
         return render(request, self.template)
 
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get("email", None)
+        user = User.objects.filter(email=email, is_superuser=True).first()
+        if user:
+            password_reset: PasswordReset = PasswordReset.objects.create(user=user)
+            reset_url = (
+                request.build_absolute_uri("/")[:-1]
+                + reverse("adminpanel:password-reset")
+                + f"?uid={str(password_reset.uid)}"
+            )
+            send_mail(
+                "Password Reset",
+                f"Please click the link to reset your password {reset_url}",
+                "investthrift@gmail.com",
+                [email],
+                fail_silently=False,
+            )
+        return redirect("adminpanel:password-reset-confirmation")
+
+
+class PasswordResetConfirmationView(View):
+    template = "password-reset-confirmation.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template)
+
+
+class PasswordResetView(View):
+    template = "password-reset.html"
+
+    def get(self, request, *args, **kwargs):
+        uid = request.GET.get("uid", None)
+        if uid:
+            try:
+                PasswordReset.objects.get(uid=uid)
+                return render(request, self.template, {"uid": uid})
+            except PasswordReset.DoesNotExist:
+                return HttpResponseNotFound("Invalid URL")
+        else:
+            return HttpResponseNotFound("Invalid URL")
+
+    def post(self, request, *args, **kwargs):
+        uid = request.GET.get("uid", None)
+        password = request.POST.get("password", None)
+        password2 = request.POST.get("password2", None)
+
+        try:
+            password_reset_obj: PasswordReset = PasswordReset.objects.get(uid=uid)
+        except PasswordReset.DoesNotExist:
+            return HttpResponseNotFound("Invalid URL")
+
+        user = password_reset_obj.user
+
+        if password == password2:
+            user.set_password(password)
+            user.save()
+            messages.add_message(request, messages.SUCCESS, "Password reset complete!")
+            password_reset_obj.delete()
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                "Password reset failed, Passwords do not match.",
+            )
+
+        return redirect("adminpanel:login")
+
 
 class DashboardView(View):
     template = "dashboard.html"
@@ -118,6 +200,7 @@ class DashboardView(View):
         context["from_period"] = from_period
         context["from_date"] = from_date
         context["to_date"] = to_date
+        context["today_date"] = datetime.today().strftime('%Y-%m-%d')
 
         return render(
             request,
@@ -135,15 +218,29 @@ class CustomerManagementView(ListView):
     def get_queryset(self):
         q = self.request.GET.get("q", None)
         if q:
-            return (
-                User.objects.select_related("profile")
-                .filter(is_superuser=False)
-                .filter(
-                    Q(email__icontains=q)
-                    | Q(phone_number__icontains=q)
-                    | Q(profile__first_name__icontains=q)
+            try:
+                user_id = int(q.replace("CU",""))
+            except:
+                user_id = None
+
+            print(user_id)
+            
+            if user_id:
+                return (
+                    User.objects.select_related("profile")
+                    .filter(is_superuser=False)
+                    .filter(id=user_id)
                 )
-            )
+            else:
+                return (
+                    User.objects.select_related("profile")
+                    .filter(is_superuser=False)
+                    .filter(
+                        Q(email__icontains=q)
+                        | Q(phone_number__icontains=q)
+                        | Q(profile__first_name__icontains=q)
+                    )
+                )
         else:
             return User.objects.select_related().filter(is_superuser=False)
 
@@ -255,55 +352,7 @@ class CustomerEditView(DetailView):
         except Exception as e:
             print(e)
 
-        return redirect("adminpanel:customer-edit",self.kwargs.get("pk"))
-
-
-class CustomerAddView(View):
-    template_name = "customer_add.html"
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
-
-    def post(self, request, *args, **kwargs):
-        first_name = request.POST.get("first_name", None)
-        last_name = request.POST.get("last_name", None)
-        email = request.POST.get("email", None)
-        phone_number = request.POST.get("phone_number", None)
-        pan_number = request.POST.get("pan_number", None)
-        date_of_birth = request.POST.get("date_of_birth", None)
-        gender = request.POST.get("gender", None)
-        address = request.POST.get("address", None)
-
-        # try:
-        #     user :User = User.objects.get(id=self.kwargs.get("pk"))
-        #     profile :UserProfile = user.profile
-        # except User.DoesNotExist:
-        #     return self.get(self,request,*args,**kwargs)
-
-        # if first_name:
-        #     profile.first_name = first_name
-        # if last_name:
-        #     profile.last_name = last_name
-        # if email:
-        #     user.email = email
-        # if phone_number:
-        #     user.phone_number = phone_number
-        # if pan_number:
-        #     profile.pan_number = pan_number
-        # if date_of_birth:
-        #     profile.date_of_birth = date_of_birth
-        # if gender:
-        #     profile.gender = gender
-        # if address:
-        #     profile.address = address
-
-        # try:
-        #     profile.save()
-        #     user.save()
-        # except Exception as e:
-        #     print(e)
-
-        return self.get(self, request, *args, **kwargs)
+        return redirect("adminpanel:customer-edit", self.kwargs.get("pk"))
 
 
 class InvestingReportView(View):
@@ -346,6 +395,7 @@ class SubscriptionManagementView(ListView):
         context["q"] = self.request.GET.get("q", "")
         context["from_date"] = self.request.GET.get("from_date", None)
         context["to_date"] = self.request.GET.get("to_date", None)
+        context["today_date"] = datetime.today().strftime('%Y-%m-%d')
         return context
 
 
@@ -359,9 +409,7 @@ class StockManagementView(ListView):
         q = self.request.GET.get("q", None)
         query = Stock.objects.all()
         if q:
-            query = query.filter(
-                Q(symbol__icontains=q)
-            )
+            query = query.filter(Q(symbol__icontains=q))
         return query
 
     def get_context_data(self, **kwargs):
@@ -373,27 +421,27 @@ class StockManagementView(ListView):
 class StockUploadView(View):
     template_name = "stock_upload.html"
 
-    def get(self,request,*args,**kwargs):
-         return render(request, self.template_name)
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
-    def post(self,request,*args,**kwargs):
+    def post(self, request, *args, **kwargs):
         df = pd.read_excel(request.FILES.get("stock_file"))
         print(df)
-        print(df['exchange'].isnull().values.any())
-        if df['exchange'].isnull().values.any() or df['symbol'].isnull().values.any():
+        print(df["exchange"].isnull().values.any())
+        if df["exchange"].isnull().values.any() or df["symbol"].isnull().values.any():
             messages.add_message(
                 request, messages.ERROR, "Exchance & Symbol columns can't be empty!"
             )
             return redirect("adminpanel:stock-upload")
-        
+
         Stock.objects.all().delete()
         [Stock.objects.create(**x) for x in df.T.to_dict().values()]
         return redirect("adminpanel:stock-management")
 
 
 class StockUploadTemplateView(View):
-    def get(self,request,*args,**kwagrs):
-        return FileResponse(open("stocks_template.xlsx","rb"))
+    def get(self, request, *args, **kwagrs):
+        return FileResponse(open("stocks_template.xlsx", "rb"))
 
 
 class StaticContentManagementView(View):
@@ -476,8 +524,12 @@ class SettingsView(View):
 
         return render(request, self.template)
 
-class NotificationsView(View):
-    template = "notifications.html"
 
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template)
+class NotificationsView(ListView):
+    template_name = "notifications.html"
+    model = AdminNotification
+    context_object_name = "notification_list"
+    paginate_by = 5
+
+    def get_queryset(self):
+        return AdminNotification.objects.all()

@@ -48,7 +48,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True, null=True)
-    firebase_token = models.TextField(default="")
+    firebase_token = models.TextField(default="",unique=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
