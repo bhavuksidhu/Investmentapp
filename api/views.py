@@ -1,5 +1,4 @@
 from datetime import timedelta
-from turtle import title
 
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
 from core.models import (MarketQuote, Notification, UploadedFile, User,

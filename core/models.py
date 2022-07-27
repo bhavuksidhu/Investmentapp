@@ -176,42 +176,10 @@ class Notification(models.Model):
         ordering = ["-created_at"]
 
 
-class ZerodhaTransaction(models.Model):
-    TRANSACTION_CHOICES = [("Buy", "Buy"), ("Sell", "Sell")]
-    VALIDITY_CHOICES = [("DAY", "DAY"), ("IOC", "IOC"), ("TTL", "TTL")]
-
-    trading_symbol = models.CharField(max_length=20, default="")
-    exchange = models.CharField(max_length=10, default="")
-    transaction_type = models.CharField(
-        max_length=5, choices=TRANSACTION_CHOICES, null=True
-    )
-    order_type = models.CharField(max_length=20, default="")
-    quantity = models.IntegerField()
-    product = models.TextField()
-    price = models.FloatField()
-    trigger_price = models.FloatField()
-    disclosed_quantity = models.IntegerField()
-    validity = models.CharField(max_length=5, choices=VALIDITY_CHOICES)
-    validity_ttl = models.IntegerField()
-    iceberg_legs = models.IntegerField()
-    iceberg_quantity = models.FloatField()
-    tag = models.TextField(default="")
-
-    order_id = models.TextField()
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-
 class Transaction(models.Model):
     TRANSACTION_CHOICES = [("Buy", "Buy"), ("Sell", "Sell")]
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="transactions"
-    )
-    zerodha_transaction = models.OneToOneField(
-        ZerodhaTransaction, on_delete=models.CASCADE, related_name="user_transaction"
     )
     trading_symbol = models.CharField(max_length=20, default="")
     exchange = models.CharField(max_length=10, default="")
