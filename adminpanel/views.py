@@ -170,11 +170,16 @@ class DashboardView(View):
         from_period = request.GET.get("from_period", None)
         
         if from_date or to_date:
-            user_query = user_query.filter(created_at__date__range=[from_date, to_date])
-            subscriber_query = subscriber_query.filter(
-                created_at__date__range=[from_date, to_date]
-            )
-            
+            if from_date:
+                user_query = user_query.filter(created_at__date__gte=from_date)
+                subscriber_query = subscriber_query.filter(
+                    created_at__date__gte=from_date
+                )
+            if to_date:
+                user_query = user_query.filter(created_at__date__lte=to_date)
+                subscriber_query = subscriber_query.filter(
+                    created_at__date__lte=to_date
+                )
             header = f"From {from_date} to {to_date}"
 
         elif from_period:
