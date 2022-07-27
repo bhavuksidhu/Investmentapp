@@ -157,6 +157,7 @@ class DashboardView(View):
     def get(self, request, *args, **kwargs):
 
         context = {}
+        header = "Today"
 
         user_query = User.objects.filter(
             is_superuser=False, is_staff=False, is_active=True
@@ -167,21 +168,26 @@ class DashboardView(View):
         to_date = request.GET.get("to_date", None)
 
         from_period = request.GET.get("from_period", None)
-
-        if from_date and to_date:
+        
+        if from_date or to_date:
             user_query = user_query.filter(created_at__date__range=[from_date, to_date])
             subscriber_query = subscriber_query.filter(
                 created_at__date__range=[from_date, to_date]
             )
+            
+            header = f"From {from_date} to {to_date}"
 
         elif from_period:
             today = datetime.today()
             if from_period == "Today":
+                header = "Today"
                 filter_date = today.date()
             elif from_period == "This Week":
+                header = "This Week"
                 filter_date = today - timedelta(days=7)
                 filter_date = filter_date.date()
             else:
+                header = "This month"
                 filter_date = today - timedelta(days=30)
                 filter_date = filter_date.date()
 
@@ -201,6 +207,7 @@ class DashboardView(View):
         context["from_date"] = from_date
         context["to_date"] = to_date
         context["today_date"] = datetime.today().strftime('%Y-%m-%d')
+        context["header"] = header
 
         return render(
             request,
