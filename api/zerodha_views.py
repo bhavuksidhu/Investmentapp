@@ -1,18 +1,22 @@
 import urllib.parse
 
-from core.models import User, ZerodhaData
+from core.models import Transaction, User, ZerodhaData
 from django.conf import settings
+from django.http import HttpResponseNotFound, HttpResponseForbidden
 from drf_spectacular.utils import extend_schema, inline_serializer
 from kiteconnect import KiteConnect
 from rest_framework import serializers, status
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .custom_views import ZerodhaView
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from api.utils import check_kyc_status
+
+from .custom_views import ZerodhaView
+import json
 
 KITE_CREDS = settings.KITE_CREDS
 kite = KiteConnect(api_key=KITE_CREDS["api_key"])
@@ -31,7 +35,19 @@ class Redirect(APIView):
         ),
     )
     def get(self, request: Request, *args, **kwargs):
+        action = request.query_params.get("action", None)
         uuid = request.query_params.get("uuid", None)
+
+        if action == "basket":
+            print(request.data)
+            return Response(
+                {
+                    "errors": None,
+                    "data": request.data,
+                    "status": status.HTTP_200_OK,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         if not uuid:
             return Response(
@@ -43,7 +59,7 @@ class Redirect(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        action = request.query_params.get("action", None)
+        
         type = request.query_params.get("type", None)
         zerodha_status = request.query_params.get("status", None)
         request_token = request.query_params.get("request_token", None)
@@ -171,4 +187,40 @@ class CheckStatus(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+
+class ExecuteTradeView(APIView):
+    renderer_classes = (TemplateHTMLRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        transaction_id = kwargs.get("transaction_id", None)
+        print(transaction_id)
+        if not transaction_id:
+            return HttpResponseNotFound("Invalid URL or Expired!")
+
+        try:
+            transaction_id = int(transaction_id)
+            transaction_obj: Transaction = Transaction.objects.get(uid=transaction_id)
+        except Transaction.DoesNotExist:
+            return HttpResponseNotFound("Invalid URL or Expired!")
+
+        if transaction_obj.executed:
+            return HttpResponseNotFound("Invalid URL or Expired!")
+
+        transaction_obj.executed = True
+        transaction_obj.save()
+
+        json_data = [{
+            "variety": "regular",
+            "tradingsymbol": transaction_obj.trading_symbol,
+            "exchange": transaction_obj.exchange,
+            "transaction_type": transaction_obj.transaction_type.upper(),
+            "order_type": "MARKET",
+            "quantity": transaction_obj.quantity,
+            "readonly": True,
+            "tag" : f"{transaction_obj.id}"
+        }]
+
+        api_key = KITE_CREDS["api_key"]
+
+        return Response({"json_data":json.dumps(json_data),"api_key":api_key}, template_name="zerodha/execute-trade.html")
 

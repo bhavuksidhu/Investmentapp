@@ -38,7 +38,6 @@ class GetPostViewSet(
 
     def create(self, request, *args, **kwargs):
         try:
-            print("kekek")
             return super().create(request, *args, **kwargs)
         except:
             instance = self.get_object()

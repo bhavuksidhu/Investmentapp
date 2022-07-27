@@ -1,11 +1,14 @@
 from datetime import timedelta
+from tkinter.messagebox import NO
 
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
-from core.models import (MarketQuote, Notification, UploadedFile, User,
-                         UserProfile, UserSetting, UserSubscription)
+from core.models import (MarketQuote, Notification, Transaction, UploadedFile,
+                         User, UserProfile, UserSetting, UserSubscription)
+from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 from drf_spectacular.utils import (OpenApiParameter, extend_schema,
-                                   inline_serializer)
+                                   extend_schema_view, inline_serializer)
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -13,7 +16,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Q
 
 from api.serializers import (AboutUsSerializer, BasicUserSerializer,
                              ContactDataSerializer, FAQSerializer,
@@ -119,7 +121,10 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             token = str(Token.objects.get_or_create(user=user)[0])
-            AdminNotification.objects.create(title = f"New user signed-up!",content=f"A new user has signed up, ID : CU{user.id}.")
+            AdminNotification.objects.create(
+                title=f"New user signed-up!",
+                content=f"A new user has signed up, ID : CU{user.id}.",
+            )
             return Response(
                 {
                     "errors": None,
@@ -275,13 +280,15 @@ class UserProfileViewSet(GetPostViewSet):
         except UserProfile.DoesNotExist:
             raise NoDataException
 
+
 class BasicUserViewSet(GetPostViewSet):
-    serializer_class =  BasicUserSerializer
+    serializer_class = BasicUserSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.request.user
+
 
 class UserSettingViewSet(GetPostViewSet):
     serializer_class = UserSettingSerializer
@@ -358,7 +365,10 @@ class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         subscription.active = True
         subscription.save()
 
-        AdminNotification.objects.create(title = f"Subscription Purchased!",content=f"User - CU{request.user.id}, has just purchased a subscription!")
+        AdminNotification.objects.create(
+            title=f"Subscription Purchased!",
+            content=f"User - CU{request.user.id}, has just purchased a subscription!",
+        )
 
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
@@ -384,7 +394,7 @@ class SubscriptionHistoryViewSet(GetViewSet):
         return self.request.user.subscription.history.all()
 
 
-class MarketFilterViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
+class MarketFilterViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = StandardResultsSetPagination
     serializer_class = MarketQuoteSerializer
     authentication_classes = (TokenAuthentication,)
@@ -392,19 +402,20 @@ class MarketFilterViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
 
     def get_queryset(self):
         price = self.request.GET.get("price", None)
-        keyword = self.request.GET.get("keyword",None)
-        
+        keyword = self.request.GET.get("keyword", None)
+
         price = float(price)
         lower_price = price - 1000
-        
-        query =  MarketQuote.objects.filter(
-            price__lte=price, price__gte=lower_price)
+
+        query = MarketQuote.objects.filter(price__lte=price, price__gte=lower_price)
 
         if keyword:
-            query = query.filter(Q(company_name__icontains=keyword)|Q(trading_symbol__icontains=keyword))
+            query = query.filter(
+                Q(company_name__icontains=keyword)
+                | Q(trading_symbol__icontains=keyword)
+            )
 
         return query
-
 
     @extend_schema(
         parameters=[
@@ -428,10 +439,13 @@ class MarketFilterViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-@extend_schema(parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)])
+@extend_schema_view(
+    retrieve=extend_schema(
+        parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)]
+    )
+)
 class TransactionViewSet(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet,
 ):
@@ -441,7 +455,50 @@ class TransactionViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        return self.request.user.transactions.filter(verified=True)
+
+
+class TradeViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = TransactionSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
         return self.request.user.transactions.all()
+
+    @extend_schema(
+        responses=inline_serializer(
+            name="trade_response",
+            fields={
+                "trade_url": serializers.CharField(),
+                "status": serializers.IntegerField(),
+            },
+        ),
+    )
+    def create(self, request, *args, **kwargs):
+        try:
+            transaction_obj :Transaction = Transaction.objects.create(**{"user":request.user,**request.data})
+        except Exception as e:
+            print(e)
+            return Response(
+                {
+                    "trade_url": None,
+                    "status": status.HTTP_400_BAD_REQUEST,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        trade_url = request.build_absolute_uri("/")[:-1] + reverse("api:execute-trade", kwargs={"transaction_id":transaction_obj.uid})
+        return Response(
+            {
+                "trade_url": trade_url,
+                "status": status.HTTP_200_OK,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 
 class CheckEmailPassword(APIView):
     @extend_schema(
@@ -456,7 +513,7 @@ class CheckEmailPassword(APIView):
             name="check_email_pass_response",
             fields={
                 "user_exists": serializers.BooleanField(),
-                "status": serializers.IntegerField()
+                "status": serializers.IntegerField(),
             },
         ),
     )
@@ -475,7 +532,7 @@ class CheckEmailPassword(APIView):
                 exists = True
             except User.DoesNotExist:
                 pass
-        
+
         return Response(
             {
                 "user_exists": exists,
@@ -483,4 +540,3 @@ class CheckEmailPassword(APIView):
             },
             status=status.HTTP_200_OK,
         )
-        

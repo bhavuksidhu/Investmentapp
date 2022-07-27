@@ -177,7 +177,8 @@ class Notification(models.Model):
 
 
 class Transaction(models.Model):
-    TRANSACTION_CHOICES = [("Buy", "Buy"), ("Sell", "Sell")]
+    TRANSACTION_CHOICES = [("BUY", "BUY"), ("SELL", "SELL")]
+    uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="transactions"
     )
@@ -189,7 +190,11 @@ class Transaction(models.Model):
     transaction_type = models.CharField(
         max_length=5, choices=TRANSACTION_CHOICES, null=True
     )
+    order_type = models.TextField(default="MARKET")
     if_not_invest_then_what = models.TextField(default="")
+    verified = models.BooleanField(default=False)
+
+    executed = models.BooleanField(default=False) #Used to check if we executed this trade on our end or not! (One trade should only open one time.)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

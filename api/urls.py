@@ -17,6 +17,7 @@ from api.views import (
     SubscriptionHistoryViewSet,
     SubscriptionViewSet,
     TermsNConditionsViewSet,
+    TradeViewSet,
     TransactionViewSet,
     UserProfilePhotoViewSet,
     UserProfileViewSet,
@@ -41,6 +42,7 @@ router.register(r"market/filter",MarketFilterViewSet,basename="market-filter")
 
 #Transactions
 router.register(r"transaction",TransactionViewSet,basename="transaction")
+router.register(r"trade",TradeViewSet,basename="trade")
 
 #Subscriptions
 router.register(r"subscription/subscribe",SubscribeViewSet,basename="subscribe")
