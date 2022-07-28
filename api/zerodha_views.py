@@ -83,6 +83,7 @@ class Redirect(APIView):
                 kite.set_access_token(data["access_token"])
 
                 margins_data = kite.margins()
+                funds = margins_data["equity"]["available"]["cash"]
 
                 try:
                     user: User = User.objects.get(uuid=uuid)
@@ -90,12 +91,13 @@ class Redirect(APIView):
                     ZerodhaData.objects.filter(local_user=user).delete()
                     # Create new data
                     data["local_user_id"] = user.id
+                    data["funds"] = funds
                     ZerodhaData.objects.create(**data)
 
                     return Response(
                         {
                             "errors": "OK",
-                            "data": margins_data,
+                            "data": data,
                             "status": status.HTTP_200_OK,
                         },
                         status=status.HTTP_200_OK,
