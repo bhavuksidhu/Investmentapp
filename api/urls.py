@@ -6,6 +6,7 @@ from api.views import (
     BasicUserViewSet,
     ContactDataViewSet,
     FAQViewSet,
+    GetFundsViewSet,
     LoginView,
     LogoutView,
     MarketFilterViewSet,
@@ -39,6 +40,8 @@ router.register(r"settings", UserSettingViewSet, basename="settings")
 router.register(r"notifications", NotificationViewSet, basename="notifications")
 
 router.register(r"market/filter",MarketFilterViewSet,basename="market-filter")
+
+router.register(r"funds",GetFundsViewSet,basename="get-funds")
 
 #Transactions
 router.register(r"transaction",TransactionViewSet,basename="transaction")

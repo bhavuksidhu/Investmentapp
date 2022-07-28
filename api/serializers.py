@@ -1,3 +1,4 @@
+from operator import mod
 from pyexpat import model
 import re
 from mimetypes import guess_type
@@ -131,6 +132,11 @@ class UserSerializer(serializers.ModelSerializer):
             "profile",
             "settings",
         ]
+
+class FundsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZerodhaData
+        fields =["funds",]
 
 class MarketQuoteSerializer(serializers.ModelSerializer):
     class Meta:

@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
 from core.models import (MarketQuote, Notification, Transaction, UploadedFile,
-                         User, UserProfile, UserSetting, UserSubscription)
+                         User, UserProfile, UserSetting, UserSubscription, ZerodhaData)
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
@@ -25,7 +25,7 @@ from api.serializers import (AboutUsSerializer, BasicUserSerializer,
                              UploadedFileSerializer, UserProfileSerializer,
                              UserSettingSerializer,
                              UserSubscriptionHistorySerializer,
-                             UserSubscriptionSerializer)
+                             UserSubscriptionSerializer,FundsSerializer)
 from api.utils import NoDataException, StandardResultsSetPagination
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
@@ -308,6 +308,17 @@ class UserSettingViewSet(GetPostViewSet):
         try:
             return UserSetting.objects.get(user=self.request.user)
         except UserSetting.DoesNotExist:
+            raise NoDataException
+
+class GetFundsViewSet(GetViewSet):
+    serializer_class = FundsSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        try:
+            return ZerodhaData.objects.get(local_user=self.request.user)
+        except ZerodhaData.DoesNotExist:
             raise NoDataException
 
 
