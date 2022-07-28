@@ -14,7 +14,7 @@
             <div class="FlexMain">
                 <div class="Search">
                     <form action={% url "adminpanel:stock-management"%} method="GET">
-                        <input type="text" placeholder="Enter Stock Symbol" name="q">
+                        <input type="text" placeholder="Enter Stock Symbol" name="q" value="{{q}}">
                         <button>Search</button>
                         <button class="Reset"><i class="fa fa-refresh"></i></button>
                     </form>
@@ -26,7 +26,7 @@
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th>Exchange</th>
+                            <th>ID</th>
                             <th>Symbol</th>
                             <th>Series</th>
                             <th>Index Listing</th>
@@ -36,7 +36,7 @@
                         {% for stock in stocks %}
                         <tr>
                             <td>{{forloop.counter}}</td>
-                            <td>{{stock.exchange}}</td>
+                            <td>{{stock.id}}</td>
                             <td>{{stock.symbol}}</td>
                             <td>{{stock.series}}</td>
                             <td>{{stock.index_listing}}</td>

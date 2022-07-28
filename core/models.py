@@ -154,6 +154,7 @@ class ZerodhaData(models.Model):
     enctoken = models.TextField(default="", null=True)
     login_time = models.DateTimeField(null=True)
     meta = models.JSONField(null=True)
+    funds = models.FloatField(default=0)
 
 
 class Notification(models.Model):

@@ -80,6 +80,10 @@ class Redirect(APIView):
                 data = kite.generate_session(
                     request_token, api_secret=KITE_CREDS["secret"]
                 )
+                kite.set_access_token(data["access_token"])
+
+                margins_data = kite.margins()
+
                 try:
                     user: User = User.objects.get(uuid=uuid)
                     # Delete old data
@@ -91,7 +95,7 @@ class Redirect(APIView):
                     return Response(
                         {
                             "errors": "OK",
-                            "data": data,
+                            "data": margins_data,
                             "status": status.HTTP_200_OK,
                         },
                         status=status.HTTP_200_OK,

@@ -417,7 +417,7 @@ class StockManagementView(ListView):
     template_name = "stock_management.html"
     model = Stock
     context_object_name = "stocks"
-    paginate_by = 5
+    paginate_by = 15
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
