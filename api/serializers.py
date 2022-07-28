@@ -132,7 +132,8 @@ class UserSerializer(serializers.ModelSerializer):
             "profile",
             "settings",
         ]
-
+        
+@extend_schema_serializer(many=False)
 class FundsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ZerodhaData
