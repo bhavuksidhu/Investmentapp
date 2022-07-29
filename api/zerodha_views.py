@@ -246,6 +246,7 @@ class PostBackView(APIView):
         
         if request.data.get("status",None) == "COMPLETE":
             transaction_obj.verified = True
+            transaction_obj.status = "Completed"
             transaction_obj.save()
         if not os.path.isdir("postbacks"):
             os.mkdir("postbacks")

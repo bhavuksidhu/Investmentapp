@@ -475,7 +475,7 @@ class TransactionViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return self.request.user.transactions.filter(verified=True)
+        return self.request.user.transactions.filter()
 
 
 class TradeViewSet(

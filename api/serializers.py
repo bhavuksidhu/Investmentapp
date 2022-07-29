@@ -147,7 +147,7 @@ class MarketQuoteSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["trading_symbol","exchange","price","quantity","amount","transaction_type","if_not_invest_then_what","created_at"]
+        fields = ["trading_symbol","exchange","price","quantity","amount","status","transaction_type","if_not_invest_then_what","created_at"]
 
 
 class RegisterUserSerializer(

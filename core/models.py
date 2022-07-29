@@ -194,7 +194,7 @@ class Transaction(models.Model):
     order_type = models.TextField(default="MARKET")
     if_not_invest_then_what = models.TextField(default="")
     verified = models.BooleanField(default=False)
-
+    status = models.TextField(default="Pending")
     executed = models.BooleanField(default=False) #Used to check if we executed this trade on our end or not! (One trade should only open one time.)
 
     created_at = models.DateTimeField(auto_now_add=True)
