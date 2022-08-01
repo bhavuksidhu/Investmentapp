@@ -235,12 +235,13 @@ class PostBackView(APIView):
 
     def post(self, request, *args, **kwargs):
         
+        data = json.loads(request.body)
         if not os.path.isdir("postbacks"):
             os.mkdir("postbacks")
         with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
-            json.dump(request.data,f,ensure_ascii=False)
+            json.dump(data,f,ensure_ascii=False)
         
-        tag = request.data.get("tag",None)
+        tag = data.get("tag",None)
         if not tag:
             return Response(data={"msg":"No Tag"}, status=200)
         tag = int(tag)
@@ -249,7 +250,7 @@ class PostBackView(APIView):
         except Transaction.DoesNotExist:
             return Response(data={"msg":"No Transaction Obj"}, status=200)
         
-        if request.data.get("status",None) == "COMPLETE":
+        if data.get("status",None) == "COMPLETE":
             transaction_obj.verified = True
             transaction_obj.status = "Completed"
             transaction_obj.save()
