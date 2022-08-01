@@ -234,7 +234,12 @@ class ExecuteTradeView(APIView):
 class PostBackView(APIView):
 
     def post(self, request, *args, **kwargs):
-
+        
+        if not os.path.isdir("postbacks"):
+            os.mkdir("postbacks")
+        with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
+            json.dump(request.data,f,ensure_ascii=False)
+        
         tag = request.data.get("tag",None)
         if not tag:
             return Response(data={"msg":"No Tag"}, status=200)
@@ -248,9 +253,5 @@ class PostBackView(APIView):
             transaction_obj.verified = True
             transaction_obj.status = "Completed"
             transaction_obj.save()
-        if not os.path.isdir("postbacks"):
-            os.mkdir("postbacks")
-        with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
-            json.dump(request.data,f,ensure_ascii=False)
         
         return Response(data={"msg":"Done"}, status=200)
