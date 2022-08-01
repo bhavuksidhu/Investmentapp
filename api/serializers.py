@@ -148,7 +148,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ["trading_symbol","exchange","price","quantity","amount","status","transaction_type","if_not_invest_then_what","created_at"]
-
+        read_only_fields = ["status"]
 
 class RegisterUserSerializer(
     WritableNestedModelSerializer, serializers.ModelSerializer
