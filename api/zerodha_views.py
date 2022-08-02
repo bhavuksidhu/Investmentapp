@@ -227,6 +227,7 @@ class ExecuteTradeView(APIView):
 
         return Response({"json_data":json.dumps(json_data),"api_key":api_key}, template_name="zerodha/execute-trade.html")
 
+
 class PostBackView(APIView):
 
     def post(self, request, *args, **kwargs):
