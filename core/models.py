@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -9,8 +10,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-from datetime import date
-
 
 # Create your models here.
 
@@ -48,7 +47,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True, null=True)
-    firebase_token = models.TextField(default="",unique=True)
+    firebase_token = models.TextField(default="", unique=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -83,7 +82,11 @@ class UserProfile(models.Model):
     @property
     def age(self):
         today = date.today()
-        return today.year - self.date_of_birth.year - (today.timetuple()[1:3] < self.date_of_birth.timetuple()[1:3])
+        return (
+            today.year
+            - self.date_of_birth.year
+            - (today.timetuple()[1:3] < self.date_of_birth.timetuple()[1:3])
+        )
 
 
 class UserSetting(models.Model):
@@ -107,14 +110,14 @@ class UserSubscription(models.Model):
     @property
     def amount(self):
         if self.date_to and self.date_from:
-            return ((self.date_to - self.date_from).days / 365 ) * 39
+            return ((self.date_to - self.date_from).days / 365) * 39
         else:
             return 0
-    
+
     @property
     def total_amount(self):
         amount = self.amount
-        return ((amount / 100) * 18)  + amount
+        return ((amount / 100) * 18) + amount
 
 
 class UserSubscriptionHistory(models.Model):
@@ -195,21 +198,40 @@ class Transaction(models.Model):
     if_not_invest_then_what = models.TextField(default="")
     verified = models.BooleanField(default=False)
     status = models.TextField(default="Pending")
-    executed = models.BooleanField(default=False) #Used to check if we executed this trade on our end or not! (One trade should only open one time.)
+    executed = models.BooleanField(
+        default=False
+    )  # Used to check if we executed this trade on our end or not! (One trade should only open one time.)
 
+    zerodha_postback = models.JSONField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def purchased_value(self):
+        return self.amount
 
     class Meta:
         ordering = ["-created_at"]
 
+class InvestmentInsight(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="insights"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    value = models.FloatField()
+    
+    class Meta:
+        ordering = ["created_at"]
+
+
 class Stock(models.Model):
     exchange = models.TextField()
     symbol = models.TextField()
-    series = models.TextField(default="",null="")
-    index_listing = models.TextField(default="",null="")
+    series = models.TextField(default="", null="")
+    index_listing = models.TextField(default="", null="")
+
 
 class MarketQuote(models.Model):
-    company_name = models.TextField(null=True,default="")
+    company_name = models.TextField(null=True, default="")
     instrument_token = models.TextField()
     trading_symbol = models.TextField()
     price = models.FloatField()

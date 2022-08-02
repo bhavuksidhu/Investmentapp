@@ -162,6 +162,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api",
     "COMPONENT_SPLIT_REQUEST": True,
+    "PREPROCESSING_HOOKS": ["api.utils.preprocessing_filter_spec"],
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -2,7 +2,7 @@ import urllib.parse
 
 from core.models import Transaction, User, ZerodhaData
 from django.conf import settings
-from django.http import HttpResponseNotFound, HttpResponseForbidden
+from django.http import HttpResponseNotFound
 from drf_spectacular.utils import extend_schema, inline_serializer
 from kiteconnect import KiteConnect
 from rest_framework import serializers, status
@@ -12,11 +12,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
-import os
-import uuid
 from api.utils import check_kyc_status
-
-from .custom_views import ZerodhaView
 import json
 
 KITE_CREDS = settings.KITE_CREDS
@@ -236,10 +232,10 @@ class PostBackView(APIView):
     def post(self, request, *args, **kwargs):
         
         data = json.loads(request.body)
-        if not os.path.isdir("postbacks"):
-            os.mkdir("postbacks")
-        with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
-            json.dump(data,f,ensure_ascii=False)
+        # if not os.path.isdir("postbacks"):
+        #     os.mkdir("postbacks")
+        # with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
+        #     json.dump(data,f,ensure_ascii=False)
         
         tag = data.get("tag",None)
         if not tag:
@@ -251,8 +247,12 @@ class PostBackView(APIView):
             return Response(data={"msg":"No Transaction Obj"}, status=200)
         
         if data.get("status",None) == "COMPLETE":
+            transaction_obj.price = data.get("average_price")
+            transaction_obj.quantity = data.get("quantity")
+            transaction_obj.amount = transaction_obj.price * transaction_obj.quantity
             transaction_obj.verified = True
             transaction_obj.status = "Completed"
+            transaction_obj.zerodha_postback = data
             transaction_obj.save()
         
         return Response(data={"msg":"Done"}, status=200)

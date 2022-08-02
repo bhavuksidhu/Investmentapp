@@ -7,10 +7,13 @@ from api.views import (
     ContactDataViewSet,
     FAQViewSet,
     GetFundsViewSet,
+    InvestmentInsightViewSet,
+    JournalViewSet,
     LoginView,
     LogoutView,
     MarketFilterViewSet,
     NotificationViewSet,
+    PortFolioView,
     PrivacyPolicyViewSet,
     RegisterView,
     ResetPasswordView,
@@ -23,7 +26,8 @@ from api.views import (
     UserProfilePhotoViewSet,
     UserProfileViewSet,
     UserSettingViewSet,
-    CheckEmailPassword
+    CheckEmailPassword,
+    InvestmentInsightViewSet
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 
@@ -44,14 +48,15 @@ router.register(r"market/filter",MarketFilterViewSet,basename="market-filter")
 router.register(r"funds",GetFundsViewSet,basename="get-funds")
 
 #Transactions
-router.register(r"transaction",TransactionViewSet,basename="transaction")
+router.register(r"investment-insight/insights",InvestmentInsightViewSet,basename="investment-insight")
+router.register(r"investment-insight/transactions",TransactionViewSet,basename="transaction")
 router.register(r"trade",TradeViewSet,basename="trade")
+router.register(r"journal",JournalViewSet,basename="journal")
 
 #Subscriptions
 router.register(r"subscription/subscribe",SubscribeViewSet,basename="subscribe")
 router.register(r"subscription/detail",SubscriptionViewSet,basename="subscription-detail")
 router.register(r"subscription/history",SubscriptionHistoryViewSet,basename="subscription-history")
-
 
 #Static
 router.register(r"static/about-us", AboutUsViewSet, basename="about-us")
@@ -74,6 +79,7 @@ urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("check/email-password/",CheckEmailPassword.as_view(),name="check-email-password"),
+    path("portfolio/",PortFolioView.as_view(),name="portfolio"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),

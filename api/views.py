@@ -1,13 +1,27 @@
 from datetime import timedelta
+import datetime
 
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
-from core.models import (MarketQuote, Notification, Transaction, UploadedFile,
-                         User, UserProfile, UserSetting, UserSubscription, ZerodhaData)
+from core.models import (
+    MarketQuote,
+    Notification,
+    Transaction,
+    UploadedFile,
+    User,
+    UserProfile,
+    UserSetting,
+    UserSubscription,
+    ZerodhaData,
+)
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
-from drf_spectacular.utils import (OpenApiParameter, extend_schema,
-                                   extend_schema_view, inline_serializer)
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    extend_schema,
+    extend_schema_view,
+    inline_serializer,
+)
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -16,16 +30,30 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.serializers import (AboutUsSerializer, BasicUserSerializer,
-                             ContactDataSerializer, FAQSerializer,
-                             LoginSerializer, MarketQuoteSerializer,
-                             NotificationSerializer, PrivacyPolicySerializer,
-                             RegisterUserSerializer, ResetPasswordSerializer,
-                             TermsNConditionsSerializer, TransactionSerializer,
-                             UploadedFileSerializer, UserProfileSerializer,
-                             UserSettingSerializer,
-                             UserSubscriptionHistorySerializer,
-                             UserSubscriptionSerializer,FundsSerializer)
+from api.serializers import (
+    AboutUsSerializer,
+    BasicUserSerializer,
+    ContactDataSerializer,
+    FAQSerializer,
+    FundsSerializer,
+    InsightSerializer,
+    JournalSerializer,
+    LoginSerializer,
+    MarketQuoteSerializer,
+    NotificationSerializer,
+    PortfolioSerializer,
+    PrivacyPolicySerializer,
+    RegisterUserSerializer,
+    ResetPasswordSerializer,
+    TermsNConditionsSerializer,
+    TradeSerializer,
+    TransactionSerializer,
+    UploadedFileSerializer,
+    UserProfileSerializer,
+    UserSettingSerializer,
+    UserSubscriptionHistorySerializer,
+    UserSubscriptionSerializer,
+)
 from api.utils import NoDataException, StandardResultsSetPagination
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
@@ -39,24 +67,26 @@ class ResetPasswordView(APIView):
         if serializer.is_valid():
             if "email" in request.data:
                 try:
-                    user :User = User.objects.get(email=request.data["email"])
+                    user: User = User.objects.get(email=request.data["email"])
                 except User.DoesNotExist:
                     user = None
             if "phone_number" in request.data:
                 try:
-                    user :User = User.objects.get(phone_number=request.data["phone_number"])
+                    user: User = User.objects.get(
+                        phone_number=request.data["phone_number"]
+                    )
                 except User.DoesNotExist:
                     user = None
             firebase_token = request.data.get("firebase_token")
 
             if firebase_token != user.firebase_token:
                 return Response(
-                        {
-                            "errors": "Invalid firebase token!",
-                            "status": status.HTTP_400_BAD_REQUEST,
-                        }
-                    )
-        
+                    {
+                        "errors": "Invalid firebase token!",
+                        "status": status.HTTP_400_BAD_REQUEST,
+                    }
+                )
+
             if user:
                 if not request.data["new_password"]:
                     return Response(
@@ -310,6 +340,7 @@ class UserSettingViewSet(GetPostViewSet):
         except UserSetting.DoesNotExist:
             raise NoDataException
 
+
 class GetFundsViewSet(GetViewSet):
     serializer_class = FundsSerializer
     authentication_classes = (TokenAuthentication,)
@@ -475,14 +506,148 @@ class TransactionViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return self.request.user.transactions.filter()
+        return self.request.user.transactions.filter(verified=True)
 
+
+class PortFolioView(APIView):
+    serializer_class = PortfolioSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        transactions = request.user.transactions.filter(verified=True)
+
+        transaction_data = {}
+        for transaction in transactions:
+            symbol = transaction.trading_symbol
+            if symbol in transaction_data:
+                if transaction.transaction_type == "SELL":
+                    transaction_data[symbol]["quantity"] -= transaction.quantity
+                    transaction_data[symbol]["purchased_value"] -= transaction.amount
+                else:
+                    transaction_data[symbol]["quantity"] += transaction.quantity
+                    transaction_data[symbol]["purchased_value"] += transaction.amount
+            else:
+                transaction_data[symbol] = {
+                    "trading_symbol": symbol,
+                    "exchange": transaction.exchange,
+                    "quantity" : 0,
+                    "purchased_value" : 0.0
+                }
+
+                if transaction.transaction_type == "SELL":
+                    transaction_data[symbol]["quantity"] = -transaction.quantity
+                    transaction_data[symbol]["purchased_value"] = -transaction.amount
+                else:
+                    transaction_data[symbol]["quantity"] = transaction.quantity
+                    transaction_data[symbol]["purchased_value"] += transaction.amount
+
+        portfolio_list = [v for k, v in transaction_data.items()]
+        stocks_list = [k for k, v in transaction_data.items()]
+        current_stocks_data = {
+            x["trading_symbol"]: x
+            for x in MarketQuote.objects.filter(
+                trading_symbol__in=stocks_list
+            ).values("company_name", "price", "trading_symbol")
+        }
+
+        for entry in portfolio_list:
+            current_data = current_stocks_data[entry["trading_symbol"]]
+            entry["company_name"] = current_data["company_name"]
+            entry["current_value"] = current_data["price"] * entry["quantity"]
+
+        num_of_transactions = len(transactions)
+        total_purchase_value = sum([x["purchased_value"] for x in portfolio_list])
+        total_current_value = sum(x["current_value"] for x in portfolio_list)
+
+        data = {
+            "num_of_transactions": num_of_transactions,
+            "total_purchase_value": total_purchase_value,
+            "total_current_value": total_current_value,
+            "portfolio_list": portfolio_list,
+        }
+
+        s = PortfolioSerializer(data=data)
+        print(s.is_valid())
+        return Response(s.data)
+
+class JournalViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
+    serializer_class = JournalSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        from_date = self.request.GET.get("from_date", None)
+        to_date = self.request.GET.get("to_date", None)
+        query = self.request.user.transactions.filter(verified=True)
+        if from_date:
+            query = query.filter(created_at__date__gte=from_date)
+        if to_date:
+            query = query.filter(created_at__date__lte=to_date)
+        return query
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="from_date",
+                location=OpenApiParameter.QUERY,
+                description="From date",
+                required=False,
+                type=datetime.date,
+            ),
+            OpenApiParameter(
+                name="to_date",
+                location=OpenApiParameter.QUERY,
+                description="To Date",
+                required=False,
+                type=datetime.date,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+        
+class InvestmentInsightViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
+    serializer_class = InsightSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        from_date = self.request.GET.get("from_date", None)
+        to_date = self.request.GET.get("to_date", None)
+        query = self.request.user.insights.all()
+        if from_date:
+            query = query.filter(created_at__date__gte=from_date)
+        if to_date:
+            query = query.filter(created_at__date__lte=to_date)
+        return query
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="from_date",
+                location=OpenApiParameter.QUERY,
+                description="From date",
+                required=False,
+                type=datetime.date,
+            ),
+            OpenApiParameter(
+                name="to_date",
+                location=OpenApiParameter.QUERY,
+                description="To Date",
+                required=False,
+                type=datetime.date,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 class TradeViewSet(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
-    serializer_class = TransactionSerializer
+    serializer_class = TradeSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -500,7 +665,9 @@ class TradeViewSet(
     )
     def create(self, request, *args, **kwargs):
         try:
-            transaction_obj :Transaction = Transaction.objects.create(**{"user":request.user,**request.data})
+            transaction_obj: Transaction = Transaction.objects.create(
+                **{"user": request.user, **request.data}
+            )
         except Exception as e:
             print(e)
             return Response(
@@ -510,7 +677,9 @@ class TradeViewSet(
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        trade_url = request.build_absolute_uri("/")[:-1] + reverse("api:execute-trade", kwargs={"transaction_id":transaction_obj.uid})
+        trade_url = request.build_absolute_uri("/")[:-1] + reverse(
+            "api:execute-trade", kwargs={"transaction_id": transaction_obj.uid}
+        )
         return Response(
             {
                 "trade_url": trade_url,

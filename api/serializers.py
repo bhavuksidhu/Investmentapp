@@ -7,6 +7,7 @@ from attr import fields
 
 from adminpanel.models import FAQ, ContactData, StaticData
 from core.models import (
+    InvestmentInsight,
     MarketQuote,
     Notification,
     Transaction,
@@ -144,11 +145,39 @@ class MarketQuoteSerializer(serializers.ModelSerializer):
         model = MarketQuote
         fields = ["company_name","trading_symbol","price","exchange","change"]
 
+class TradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ["trading_symbol","exchange","quantity","transaction_type","if_not_invest_then_what"]
+
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["trading_symbol","exchange","price","quantity","amount","status","transaction_type","if_not_invest_then_what","created_at"]
-        read_only_fields = ["status"]
+        fields = ["id","trading_symbol","exchange","quantity","price","amount","transaction_type","if_not_invest_then_what"]
+
+class PortfolioTransactionSerializer(serializers.Serializer):
+    trading_symbol = serializers.CharField()
+    exchange = serializers.CharField()
+    quantity = serializers.IntegerField()
+    purchased_value = serializers.FloatField()
+    current_value = serializers.FloatField()
+
+class PortfolioSerializer(serializers.Serializer):
+    portfolio_list = PortfolioTransactionSerializer(many=True)
+    num_of_transactions = serializers.IntegerField()
+    total_purchase_value = serializers.FloatField()
+    total_current_value = serializers.FloatField()
+
+class JournalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ["transaction_type","amount","if_not_invest_then_what","created_at"]
+
+class InsightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvestmentInsight
+        fields = ["value","created_at"]
+
 
 class RegisterUserSerializer(
     WritableNestedModelSerializer, serializers.ModelSerializer
