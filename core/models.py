@@ -47,6 +47,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True, null=True)
+    is_email_verified = models.BooleanField(default=False)
     firebase_token = models.TextField(default="", unique=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -237,3 +238,7 @@ class MarketQuote(models.Model):
     price = models.FloatField()
     exchange = models.TextField()
     change = models.FloatField(null=True)
+
+class EmailVerificationRecord(models.Model):
+    uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -1,8 +1,10 @@
 import datetime
 from datetime import timedelta
 
+from django.http import HttpResponse, HttpResponseNotFound
+
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
-from core.models import (MarketQuote, Notification, Transaction, UploadedFile,
+from core.models import (EmailVerificationRecord, MarketQuote, Notification, Transaction, UploadedFile,
                          User, UserProfile, UserSetting, UserSubscription,
                          ZerodhaData)
 from django.db.models import Q
@@ -17,6 +19,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.views.generic import View
+from django.core.mail import send_mail
 
 from api.serializers import (AboutUsSerializer, BasicUserSerializer,
                              ContactDataSerializer, FAQSerializer,
@@ -715,4 +719,74 @@ class CheckEmailPassword(APIView):
                 "status": status.HTTP_200_OK,
             },
             status=status.HTTP_200_OK,
+        )
+
+class VerifyEmailView(View):
+    
+    def get(self, request, *args, **kwargs):
+        uid = request.GET.get("uid", None)
+        if uid:
+            try:
+                record = EmailVerificationRecord.objects.get(uid=uid)
+                user = record.user
+                user.is_email_verified = True
+                user.save()
+                record.delete()
+                return HttpResponse("Email Verification Complete!")
+            except EmailVerificationRecord.DoesNotExist:
+                return HttpResponseNotFound("Invalid URL")
+        else:
+            return HttpResponseNotFound("Invalid URL")
+
+class SendVerififcationEmailView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        responses=inline_serializer(
+            name="verify_email_response",
+            fields={
+                "errors": serializers.CharField(),
+                "status": serializers.IntegerField()
+            },
+        ),
+    )
+    def get(self, request, *args, **kwargs):
+        if request.user.is_email_verified:
+            return Response({
+                "errors": "Email already verified.",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+        try:
+            email_verification: EmailVerificationRecord = EmailVerificationRecord.objects.create(user=request.user)
+            verification_url = (
+                request.build_absolute_uri("/")[:-1]
+                + reverse("api:email-verification")
+                + f"?uid={str(email_verification.uid)}"
+            )
+
+            send_mail(
+                "Email verification",
+                f"Please click the link to verification your Email {verification_url}",
+                "investthrift@gmail.com",
+                [request.user.email],
+                fail_silently=False,
+            )
+
+            return Response({
+                "errors": None,
+                "status": status.HTTP_200_OK,
+            },
+            status=status.HTTP_200_OK,
+        )
+        except Exception as e:
+            email_verification.delete()
+            return Response({
+                "errors": f"{e}",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
         )

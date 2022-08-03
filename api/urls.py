@@ -17,6 +17,7 @@ from api.views import (
     PrivacyPolicyViewSet,
     RegisterView,
     ResetPasswordView,
+    SendVerififcationEmailView,
     SubscribeViewSet,
     SubscriptionHistoryViewSet,
     SubscriptionViewSet,
@@ -28,7 +29,8 @@ from api.views import (
     UserProfileViewSet,
     UserSettingViewSet,
     CheckEmailPassword,
-    InvestmentInsightViewSet
+    InvestmentInsightViewSet,
+    VerifyEmailView
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 
@@ -82,6 +84,8 @@ urlpatterns = [
     path("check/email-password/",CheckEmailPassword.as_view(),name="check-email-password"),
     path("portfolio/",PortFolioView.as_view(),name="portfolio"),
     path("investment-insight/transactions/latest/",TransactionLatestView.as_view(),name="transaction-latest"),
+    path("verify/send-verification-email/",SendVerififcationEmailView.as_view(),name="send-verification-email"),
+    path("verify/email/",VerifyEmailView.as_view(),name="email-verification"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),

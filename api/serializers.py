@@ -61,8 +61,18 @@ class UserSettingSerializer(serializers.ModelSerializer):
 class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["email","phone_number"]
-
+        fields = ["email","is_email_verified","phone_number"]
+        read_only_fields = ["is_email_verified"]
+    
+    def update(self, instance, validated_data):
+        old_email = instance.email
+        new_email = validated_data["email"]
+        instance =  super().update(instance, validated_data)
+        if old_email != new_email:
+            instance.is_email_verified = False
+            instance.save()
+        return instance
+        
 
 @extend_schema_serializer(many=False)
 class UserProfileSerializer(WritableNestedModelSerializer,serializers.ModelSerializer):

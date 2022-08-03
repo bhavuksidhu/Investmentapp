@@ -43,7 +43,7 @@ PAN_REGEX = r"[A-Za-z]{5}\d{4}[A-Za-z]{1}"
 
 def preprocessing_filter_spec(endpoints):
     filtered = []
-    excluded_path = ["/zerodha/redirect","/zerodha/execute-trade","/zerodha/post-back"]
+    excluded_path = ["/zerodha/redirect","/zerodha/execute-trade","/zerodha/post-back","verify/email/"]
     for (path, path_regex, method, callback) in endpoints:
         # Remove all but DRF API endpoints
         if not any([x for x in excluded_path if x in path]):

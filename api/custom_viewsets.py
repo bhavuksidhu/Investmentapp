@@ -41,7 +41,7 @@ class GetPostViewSet(
     def create(self, request, *args, **kwargs):
         try:
             return super().create(request, *args, **kwargs)
-        except:
+        except Exception as e:
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=False)
             serializer.is_valid(raise_exception=True)
