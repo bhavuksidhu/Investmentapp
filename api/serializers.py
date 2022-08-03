@@ -153,7 +153,7 @@ class TradeSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["id","trading_symbol","exchange","quantity","status","price","amount","transaction_type","if_not_invest_then_what"]
+        fields = ["id","trading_symbol","exchange","quantity","status","price","amount","transaction_type","if_not_invest_then_what","created_at"]
 
 class PortfolioTransactionSerializer(serializers.Serializer):
     trading_symbol = serializers.CharField()
