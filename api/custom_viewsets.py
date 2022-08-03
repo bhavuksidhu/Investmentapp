@@ -11,9 +11,11 @@ from .utils import NoDataException, StandardResultsSetPagination
 
 class GetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_object(self):
+        print("fefefe")
         return self.get_queryset()
 
     def list(self, request, *args, **kwargs):
+        print("gfefe")
         instance = self.get_object()
         if hasattr(self,"many"):
             serializer = self.get_serializer(instance,many=True)

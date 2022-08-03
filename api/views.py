@@ -1,27 +1,15 @@
-from datetime import timedelta
 import datetime
+from datetime import timedelta
 
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
-from core.models import (
-    MarketQuote,
-    Notification,
-    Transaction,
-    UploadedFile,
-    User,
-    UserProfile,
-    UserSetting,
-    UserSubscription,
-    ZerodhaData,
-)
+from core.models import (MarketQuote, Notification, Transaction, UploadedFile,
+                         User, UserProfile, UserSetting, UserSubscription,
+                         ZerodhaData)
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    extend_schema,
-    extend_schema_view,
-    inline_serializer,
-)
+from drf_spectacular.utils import (OpenApiParameter, extend_schema,
+                                   extend_schema_view, inline_serializer)
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -30,30 +18,18 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.serializers import (
-    AboutUsSerializer,
-    BasicUserSerializer,
-    ContactDataSerializer,
-    FAQSerializer,
-    FundsSerializer,
-    InsightSerializer,
-    JournalSerializer,
-    LoginSerializer,
-    MarketQuoteSerializer,
-    NotificationSerializer,
-    PortfolioSerializer,
-    PrivacyPolicySerializer,
-    RegisterUserSerializer,
-    ResetPasswordSerializer,
-    TermsNConditionsSerializer,
-    TradeSerializer,
-    TransactionSerializer,
-    UploadedFileSerializer,
-    UserProfileSerializer,
-    UserSettingSerializer,
-    UserSubscriptionHistorySerializer,
-    UserSubscriptionSerializer,
-)
+from api.serializers import (AboutUsSerializer, BasicUserSerializer,
+                             ContactDataSerializer, FAQSerializer,
+                             FundsSerializer, InsightSerializer,
+                             JournalSerializer, LoginSerializer,
+                             MarketQuoteSerializer, NotificationSerializer,
+                             PortfolioSerializer, PrivacyPolicySerializer,
+                             RegisterUserSerializer, ResetPasswordSerializer,
+                             TermsNConditionsSerializer, TradeSerializer,
+                             TransactionSerializer, UploadedFileSerializer,
+                             UserProfileSerializer, UserSettingSerializer,
+                             UserSubscriptionHistorySerializer,
+                             UserSubscriptionSerializer)
 from api.utils import NoDataException, StandardResultsSetPagination
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
@@ -507,6 +483,17 @@ class TransactionViewSet(
 
     def get_queryset(self):
         return self.request.user.transactions.filter()
+
+class TransactionLatestView(
+   APIView):
+    serializer_class = TransactionSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        transaction = self.request.user.transactions.first()
+        serializer = self.serializer_class(transaction)
+        return Response(serializer.data)
 
 
 class PortFolioView(APIView):

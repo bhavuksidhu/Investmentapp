@@ -22,6 +22,7 @@ from api.views import (
     SubscriptionViewSet,
     TermsNConditionsViewSet,
     TradeViewSet,
+    TransactionLatestView,
     TransactionViewSet,
     UserProfilePhotoViewSet,
     UserProfileViewSet,
@@ -80,6 +81,7 @@ urlpatterns = [
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("check/email-password/",CheckEmailPassword.as_view(),name="check-email-password"),
     path("portfolio/",PortFolioView.as_view(),name="portfolio"),
+    path("investment-insight/transactions/latest",TransactionLatestView.as_view(),name="transaction-latest"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),
