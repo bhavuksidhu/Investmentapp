@@ -188,9 +188,9 @@ class Transaction(models.Model):
     )
     trading_symbol = models.CharField(max_length=20, default="")
     exchange = models.CharField(max_length=10, default="")
-    price = models.FloatField()
+    price = models.FloatField(null=True)
     quantity = models.IntegerField()
-    amount = models.FloatField()
+    amount = models.FloatField(null=True)
     transaction_type = models.CharField(
         max_length=5, choices=TRANSACTION_CHOICES, null=True
     )
