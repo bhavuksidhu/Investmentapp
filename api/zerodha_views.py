@@ -254,6 +254,9 @@ class PostBackView(APIView):
             transaction_obj.verified = True
             transaction_obj.status = "Completed"
             transaction_obj.zerodha_postback = data
-            transaction_obj.save()
-        
+        else:
+            transaction_obj.status = data.get("status","Cancelled").title()
+            transaction_obj.zerodha_postback = data
+        transaction_obj.save()
+
         return Response(data={"msg":"Done"}, status=200)
