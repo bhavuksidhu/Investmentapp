@@ -29,7 +29,7 @@ from api.serializers import (AboutUsSerializer, BasicUserSerializer,
                              MarketQuoteSerializer, NotificationSerializer,
                              PortfolioSerializer, PrivacyPolicySerializer,
                              RegisterUserSerializer, ResetPasswordSerializer,
-                             TermsNConditionsSerializer, TradeSerializer,
+                             TermsNConditionsSerializer, TradeSerializer, TransactionGroupedByDateSerializer,
                              TransactionSerializer, UploadedFileSerializer,
                              UserProfileSerializer, UserSettingSerializer,
                              UserSubscriptionHistorySerializer,
@@ -487,6 +487,28 @@ class TransactionViewSet(
 
     def get_queryset(self):
         return self.request.user.transactions.filter()
+    
+    @extend_schema(
+        responses=TransactionGroupedByDateSerializer
+    )
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            transactions = page
+        else:
+            transactions = queryset
+        grouped_by_date = {}
+        for transaction in transactions:
+            created_at = str(transaction.created_at.date())
+            if created_at in grouped_by_date:
+                grouped_by_date[created_at].append(transaction)
+            else:
+                grouped_by_date[created_at] = [transaction]
+        grouped_by_date = [{"date":key,"transactions":value} for key, value in grouped_by_date.items()]
+        serializer = TransactionGroupedByDateSerializer(data=grouped_by_date, many=True)
+        print(serializer.is_valid())
+        return self.get_paginated_response(serializer.data)
 
 class TransactionLatestView(
    APIView):
