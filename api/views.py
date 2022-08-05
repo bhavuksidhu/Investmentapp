@@ -101,7 +101,6 @@ class ResetPasswordView(APIView):
                             "status": status.HTTP_400_BAD_REQUEST,
                         }
                     )
-                user = request.user
                 user.set_password(request.data["new_password"])
                 user.save()
             else:
