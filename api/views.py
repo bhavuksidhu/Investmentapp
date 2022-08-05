@@ -102,7 +102,7 @@ class ResetPasswordView(APIView):
                         }
                     )
                 user = request.user
-                user.set_password = request.data["new_password"]
+                user.set_password(request.data["new_password"])
                 user.save()
             else:
                 return Response(
@@ -590,7 +590,7 @@ class PortFolioView(APIView):
                     transaction_data[symbol]["quantity"] = transaction.quantity
                     transaction_data[symbol]["purchased_value"] += transaction.amount
 
-        portfolio_list = [v for k, v in transaction_data.items()]
+        portfolio_list = [v for k, v in transaction_data.items() if v["quantity"] != 0]
         stocks_list = [k for k, v in transaction_data.items()]
         current_stocks_data = {
             x["trading_symbol"]: x
