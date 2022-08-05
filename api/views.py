@@ -591,7 +591,7 @@ class PortFolioView(APIView):
                     transaction_data[symbol]["purchased_value"] += transaction.amount
 
         portfolio_list = [v for k, v in transaction_data.items() if v["quantity"] != 0]
-        stocks_list = [k for k, v in transaction_data.items()]
+        stocks_list = [k for k, v in transaction_data.items() if v["quantity"] != 0]
         current_stocks_data = {
             x["trading_symbol"]: x
             for x in MarketQuote.objects.filter(trading_symbol__in=stocks_list).values(
