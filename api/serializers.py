@@ -1,12 +1,9 @@
-from operator import mod
-from pyexpat import model
 import re
 from mimetypes import guess_type
 
-from attr import fields
-
 from adminpanel.models import FAQ, ContactData, StaticData
 from core.models import (
+    EmailVerificationRecord,
     InvestmentInsight,
     MarketQuote,
     Notification,
@@ -15,10 +12,12 @@ from core.models import (
     User,
     UserProfile,
     UserSetting,
-    UserSubscriptionHistory,
     UserSubscription,
+    UserSubscriptionHistory,
     ZerodhaData,
 )
+from django.core.mail import send_mail
+from django.urls import reverse
 from drf_spectacular.utils import extend_schema_serializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
@@ -58,24 +57,41 @@ class UserSettingSerializer(serializers.ModelSerializer):
         model = UserSetting
         fields = ["notification_preference", "device_token", "device_type"]
 
+
 class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["email","is_email_verified","phone_number"]
-        read_only_fields = ["is_email_verified"]
-    
+        fields = ["email", "is_email_verified", "phone_number"]
+        read_only_fields = ["is_email_verified", "phone_number"]
+
     def update(self, instance, validated_data):
         old_email = instance.email
         new_email = validated_data["email"]
-        instance =  super().update(instance, validated_data)
+        instance = super().update(instance, validated_data)
+        request = self.context.get("request", None)
         if old_email != new_email:
             instance.is_email_verified = False
             instance.save()
+            email_verification: EmailVerificationRecord = (
+                EmailVerificationRecord.objects.create(user=request.user)
+            )
+            verification_url = (
+                request.build_absolute_uri("/")[:-1]
+                + reverse("api:email-verification")
+                + f"?uid={str(email_verification.uid)}"
+            )
+            send_mail(
+                "Email verification",
+                f"Please click the link to verification your Email {verification_url}",
+                "investthrift@gmail.com",
+                [instance.email],
+                fail_silently=True,
+            )
         return instance
-        
+
 
 @extend_schema_serializer(many=False)
-class UserProfileSerializer(WritableNestedModelSerializer,serializers.ModelSerializer):
+class UserProfileSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
     profile_photo = UploadedFileSerializer(allow_null=True, read_only=True)
 
     class Meta:
@@ -88,6 +104,13 @@ class UserProfileSerializer(WritableNestedModelSerializer,serializers.ModelSeria
             "gender",
             "pan_number",
             "address",
+        ]
+        read_only_fields = [
+            "first_name",
+            "last_name",
+            "date_of_birth",
+            "gender",
+            "pan_number",
         ]
 
     def create(self, validated_data):
@@ -109,26 +132,27 @@ class UserSettingSerializer(serializers.ModelSerializer):
             validated_data["user"] = request.user
         return super().create(validated_data)
 
+
 @extend_schema_serializer(many=False)
 class UserSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSubscription
         fields = ["active", "date_from", "date_to"]
 
+
 class UserSubscriptionHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSubscriptionHistory
-        fields = ["amount","transaction_id","payment_gateway","notes","created_at"]
-    
+        fields = ["amount", "transaction_id", "payment_gateway", "notes", "created_at"]
+
     def validate(self, attrs):
         validated_data = super().validate(attrs)
         if validated_data["amount"] < 0:
-            raise serializers.ValidationError(
-                "Amount needs to be positive!"
-            )
+            raise serializers.ValidationError("Amount needs to be positive!")
         subscription_id = self.context["request"].user.subscription.id
         validated_data["subscription_id"] = subscription_id
         return validated_data
+
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer()
@@ -143,31 +167,56 @@ class UserSerializer(serializers.ModelSerializer):
             "profile",
             "settings",
         ]
-        
+
+
 @extend_schema_serializer(many=False)
 class FundsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ZerodhaData
-        fields =["funds",]
+        fields = [
+            "funds",
+        ]
+
 
 class MarketQuoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarketQuote
-        fields = ["company_name","trading_symbol","price","exchange","change"]
+        fields = ["company_name", "trading_symbol", "price", "exchange", "change"]
+
 
 class TradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["trading_symbol","exchange","quantity","transaction_type","if_not_invest_then_what"]
+        fields = [
+            "trading_symbol",
+            "exchange",
+            "quantity",
+            "transaction_type",
+            "if_not_invest_then_what",
+        ]
+
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["id","trading_symbol","exchange","quantity","status","price","amount","transaction_type","if_not_invest_then_what","created_at"]
+        fields = [
+            "id",
+            "trading_symbol",
+            "exchange",
+            "quantity",
+            "status",
+            "price",
+            "amount",
+            "transaction_type",
+            "if_not_invest_then_what",
+            "created_at",
+        ]
+
 
 class TransactionGroupedByDateSerializer(serializers.Serializer):
     date = serializers.DateField()
     transactions = TransactionSerializer(many=True)
+
 
 class PortfolioTransactionSerializer(serializers.Serializer):
     trading_symbol = serializers.CharField()
@@ -176,25 +225,35 @@ class PortfolioTransactionSerializer(serializers.Serializer):
     purchased_value = serializers.FloatField()
     current_value = serializers.FloatField()
 
+
 class PortfolioSerializer(serializers.Serializer):
     portfolio_list = PortfolioTransactionSerializer(many=True)
     num_of_transactions = serializers.IntegerField()
     total_purchase_value = serializers.FloatField()
     total_current_value = serializers.FloatField()
 
+
 class JournalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["transaction_type","amount","status","if_not_invest_then_what","created_at"]
+        fields = [
+            "transaction_type",
+            "amount",
+            "status",
+            "if_not_invest_then_what",
+            "created_at",
+        ]
+
 
 class JournalGroupedByDateSerializer(serializers.Serializer):
     date = serializers.DateField()
     entries = JournalSerializer(many=True)
 
+
 class InsightSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvestmentInsight
-        fields = ["value","created_at"]
+        fields = ["value", "created_at"]
 
 
 class RegisterUserSerializer(
@@ -204,16 +263,14 @@ class RegisterUserSerializer(
 
     class Meta:
         model = User
-        fields = ["firebase_token","email", "phone_number","password", "profile"]
+        fields = ["firebase_token", "email", "phone_number", "password", "profile"]
 
     def validate(self, data):
         """
         Check that at least one of email or phone is present
         """
         if not data["password"]:
-            raise serializers.ValidationError(
-                "Password is required"
-            )
+            raise serializers.ValidationError("Password is required")
         if not data["phone_number"] or not data["email"]:
             raise serializers.ValidationError(
                 "You need to supply user's phone number or email"
@@ -323,12 +380,10 @@ class ResetPasswordSerializer(serializers.Serializer):
         max_length=20, allow_blank=True, required=False
     )
     email = serializers.CharField(max_length=255, allow_blank=True, required=False)
-    
+
     def validate(self, data):
-        if not "firebase_token" in  data:
-            raise serializers.ValidationError(
-                "You need to supply firebase_token"
-            )
+        if not "firebase_token" in data:
+            raise serializers.ValidationError("You need to supply firebase_token")
         if not "phone_number" in data and not "email" in data:
             raise serializers.ValidationError(
                 "You need to supply user's phone number or email"
