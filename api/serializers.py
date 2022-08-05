@@ -185,7 +185,11 @@ class PortfolioSerializer(serializers.Serializer):
 class JournalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ["transaction_type","amount","if_not_invest_then_what","created_at"]
+        fields = ["transaction_type","amount","status","if_not_invest_then_what","created_at"]
+
+class JournalGroupedByDateSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    entries = JournalSerializer(many=True)
 
 class InsightSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,17 +1,31 @@
 import datetime
 from datetime import timedelta
 
-from django.http import HttpResponse, HttpResponseNotFound
-
 from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
-from core.models import (EmailVerificationRecord, MarketQuote, Notification, Transaction, UploadedFile,
-                         User, UserProfile, UserSetting, UserSubscription,
-                         ZerodhaData)
+from core.models import (
+    EmailVerificationRecord,
+    MarketQuote,
+    Notification,
+    Transaction,
+    UploadedFile,
+    User,
+    UserProfile,
+    UserSetting,
+    UserSubscription,
+    ZerodhaData,
+)
+from django.core.mail import send_mail
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseNotFound
 from django.urls import reverse
 from django.utils import timezone
-from drf_spectacular.utils import (OpenApiParameter, extend_schema,
-                                   extend_schema_view, inline_serializer)
+from django.views.generic import View
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    extend_schema,
+    extend_schema_view,
+    inline_serializer,
+)
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -19,21 +33,33 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.views.generic import View
-from django.core.mail import send_mail
 
-from api.serializers import (AboutUsSerializer, BasicUserSerializer,
-                             ContactDataSerializer, FAQSerializer,
-                             FundsSerializer, InsightSerializer,
-                             JournalSerializer, LoginSerializer,
-                             MarketQuoteSerializer, NotificationSerializer,
-                             PortfolioSerializer, PrivacyPolicySerializer,
-                             RegisterUserSerializer, ResetPasswordSerializer,
-                             TermsNConditionsSerializer, TradeSerializer, TransactionGroupedByDateSerializer,
-                             TransactionSerializer, UploadedFileSerializer,
-                             UserProfileSerializer, UserSettingSerializer,
-                             UserSubscriptionHistorySerializer,
-                             UserSubscriptionSerializer)
+from api.serializers import (
+    AboutUsSerializer,
+    BasicUserSerializer,
+    ContactDataSerializer,
+    FAQSerializer,
+    FundsSerializer,
+    InsightSerializer,
+    JournalGroupedByDateSerializer,
+    JournalSerializer,
+    LoginSerializer,
+    MarketQuoteSerializer,
+    NotificationSerializer,
+    PortfolioSerializer,
+    PrivacyPolicySerializer,
+    RegisterUserSerializer,
+    ResetPasswordSerializer,
+    TermsNConditionsSerializer,
+    TradeSerializer,
+    TransactionGroupedByDateSerializer,
+    TransactionSerializer,
+    UploadedFileSerializer,
+    UserProfileSerializer,
+    UserSettingSerializer,
+    UserSubscriptionHistorySerializer,
+    UserSubscriptionSerializer,
+)
 from api.utils import NoDataException, StandardResultsSetPagination
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
@@ -487,31 +513,40 @@ class TransactionViewSet(
 
     def get_queryset(self):
         return self.request.user.transactions.filter()
-    
-    @extend_schema(
-        responses=TransactionGroupedByDateSerializer
-    )
+
+    @extend_schema(responses=TransactionGroupedByDateSerializer)
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            transactions = page
-        else:
-            transactions = queryset
+        transactions = self.paginate_queryset(queryset)
+
         grouped_by_date = {}
         for transaction in transactions:
             created_at = str(transaction.created_at.date())
             if created_at in grouped_by_date:
-                grouped_by_date[created_at].append(transaction)
+                grouped_by_date[created_at].append(transaction.__dict__)
             else:
-                grouped_by_date[created_at] = [transaction]
-        grouped_by_date = [{"date":key,"transactions":value} for key, value in grouped_by_date.items()]
-        serializer = TransactionGroupedByDateSerializer(data=grouped_by_date, many=True)
-        print(serializer.is_valid())
-        return self.get_paginated_response(serializer.data)
+                grouped_by_date[created_at] = [transaction.__dict__]
+        grouped_by_date = [
+            {"date": key, "transactions": value}
+            for key, value in grouped_by_date.items()
+        ]
 
-class TransactionLatestView(
-   APIView):
+        print(grouped_by_date)
+
+        serializer = TransactionGroupedByDateSerializer(data=grouped_by_date, many=True)
+        if serializer.is_valid():
+            return self.get_paginated_response(serializer.data)
+        else:
+            return Response(
+                {
+                    "errors": serializer.errors,
+                    "status": status.HTTP_400_BAD_REQUEST,
+                },
+                status.HTTP_400_BAD_REQUEST
+            )
+
+
+class TransactionLatestView(APIView):
     serializer_class = TransactionSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -544,8 +579,8 @@ class PortFolioView(APIView):
                 transaction_data[symbol] = {
                     "trading_symbol": symbol,
                     "exchange": transaction.exchange,
-                    "quantity" : 0,
-                    "purchased_value" : 0.0
+                    "quantity": 0,
+                    "purchased_value": 0.0,
                 }
 
                 if transaction.transaction_type == "SELL":
@@ -559,9 +594,9 @@ class PortFolioView(APIView):
         stocks_list = [k for k, v in transaction_data.items()]
         current_stocks_data = {
             x["trading_symbol"]: x
-            for x in MarketQuote.objects.filter(
-                trading_symbol__in=stocks_list
-            ).values("company_name", "price", "trading_symbol")
+            for x in MarketQuote.objects.filter(trading_symbol__in=stocks_list).values(
+                "company_name", "price", "trading_symbol"
+            )
         }
 
         for entry in portfolio_list:
@@ -584,15 +619,17 @@ class PortFolioView(APIView):
         print(s.is_valid())
         return Response(s.data)
 
-class JournalViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
-    serializer_class = JournalSerializer
+
+class JournalViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    pagination_class = StandardResultsSetPagination
+    serializer_class = JournalGroupedByDateSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         from_date = self.request.GET.get("from_date", None)
         to_date = self.request.GET.get("to_date", None)
-        query = self.request.user.transactions.filter(verified=True)
+        query = self.request.user.transactions.filter()
         if from_date:
             query = query.filter(created_at__date__gte=from_date)
         if to_date:
@@ -618,9 +655,32 @@ class JournalViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-        
-class InvestmentInsightViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
+        queryset = self.filter_queryset(self.get_queryset())
+        entries = self.paginate_queryset(queryset)
+        grouped_by_date = {}
+        for entry in entries:
+            created_at = str(entry.created_at.date())
+            if created_at in grouped_by_date:
+                grouped_by_date[created_at].append(entry.__dict__)
+            else:
+                grouped_by_date[created_at] = [entry.__dict__]
+        grouped_by_date = [
+            {"date": key, "entries": value}
+            for key, value in grouped_by_date.items()
+        ]
+        serializer = JournalGroupedByDateSerializer(data=grouped_by_date, many=True)
+        if serializer.is_valid():
+            return self.get_paginated_response(serializer.data)
+        else:
+            return Response(
+                {
+                    "errors": serializer.errors,
+                    "status": status.HTTP_400_BAD_REQUEST,
+                }
+            )
+
+
+class InvestmentInsightViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = InsightSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -655,6 +715,7 @@ class InvestmentInsightViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
 
 class TradeViewSet(
     mixins.CreateModelMixin,
@@ -743,8 +804,8 @@ class CheckEmailPassword(APIView):
             status=status.HTTP_200_OK,
         )
 
+
 class VerifyEmailView(View):
-    
     def get(self, request, *args, **kwargs):
         uid = request.GET.get("uid", None)
         if uid:
@@ -760,6 +821,7 @@ class VerifyEmailView(View):
         else:
             return HttpResponseNotFound("Invalid URL")
 
+
 class SendVerififcationEmailView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -769,21 +831,24 @@ class SendVerififcationEmailView(APIView):
             name="verify_email_response",
             fields={
                 "errors": serializers.CharField(),
-                "status": serializers.IntegerField()
+                "status": serializers.IntegerField(),
             },
         ),
     )
     def get(self, request, *args, **kwargs):
         if request.user.is_email_verified:
-            return Response({
-                "errors": "Email already verified.",
-                "status": status.HTTP_400_BAD_REQUEST,
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+            return Response(
+                {
+                    "errors": "Email already verified.",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
-            email_verification: EmailVerificationRecord = EmailVerificationRecord.objects.create(user=request.user)
+            email_verification: EmailVerificationRecord = (
+                EmailVerificationRecord.objects.create(user=request.user)
+            )
             verification_url = (
                 request.build_absolute_uri("/")[:-1]
                 + reverse("api:email-verification")
@@ -798,17 +863,19 @@ class SendVerififcationEmailView(APIView):
                 fail_silently=False,
             )
 
-            return Response({
-                "errors": None,
-                "status": status.HTTP_200_OK,
-            },
-            status=status.HTTP_200_OK,
-        )
+            return Response(
+                {
+                    "errors": None,
+                    "status": status.HTTP_200_OK,
+                },
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             email_verification.delete()
-            return Response({
-                "errors": f"{e}",
-                "status": status.HTTP_400_BAD_REQUEST,
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+            return Response(
+                {
+                    "errors": f"{e}",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )

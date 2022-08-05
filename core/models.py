@@ -196,7 +196,7 @@ class Transaction(models.Model):
         max_length=5, choices=TRANSACTION_CHOICES, null=True
     )
     order_type = models.TextField(default="MARKET")
-    if_not_invest_then_what = models.TextField(default="")
+    if_not_invest_then_what = models.TextField(default="",null=True,blank=True)
     verified = models.BooleanField(default=False)
     status = models.TextField(default="Pending")
     executed = models.BooleanField(
