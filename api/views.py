@@ -608,6 +608,9 @@ class PortFolioView(APIView):
         total_purchase_value = sum([x["purchased_value"] for x in portfolio_list])
         total_current_value = sum(x["current_value"] for x in portfolio_list)
 
+        for entry in portfolio_list:
+            entry["percentage"] = entry["current_value"] / total_current_value * 100
+
         data = {
             "num_of_transactions": num_of_transactions,
             "total_purchase_value": total_purchase_value,

@@ -245,6 +245,7 @@ class PortfolioTransactionSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     purchased_value = serializers.FloatField()
     current_value = serializers.FloatField()
+    percentage = serializers.FloatField()
 
 
 class PortfolioSerializer(serializers.Serializer):
