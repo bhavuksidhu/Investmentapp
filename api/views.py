@@ -55,6 +55,7 @@ from api.serializers import (
     TransactionGroupedByDateSerializer,
     TransactionSerializer,
     UploadedFileSerializer,
+    UserProfileRegisterSerializer,
     UserProfileSerializer,
     UserSettingSerializer,
     UserSubscriptionHistorySerializer,
@@ -136,7 +137,7 @@ class RegisterView(APIView):
                 "phone_number": serializers.CharField(max_length=20),
                 "email": serializers.EmailField(allow_blank=True),
                 "password": serializers.CharField(max_length=20),
-                "profile": UserProfileSerializer(),
+                "profile": UserProfileRegisterSerializer(),
             },
         ),
         responses=inline_serializer(
