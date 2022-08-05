@@ -119,6 +119,27 @@ class UserProfileSerializer(WritableNestedModelSerializer, serializers.ModelSeri
             validated_data["user"] = request.user
         return super().create(validated_data)
 
+@extend_schema_serializer(many=False)
+class UserProfileRegisterSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
+    profile_photo = UploadedFileSerializer(allow_null=True, read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            "profile_photo",
+            "first_name",
+            "last_name",
+            "date_of_birth",
+            "gender",
+            "pan_number",
+            "address",
+        ]
+
+    def create(self, validated_data):
+        request = self.context.get("request", None)
+        if request:
+            validated_data["user"] = request.user
+        return super().create(validated_data)
 
 @extend_schema_serializer(many=False)
 class UserSettingSerializer(serializers.ModelSerializer):
@@ -259,7 +280,7 @@ class InsightSerializer(serializers.ModelSerializer):
 class RegisterUserSerializer(
     WritableNestedModelSerializer, serializers.ModelSerializer
 ):
-    profile = UserProfileSerializer()
+    profile = UserProfileRegisterSerializer()
 
     class Meta:
         model = User
