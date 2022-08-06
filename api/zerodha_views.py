@@ -2,7 +2,6 @@ import json
 import urllib.parse
 
 import requests
-from black import err
 from core.models import Transaction, User, ZerodhaData
 from django.conf import settings
 from django.http import HttpResponseNotFound
