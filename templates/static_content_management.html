@@ -6,6 +6,7 @@
             <div class="TitleBox">
                 <h4>Static Content Management</h4>
             </div>
+            {% include "fragments/messages.html" %}
             <div class="StaticBoxArea">
                 <div id="accordion">
                     <div class="card">
@@ -33,7 +34,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Mobile Number</label>
-                                            <input type="text"
+                                            <input type="number"
                                                    id="contact_number"
                                                    class="form-control"
                                                    placeholder=" Enter Mobile Number"
@@ -104,7 +105,7 @@
                             <a class="collapsed card-link" data-toggle="collapse" href="#collapse5">
                                 <h4>FAQs</h4>
                                 <span>
-                                    <i class="fa fa-plus"></i>
+                                    <i class="fa fa-pencil"></i>
                                 </span>
                             </a>
                         </div>

@@ -6,307 +6,308 @@
             <div class="TitleBox">
                 <h4>Customer Details</h4>
                 <div class="BackPage">
-                    <a href="customer-management.html"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
+                    <a href="{% url "adminpanel:customer-management" %}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
                 </div>
             </div>
             <div class="CommonTabs">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#Personal">Personal Information</a>
+                        <a class="nav-link {% if active_tab == 'personal' %}active{% endif %}"
+                           data-toggle="tab"
+                           href="#Personal">Personal Information</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#Linked">Investment Insight</a>
+                        <a class="nav-link {% if active_tab == 'insight' %}active{% endif %}"
+                           data-toggle="tab"
+                           href="#insight">Investment Insight</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#Monitoring">Journal Insight</a>
+                        <a class="nav-link {% if active_tab == 'journal' %}active{% endif %}"
+                           data-toggle="tab"
+                           href="#journal">Journal Insight</a>
                     </li>
                 </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="Personal">
-                        <div class="CustomerBox">
-                            <h6 class="Register">
-                                <span>Registered on {{user.created_at}}</span>
-                            </h6>
-                            <div class="CustomerHead">
-                                <figure>
-                                    <img src="{{user.profile.profile_photo.url}}">
-                                </figure>
-                                <figcaption>
-                                    <div class="MainHeading">
-                                        <h4>
-                                            <span class="Strong">Customer Id :</span> <samp> {{user.id}}</samp> <a href={% url "adminpanel:customer-edit" user.id %}><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                                        </h4>
-                                        <div class="MainActions">
-                                            <p>
-                                                Status : <span>{% if user.is_active %} Active {% else %} In-Active {% endif %}</span>
-                                            </p>
-
-                                            {% comment %} <label class="Switch">
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane {% if active_tab == 'personal' %}active{% else %}fade{% endif %}"
+                     id="Personal">
+                    <div class="CustomerBox">
+                        <h6 class="Register">
+                            <span>Registered on {{ user.created_at }}</span>
+                        </h6>
+                        <div class="CustomerHead">
+                            <figure>
+                                <img src="{{ user.profile.profile_photo.url }}">
+                            </figure>
+                            <figcaption>
+                                <div class="MainHeading">
+                                    <h4>
+                                        <span class="Strong">Customer Id :</span> <samp> {{ user.id }}</samp> <a href={% url "adminpanel:customer-edit" user.id %}><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                    </h4>
+                                    <div class="MainActions">
+                                        <p>
+                                            Status : <span>
+                                            {% if user.is_active %}
+                                                Active
+                                            {% else %}
+                                                In-Active
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                    {% comment %} <label class="Switch">
                                                 <input type="checkbox" checked="">
                                                 <span class="slider"></span>
-                                            </label> {% endcomment %}
-
-                                        </div>
-                                    </div>
-                                    <h4>
-                                        <span class="Strong">Name :</span> <samp>{{user.profile.first_name}} {{user.profile.last_name}}</samp>
-                                    </h4>
-                                    <article>
-                                        <aside>
-                                            <h6>Details :</h6>
-                                            <p>
-                                                <span>Email Address :</span> {{user.email}}
-                                            </p>
-                                            <p>
-                                                <span>Mobile Number :</span> {{user.phone_number}}
-                                            </p>
-                                            <p>
-                                                <span>Gender :</span> {{user.profile.gender}}
-                                            </p>
-                                            <p>
-                                                <span>Age :</span> {{user.profile.age}}
-                                            </p>
-                                            <p>
-                                                <span>Date of Birth :</span> {{user.profile.date_of_birth}}
-                                            </p>
-                                            <p>
-                                                <span>PAN Number :</span> {{user.profile.pan_number}}
-                                            </p>
-                                            <p>
-                                                <span>Address :</span> {{user.profile.address}}
-                                            </p>
-                                        </aside>
-                                    </article>
-                                </figcaption>
+                                    </label> {% endcomment %}
+                                </div>
                             </div>
-                        </div>
+                            <h4>
+                                <span class="Strong">Name :</span> <samp>{{ user.profile.first_name }} {{ user.profile.last_name }}</samp>
+                            </h4>
+                            <article>
+                                <aside>
+                                    <h6>Details :</h6>
+                                    <p>
+                                        <span>Email Address :</span> {{ user.email }}
+                                    </p>
+                                    <p>
+                                        <span>Mobile Number :</span> {{ user.phone_number }}
+                                    </p>
+                                    <p>
+                                        <span>Gender :</span> {{ user.profile.gender }}
+                                    </p>
+                                    <p>
+                                        <span>Age :</span> {{ user.profile.age }}
+                                    </p>
+                                    <p>
+                                        <span>Date of Birth :</span> {{ user.profile.date_of_birth }}
+                                    </p>
+                                    <p>
+                                        <span>PAN Number :</span> {{ user.profile.pan_number }}
+                                    </p>
+                                    <p>
+                                        <span>Address :</span> {{ user.profile.address }}
+                                    </p>
+                                </aside>
+                            </article>
+                        </figcaption>
                     </div>
-                    <div class="tab-pane fade" id="Linked">
-                        <div class="CustomerBox">
-                            <div class="Filter">
-                                <div class="form-group">
-                                    <label>Search</label>
-                                    <input type="text" class="form-control" placeholder="Search">
-                                </div>
-                                <div class="form-group">
-                                    <label>From</label>
-                                    <input type="date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>To</label>
-                                    <input type="date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button>Apply</button>
-                                </div>
+                </div>
+            </div>
+            <div class="tab-pane {% if active_tab == 'insight' %}active{% else %}fade{% endif %}"
+                 id="insight">
+                <div class="CustomerBox">
+                    <div class="Filter">
+                        <form action
+                              {% url "adminpanel:customer-detail" user.id %}
+                              method="GET"
+                              style="display:flex"
+                              id="invest_form">
+                            <div class="form-group">
+                                <label>Search</label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Search"
+                                       value="{{q}}"
+                                       name="q">
                             </div>
-                            <div class="TableList">
-                                <table style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>S.No</th>
-                                            <th>Order  Id</th>
-                                            <th>Date of Purchase</th>
-                                            <th>
-                                                Stock Name
-                                            </th>
-                                            <th>
-                                                Purchased Quantity
-                                            </th>
-                                            <th>
-                                                Price Per stock
-                                            </th>
-                                            <th>
-                                                Admin's Commission
-                                            </th>
-                                            <th>
-                                                Total Amount
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                1
-                                            </td>
-                                            <td>
-                                                ORD123
-                                            </td>
-                                            <td>
-                                                22-Oct-2022
-                                            </td>
-                                            <td>
-                                                Stock-1
-                                            </td>
-                                            <td>
-                                                06
-                                            </td>
-                                            <td>
-                                                200 INR
-                                            </td>
-                                            <td>
-                                                200 INR
-                                            </td>
-                                            <td>
-                                                400 INR
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                2
-                                            </td>
-                                            <td>
-                                                ORD123
-                                            </td>
-                                            <td>
-                                                22-Oct-2022
-                                            </td>
-                                            <td>
-                                                Stock-1
-                                            </td>
-                                            <td>
-                                                06
-                                            </td>
-                                            <td>
-                                                200 INR
-                                            </td>
-                                            <td>
-                                                200 INR
-                                            </td>
-                                            <td>
-                                                400 INR
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                3
-                                            </td>
-                                            <td>
-                                                ORD123
-                                            </td>
-                                            <td>
-                                                22-Oct-2022
-                                            </td>
-                                            <td>
-                                                Stock-1
-                                            </td>
-                                            <td>
-                                                06
-                                            </td>
-                                            <td>
-                                                200 INR
-                                            </td>
-                                            <td>
-                                                200 INR
-                                            </td>
-                                            <td>
-                                                400 INR
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div class="form-group">
+                                <label>From</label>
+                                <input type="date"
+                                       class="form-control"
+                                       value="{{ transaction_from_date }}"
+                                       max="{{ today_date }}"
+                                       name="transaction_from_date">
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <label>To</label>
+                                <input type="date"
+                                       class="form-control"
+                                       value="{{ transaction_to_date }}"
+                                       max="{{ today_date }}"
+                                       name="transaction_to_date">
+                            </div>
+                            <input type="hidden" id="insight_active" name="active_tab" value="insight">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="submit">Apply</button>
+                                <button type="button" class="Reset" id="invest_reset_button">
+                                    <i class="fa fa-refresh"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="tab-pane fade" id="Monitoring">
-                        <div class="CustomerBox">
-                            <div class="Filter">
-                                <div class="form-group">
-                                    <label>
-                                        Search
-                                    </label>
-                                    <input type="text" class="form-control" placeholder="Search">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        From
-                                    </label>
-                                    <input type="date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        To
-                                    </label>
-                                    <input type="date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        &nbsp;
-                                    </label>
-                                    <button>
-                                        Apply
-                                    </button>
-                                </div>
+                    <div class="TableList">
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Order  Id</th>
+                                    <th>Date of Purchase</th>
+                                    <th>Stock Name</th>
+                                    <th>Purchased Quantity</th>
+                                    <th>
+                                        Price Per stock
+                                    </th>
+                                    <th>
+                                        Type
+                                    </th>
+                                    <th>
+                                        Total Amount
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                    <tr>
+                                        <td>
+                                            {{ forloop.counter }}
+                                        </td>
+                                        <td>
+                                            ORD{{ transaction.id }}
+                                        </td>
+                                        <td>
+                                            {{ transaction.created_at }}
+                                        </td>
+                                        <td>
+                                            {{ transaction.trading_symbol }}
+                                        </td>
+                                        <td>
+                                            {{ transaction.quantity }}
+                                        </td>
+                                        <td>
+                                            {{ transaction.price|floatformat:2  }}
+                                        </td>
+                                        <td>
+                                            {{ transaction.transaction_type }}
+                                        </td>
+                                        <td>
+                                            {{ transaction.amount|floatformat:2  }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane {% if active_tab == 'journal' %}active{% else %}fade{% endif %}"
+                 id="journal">
+                <div class="CustomerBox">
+                    <div class="Filter">
+                        <form action
+                              {% url "adminpanel:customer-detail" user.id %}
+                              method="GET"
+                              style="display:flex"
+                              id="journal_form">
+                            <div class="form-group">
+                                <label>
+                                    From
+                                </label>
+                                <input type="date"
+                                       class="form-control"
+                                       value="{{ journal_from_date }}"
+                                       max="{{ today_date }}"
+                                       name="journal_from_date">
                             </div>
-                            <div class="TableList">
-                                <table style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                S.No
-                                            </th>
-                                            <th>
-                                                Date of Invest
-                                            </th>
-                                            <th>
-                                                Amount Invested
-                                            </th>
-                                            <th>
-                                                You have invested rather than spending on
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                1
-                                            </td>
-                                            <td>
-                                                22-Oct-2022
-                                            </td>
-                                            <td>
-                                                Stock-1
-                                            </td>
-                                            <td>
-                                                PIZZA
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                1
-                                            </td>
-                                            <td>
-                                                22-Oct-2022
-                                            </td>
-                                            <td>
-                                                Stock-1
-                                            </td>
-                                            <td>
-                                                PIZZA
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                1
-                                            </td>
-                                            <td>
-                                                22-Oct-2022
-                                            </td>
-                                            <td>
-                                                Stock-1
-                                            </td>
-                                            <td>
-                                                PIZZA
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div class="form-group">
+                                <label>
+                                    To
+                                </label>
+                                <input type="date"
+                                       class="form-control"
+                                       value="{{ journal_to_date }}"
+                                       max="{{ today_date }}"
+                                       name="journal_to_date">
                             </div>
-                        </div>
+                            <input type="hidden" id="journal_active" name="active_tab" value="journal">
+                            <div class="form-group">
+                                <label>
+                                    &nbsp;
+                                </label>
+                                <button type="submit">
+                                    Apply
+                                </button>
+                                <button type="button" class="Reset" id="journal_reset_button">
+                                    <i class="fa fa-refresh"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="TableList">
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        S.No
+                                    </th>
+                                    <th>
+                                        Date of Invest
+                                    </th>
+                                    <th>
+                                        Amount Invested
+                                    </th>
+                                    <th>
+                                        You have invested rather than spending on
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in journal %}
+                                    <tr>
+                                        <td>
+                                            {{ forloop.counter }}
+                                        </td>
+                                        <td>
+                                            {{ entry.created_at }}
+                                        </td>
+                                        <td>
+                                            {{ entry.amount }}
+                                        </td>
+                                        <td>
+                                            {{ entry.if_not_invest_then_what }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<script>
+    $('input[type="date"]').on("change", function (e) {
+        let transaction_from_date = Date.parse(document.querySelector('input[name="transaction_from_date"]').value)
+        let transaction_to_date = Date.parse(document.querySelector('input[name="transaction_to_date"]').value)
+
+        let journal_from_date = Date.parse(document.querySelector('input[name="journal_from_date"]').value)
+        let journal_to_date = Date.parse(document.querySelector('input[name="journal_to_date"]').value)
+
+        if (transaction_to_date < transaction_from_date){
+            document.querySelector('input[name="transaction_to_date"]').value = ""
+        }
+
+        if (journal_to_date < journal_from_date){
+            document.querySelector('input[name="journal_to_date"]').value = ""
+        }
+
+    });
+</script>
+<script>
+    $('#invest_reset_button').on("click", function (e) {
+        let inputs = document.querySelectorAll("#invest_form input")
+        for(i=0;i<inputs.length;i++){
+            inputs[i].value = ""
+        }
+        document.querySelector("#insight_active").value="insight"
+    });
+    $('#journal_reset_button').on("click", function (e) {
+        let inputs = document.querySelectorAll("#journal_form input")
+        for(i=0;i<inputs.length;i++){
+            inputs[i].value = ""
+        }
+        document.querySelector("#journal_active").value="journal"
+    });
+</script>
 {% endblock %}

@@ -13,8 +13,8 @@
                             <input type="text"
                                    placeholder="Enter Customer ID/Name/Email/Phone Number"
                                    id="search_value" name="q" style="min-width:400px" {% if q %} value={{q}} {% endif %}>
-                            <button id="search">Search</button>
-                            <button class="Reset">
+                            <button id="search" type="submit">Search</button>
+                            <button class="Reset" onclick="document.querySelector('#search_value').value=''">
                                 <i class="fa fa-refresh"></i>
                             </button>
                         </form>

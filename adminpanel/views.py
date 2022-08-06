@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from core.models import (
     Stock,
+    Transaction,
     User,
     UserProfile,
     UserSubscription,
@@ -12,7 +13,9 @@ from core.models import (
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import validate_email
 from django.db.models import Q, Sum
 from django.http import FileResponse, HttpResponseNotFound, JsonResponse
 from django.shortcuts import redirect, render
@@ -151,7 +154,7 @@ class PasswordResetView(View):
         return redirect("adminpanel:login")
 
 
-class DashboardView(View):
+class DashboardView(LoginRequiredMixin, View):
     template = "dashboard.html"
 
     def get(self, request, *args, **kwargs):
@@ -168,7 +171,7 @@ class DashboardView(View):
         to_date = request.GET.get("to_date", None)
 
         from_period = request.GET.get("from_period", None)
-        
+
         if from_date or to_date:
             if from_date:
                 user_query = user_query.filter(created_at__date__gte=from_date)
@@ -211,7 +214,7 @@ class DashboardView(View):
         context["from_period"] = from_period
         context["from_date"] = from_date
         context["to_date"] = to_date
-        context["today_date"] = datetime.today().strftime('%Y-%m-%d')
+        context["today_date"] = datetime.today().strftime("%Y-%m-%d")
         context["header"] = header
 
         return render(
@@ -221,7 +224,7 @@ class DashboardView(View):
         )
 
 
-class CustomerManagementView(ListView):
+class CustomerManagementView(LoginRequiredMixin, ListView):
     template_name = "customer_management.html"
     model = User
     context_object_name = "user_list"
@@ -233,7 +236,7 @@ class CustomerManagementView(ListView):
             q = q.strip()
             if "CU" in q:
                 try:
-                    user_id = int(q.replace("CU",""))
+                    user_id = int(q.replace("CU", ""))
                 except:
                     user_id = None
             else:
@@ -286,24 +289,83 @@ class CustomerManagementView(ListView):
         return JsonResponse({"message": "OK"})
 
 
-class CustomerDetailView(DetailView):
+class CustomerDetailView(LoginRequiredMixin, View):
     template_name = "customer_detail.html"
     mode = User
-    context_object_name = "user"
 
-    def get_queryset(self):
-        return User.objects.select_related("profile").filter(id=self.kwargs.get("pk"))
+    def get_data(self):
+        q = self.request.GET.get("q", None)
+        user =  User.objects.select_related("profile").get(id=self.kwargs.get("pk"))
+
+        base_transaction_query = user.transactions.filter(
+            verified=True
+        )
+
+        #Transactions Section
+        transactions_query = base_transaction_query
+        transaction_from_date = self.request.GET.get("transaction_from_date", None)
+        transaction_to_date = self.request.GET.get("transaction_to_date", None)
+        if transaction_from_date:
+            transactions_query = transactions_query.filter(created_at__date__gte=transaction_from_date)
+        if transaction_to_date:
+            transactions_query = transactions_query.filter(created_at__date__lte=transaction_to_date)
+
+        if q:
+            q = q.strip().lower()
+            if "ord" in q:
+                try:
+                    transaction_id = int(q.replace("ord", ""))
+                    transactions_query = transactions_query.filter(id=transaction_id)
+                except:
+                    pass
+        
+        #Journal Section
+        journals_query = base_transaction_query.filter(transaction_type="BUY")
+        journal_from_date = self.request.GET.get("journal_from_date", None)
+        journal_to_date = self.request.GET.get("journal_to_date", None)
+        if journal_from_date:
+            journals_query = journals_query.filter(created_at__date__gte=journal_from_date)
+        if journal_to_date:
+            journals_query = journals_query.filter(created_at__date__lte=journal_to_date)
+        
+        transactions = transactions_query
+        journal = journals_query
+
+        return {"user": user,"transactions":transactions,"journal":journal}
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = {}
 
-        from_date = self.request.GET.get("from_date", None)
-        to_date = self.request.GET.get("to_date", None)
+        transaction_from_date = self.request.GET.get("transaction_from_date", None)
+        transaction_to_date = self.request.GET.get("transaction_to_date", None)
+        journal_from_date = self.request.GET.get("journal_from_date", None)
+        journal_to_date = self.request.GET.get("journal_to_date", None)
 
-        context["from_date"] = from_date
-        context["to_date"] = to_date
+        active_tab = self.request.GET.get("active_tab","personal")
+        q = self.request.GET.get("q", None)
+
+        context["q"] = q
+        context["transaction_from_date"] = transaction_from_date
+        context["transaction_to_date"] = transaction_to_date
+        context["journal_from_date"] = journal_from_date
+        context["journal_to_date"] = journal_to_date
+        context["active_tab"] = active_tab
+        context["today_date"] = datetime.today().strftime("%Y-%m-%d")
 
         return context
+
+    def get(self, request, *args, **kwagrs):
+        data = self.get_data()
+        context = self.get_context_data(**kwagrs)
+        context["user"] = data["user"]
+        context["transactions"] = data["transactions"]
+        context["journal"] = data["journal"]
+
+        return render(
+            request,
+            self.template_name,
+            context=context
+        )
 
 
 class CustomerEditView(DetailView):
@@ -369,14 +431,48 @@ class CustomerEditView(DetailView):
         return redirect("adminpanel:customer-edit", self.kwargs.get("pk"))
 
 
-class InvestingReportView(View):
-    template = "investing_reports.html"
+class InvestingReportView(LoginRequiredMixin, ListView):
+    template_name = "investing_reports.html"
+    model = Transaction
+    context_object_name = "transaction_list"
+    paginate_by = 5
 
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template)
+    def get_queryset(self):
+        q = self.request.GET.get("q", None)
+
+        from_date = self.request.GET.get("from_date", None)
+        to_date = self.request.GET.get("to_date", None)
+
+        query = Transaction.objects.select_related("user__profile").filter(
+            verified=True
+        )
+
+        if from_date:
+            query = query.filter(created_at__date__gte=from_date)
+        if to_date:
+            query = query.filter(created_at__date__lte=to_date)
+
+        if q:
+            q = q.strip().lower()
+            if "ord" in q:
+                try:
+                    transaction_id = int(q.replace("ord", ""))
+                    query = query.filter(id=transaction_id)
+                except:
+                    pass
+
+        return query
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        context["from_date"] = self.request.GET.get("from_date", None)
+        context["to_date"] = self.request.GET.get("to_date", None)
+        context["today_date"] = datetime.today().strftime("%Y-%m-%d")
+        return context
 
 
-class SubscriptionManagementView(ListView):
+class SubscriptionManagementView(LoginRequiredMixin, ListView):
     template_name = "subscription_management.html"
     model = UserSubscription
     context_object_name = "subscriptions"
@@ -392,7 +488,7 @@ class SubscriptionManagementView(ListView):
 
         if from_date:
             query = query.filter(date_from__gte=from_date)
-        elif to_date:
+        if to_date:
             query = query.filter(date_to__lte=to_date)
 
         if q:
@@ -409,11 +505,11 @@ class SubscriptionManagementView(ListView):
         context["q"] = self.request.GET.get("q", "")
         context["from_date"] = self.request.GET.get("from_date", None)
         context["to_date"] = self.request.GET.get("to_date", None)
-        context["today_date"] = datetime.today().strftime('%Y-%m-%d')
+        context["today_date"] = datetime.today().strftime("%Y-%m-%d")
         return context
 
 
-class StockManagementView(ListView):
+class StockManagementView(LoginRequiredMixin, ListView):
     template_name = "stock_management.html"
     model = Stock
     context_object_name = "stocks"
@@ -423,6 +519,7 @@ class StockManagementView(ListView):
         q = self.request.GET.get("q", None)
         query = Stock.objects.all()
         if q:
+            q = q.strip()
             query = query.filter(Q(symbol__icontains=q))
         return query
 
@@ -432,16 +529,19 @@ class StockManagementView(ListView):
         return context
 
 
-class StockUploadView(View):
+class StockUploadView(LoginRequiredMixin, View):
     template_name = "stock_upload.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
+
+        if not request.FILES.get("stock_file"):
+            messages.add_message(request, messages.ERROR, "No file was uploaded!")
+            return redirect("adminpanel:stock-upload")
+
         df = pd.read_excel(request.FILES.get("stock_file"))
-        print(df)
-        print(df["exchange"].isnull().values.any())
         if df["exchange"].isnull().values.any() or df["symbol"].isnull().values.any():
             messages.add_message(
                 request, messages.ERROR, "Exchance & Symbol columns can't be empty!"
@@ -453,12 +553,12 @@ class StockUploadView(View):
         return redirect("adminpanel:stock-management")
 
 
-class StockUploadTemplateView(View):
+class StockUploadTemplateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwagrs):
         return FileResponse(open("stocks_template.xlsx", "rb"))
 
 
-class StaticContentManagementView(View):
+class StaticContentManagementView(LoginRequiredMixin, View):
     template = "static_content_management.html"
 
     def get(self, request, *args, **kwargs):
@@ -481,7 +581,25 @@ class StaticContentManagementView(View):
 
         if contact_data:
             contact_data = json.loads(contact_data)
-            contact_data_obj.company_email = contact_data["contact_email"]
+
+            try:
+                validate_email(contact_data["contact_email"])
+            except ValidationError:
+                messages.add_message(request, messages.ERROR, "Invalid email")
+                return JsonResponse({"message": "OK"})
+
+            if (
+                len(contact_data["contact_number"]) > 13
+                or len(contact_data["contact_number"]) < 8
+            ):
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Invalid phone number (Must be between 8-13 characters)",
+                )
+                return JsonResponse({"message": "OK"})
+
+            contact_data_obj.company_email = contact_data["contact_email"].lower()
             contact_data_obj.company_number = contact_data["contact_number"]
             contact_data_obj.company_address = contact_data["contact_address"]
 
@@ -507,7 +625,7 @@ class StaticContentManagementView(View):
         return JsonResponse({"message": "OK"})
 
 
-class SettingsView(View):
+class SettingsView(LoginRequiredMixin, View):
     template = "settings.html"
 
     def get(self, request, *args, **kwargs):
@@ -539,7 +657,7 @@ class SettingsView(View):
         return render(request, self.template)
 
 
-class NotificationsView(ListView):
+class NotificationsView(LoginRequiredMixin, ListView):
     template_name = "notifications.html"
     model = AdminNotification
     context_object_name = "notification_list"

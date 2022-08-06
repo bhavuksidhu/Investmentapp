@@ -172,3 +172,5 @@ EMAIL_HOST_PASSWORD = GMAIL_CREDS["app_password"]
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'
+
+LOGIN_URL = '/adminpanel/login/'

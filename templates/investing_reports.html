@@ -1,120 +1,138 @@
 {% extends "logged_in_base.html" %}
 {% block title %}Investing Reports{% endblock %}
 {% block content %}
-<div class="WrapperArea">
-    <div class="WrapperBox">
-
-        <div class="TitleBox">
-            <h4>Investing Reports</h4>
-           
-        </div>
-        <div class="InnerBox">
-            <div class="Filter">
-                <div class="form-group">
-                    <label>Search</label>
-                    <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <div class="form-group">
-                    <label>From</label>
-                    <input type="date" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>To</label>
-                    <input type="date" class="form-control">
-                </div>
-              
-                <div class="form-group">
-                    <label>&nbsp;</label>
-                    <button>Apply</button>
-                   
-                </div>
-            
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Investing Reports</h4>
             </div>
-            <div class="TableList">
-                <table style="width: 120%;">
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
-                            <th>Order  Id</th>
-                            <th>Customer  Id</th>
-                            <th>Customer  Name</th>
-                            <th>Date of Purchase</th>
-                            <th>Stock Name</th>
-                            <th>Purchased Quantity</th>
-                            <th>Price Per stock</th>
-                            <th>Applicable Taxes</th>
-                            <th>Total Amount</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>ORD123</td>
-                            <td>USR011</td>
-                            <td>Simmi</td>
-                            <td>22-Oct-2022</td>
-                            <td>Stock-1</td>
-                            <td>06</td>
-                            <td>200 INR</td>
-                            <td>200 INR</td>
-                            <td>400 INR</td>
-                         
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>ORD123</td>
-                            <td>USR011</td>
-                            <td>Simmi</td>
-                            <td>22-Oct-2022</td>
-                            <td>Stock-1</td>
-                            <td>06</td>
-                            <td>200 INR</td>
-                            <td>200 INR</td>
-                            <td>400 INR</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>ORD123</td>
-                            <td>USR011</td>
-                            <td>Simmi</td>
-                            <td>22-Oct-2022</td>
-                            <td>Stock-1</td>
-                            <td>06</td>
-                            <td>200 INR</td>
-                            <td>200 INR</td>
-                            <td>400 INR</td>
-                        </tr>
-
-
-                    </tbody>
-                </table>
+            <div class="InnerBox">
+                <div class="Filter">
+                    <form action = {% url "adminpanel:investing-reports" %}
+                          method="GET"
+                          style="display:flex"
+                          id="search_form">
+                        <div class="form-group">
+                            <label>Search</label>
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Search"
+                                   value="{{q}}"
+                                   name="q">
+                        </div>
+                        <div class="form-group">
+                            <label>From</label>
+                            <input type="date"
+                                   class="form-control"
+                                   value="{{ from_date }}"
+                                   max="{{ today_date }}"
+                                   name="from_date">
+                        </div>
+                        <div class="form-group">
+                            <label>To</label>
+                            <input type="date"
+                                   class="form-control"
+                                   value="{{ to_date }}"
+                                   max="{{ today_date }}"
+                                   name="to_date">
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit">Apply</button>
+                            <button type="button" class="Reset" id="reset_button">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="TableList">
+                    <table style="width: 120%;">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Order  Id</th>
+                                <th>Customer  Id</th>
+                                <th>Customer  Name</th>
+                                <th>Date of Purchase</th>
+                                <th>Stock Name</th>
+                                <th>Quantity</th>
+                                <th>Price Per stock</th>
+                                <th>Type</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transaction_list %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>ORD{{ transaction.id }}</td>
+                                    <td>CU{{ transaction.user.id }}</td>
+                                    <td>{{ transaction.user.profile.first_name }} {{ transaction.user.profile.last_name }}</td>
+                                    <td>{{ transaction.created_at }}</td>
+                                    <td>{{ transaction.trading_symbol }}</td>
+                                    <td>{{ transaction.quantity }}</td>
+                                    <td>{{ transaction.price|floatformat:2  }}</td>
+                                    <td>{{ transaction.transaction_type }}</td>
+                                    <td>{{ transaction.amount|floatformat:2  }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if is_paginated %}
+                    <div class="Pagination">
+                        <ul>
+                            <li>
+                                <a href="?page=1"><i class="fa fa-angle-double-left"></i></a>
+                            </li>
+                            {% if page_obj.has_previous %}
+                                <li>
+                                    <a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                                </li>
+                            {% endif %}
+                            {% for n in page_obj.paginator.page_range %}
+                                {% if page_obj.number == n %}
+                                    <li class="page-item active">
+                                        <li class="active">
+                                            <a href="javascript:void(0);">{{n}}</a>
+                                        </li>
+                                    </li>
+                                {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                                    <li>
+                                        <a href="?page={{ n }}">{{ n }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li>
+                                    <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
-            <div class="Pagination">
-                <p> Show
-                    <select>
-                        <option>5</option>
-                        <option>10</option>
-                        <option>20</option>
-                        <option>30</option>
-                        <option>40</option>
-                        <option>50</option>
-                    </select>
-                    Entries
-                </p>
-                <ul>
-                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-left"></i></a></li>
-                    <li><a href="javascript:void(0);"><i class="fa fa-angle-left"></i></a></li>
-                    <li class="active"><a href="javascript:void(0);">1</a></li>
-                    <li><a href="javascript:void(0);">2</a></li>
-                    <li><a href="javascript:void(0);">3</a></li>
-                    <li><a href="javascript:void(0);"><i class="fa fa-angle-right"></i></a></li>
-                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-right"></i></a></li>
-                </ul>
-            </div>
-
-
         </div>
     </div>
-</div>
+    <script>
+        $('input[type="date"]').on("change", function (e) {
+            let from_date = Date.parse(document.querySelector('input[name="from_date"]').value)
+            let to_date = Date.parse(document.querySelector('input[name="to_date"]').value)
+    
+            if (to_date < from_date){
+                document.querySelector('input[name="to_date"]').value = ""
+            }
+        });
+    </script>
+    <script>
+        $('#reset_button').on("click", function (e) {
+            let inputs = document.querySelectorAll("#search_form input")
+            for(i=0;i<inputs.length;i++){
+                inputs[i].value = ""
+            }
+        });
+    </script>
 {% endblock %}
