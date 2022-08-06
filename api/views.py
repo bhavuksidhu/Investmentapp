@@ -168,6 +168,7 @@ class RegisterView(APIView):
             user = serializer.save()
             token = str(Token.objects.get_or_create(user=user)[0])
             AdminNotification.objects.create(
+                notification_type="NEW_USER",
                 title=f"New user signed-up!",
                 content=f"A new user has signed up, ID : CU{user.id}.",
             )

@@ -16,6 +16,13 @@
                 <ul>
                     {% for notification in notification_list %}
                     <li>
+                        {% if notification.notification_type == "NEW_USER" %}
+                        <figure><img src="/media/icons/new_user.png"></figure>
+                        {% elif notification.notification_type == "SUBSCRIPTION" %}
+                        <figure><img src="/media/icons/subscription.png"></figure>
+                        {% else %}
+                        <figure><img src="/media/icons/trade.jpg"></figure>
+                        {% endif %}
                         <h4>{{notification.title}}</h4>
                         <p>{{notification.content}}</p>
                         <h6>{{notification.created_at}}</h6>

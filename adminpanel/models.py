@@ -20,6 +20,10 @@ class FAQ(models.Model):
     answer = models.TextField()
 
 class AdminNotification(models.Model):
+    NOTIFICATION_CHOICES = [("NEW_USER", "NEW_USER"), ("SUBSCRIPTION", "SUBSCRIPTION"),("TRADE", "TRADE")]
+    notification_type = models.CharField(
+        max_length=13, choices=NOTIFICATION_CHOICES, null=True
+    )
     title = models.TextField()
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

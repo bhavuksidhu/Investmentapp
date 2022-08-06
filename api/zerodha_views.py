@@ -2,6 +2,7 @@ import json
 import urllib.parse
 
 import requests
+from adminpanel.models import AdminNotification
 from core.models import Transaction, User, ZerodhaData
 from django.conf import settings
 from django.http import HttpResponseNotFound
@@ -318,6 +319,12 @@ class PostBackView(APIView):
             transaction_obj.verified = True
             transaction_obj.status = "Completed"
             transaction_obj.zerodha_postback = data
+
+            AdminNotification.objects.create(
+                notification_type="TRADE",
+                title=f"New trade!",
+                content=f"A new trade just took place, ID : ORD{transaction_obj.id}.",
+            )
         else:
             transaction_obj.status = data.get("status", "Cancelled").title()
             transaction_obj.zerodha_postback = data
