@@ -1,5 +1,8 @@
+import json
 import urllib.parse
 
+import requests
+from black import err
 from core.models import Transaction, User, ZerodhaData
 from django.conf import settings
 from django.http import HttpResponseNotFound
@@ -8,12 +11,12 @@ from kiteconnect import KiteConnect
 from rest_framework import serializers, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import TemplateHTMLRenderer
+
 from api.utils import check_kyc_status
-import json
 
 KITE_CREDS = settings.KITE_CREDS
 kite = KiteConnect(api_key=KITE_CREDS["api_key"])
@@ -39,9 +42,7 @@ class Redirect(APIView):
         request_token = request.query_params.get("request_token", None)
 
         if action == "basket":
-            data = kite.generate_session(
-                    request_token, api_secret=KITE_CREDS["secret"]
-                )
+            data = kite.generate_session(request_token, api_secret=KITE_CREDS["secret"])
             return Response(
                 {
                     "errors": None,
@@ -212,42 +213,106 @@ class ExecuteTradeView(APIView):
         transaction_obj.executed = True
         transaction_obj.save()
 
-        json_data = [{
-            "variety": "regular",
-            "tradingsymbol": transaction_obj.trading_symbol,
-            "exchange": transaction_obj.exchange,
-            "transaction_type": transaction_obj.transaction_type.upper(),
-            "order_type": "MARKET",
-            "quantity": transaction_obj.quantity,
-            "readonly": True,
-            "tag" : f"{transaction_obj.id}"
-        }]
+        json_data = [
+            {
+                "variety": "regular",
+                "tradingsymbol": transaction_obj.trading_symbol,
+                "exchange": transaction_obj.exchange,
+                "transaction_type": transaction_obj.transaction_type.upper(),
+                "order_type": "MARKET",
+                "quantity": transaction_obj.quantity,
+                "readonly": True,
+                "tag": f"{transaction_obj.id}",
+            }
+        ]
 
         api_key = KITE_CREDS["api_key"]
 
-        return Response({"json_data":json.dumps(json_data),"api_key":api_key}, template_name="zerodha/execute-trade.html")
+        return Response(
+            {"json_data": json.dumps(json_data), "api_key": api_key},
+            template_name="zerodha/execute-trade.html",
+        )
+
+
+class RefreshFundsView(APIView):
+    serializer_class = None
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=None,
+        responses=inline_serializer(
+            name="zerodha_refresh_funds",
+            fields={
+                "errors": serializers.CharField(),
+                "funds": serializers.FloatField(),
+                "status": serializers.IntegerField(),
+            },
+        ),
+    )
+    def get(self, request, *args, **kwargs):
+        api_key = KITE_CREDS["api_key"]
+
+        try:
+            zerodha_data: ZerodhaData = request.user.zerodha_data
+            access_token = zerodha_data.access_token
+        except ZerodhaData.DoesNotExist:
+            return Response(
+                {
+                    "errors": "KYC NOT DONE OR EXPIRED",
+                    "funds": None,
+                    "status": status.HTTP_403_FORBIDDEN,
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        headers = {
+            "X-Kite-Version": "3",
+            "Authorization": f"token {api_key}:{access_token}",
+        }
+        resp = requests.get("https://api.kite.trade/user/margins", headers=headers)
+        if resp.status_code != 200:
+            return Response(
+                {
+                    "errors": "KYC NOT DONE OR EXPIRED",
+                    "funds": None,
+                    "status": status.HTTP_403_FORBIDDEN,
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        else:
+            current_funds = resp.json()["data"]["equity"]["available"]["cash"]
+            zerodha_data.funds = current_funds
+            zerodha_data.save()
+            return Response(
+                {
+                    "errors": None,
+                    "funds": current_funds,
+                    "status": status.HTTP_200_OK,
+                },
+                status=status.HTTP_200_OK,
+            )
 
 
 class PostBackView(APIView):
-
     def post(self, request, *args, **kwargs):
-        
+
         data = json.loads(request.body)
         # if not os.path.isdir("postbacks"):
         #     os.mkdir("postbacks")
         # with open(os.path.join("postbacks",f"{str(uuid.uuid4())}.json"),"w", encoding="utf-8") as f:
         #     json.dump(data,f,ensure_ascii=False)
-        
-        tag = data.get("tag",None)
+
+        tag = data.get("tag", None)
         if not tag:
-            return Response(data={"msg":"No Tag"}, status=200)
+            return Response(data={"msg": "No Tag"}, status=200)
         tag = int(tag)
         try:
-            transaction_obj : Transaction = Transaction.objects.get(id = tag)
+            transaction_obj: Transaction = Transaction.objects.get(id=tag)
         except Transaction.DoesNotExist:
-            return Response(data={"msg":"No Transaction Obj"}, status=200)
-        
-        if data.get("status",None) == "COMPLETE":
+            return Response(data={"msg": "No Transaction Obj"}, status=200)
+
+        if data.get("status", None) == "COMPLETE":
             transaction_obj.price = data.get("average_price")
             transaction_obj.quantity = data.get("quantity")
             transaction_obj.amount = transaction_obj.price * transaction_obj.quantity
@@ -255,8 +320,8 @@ class PostBackView(APIView):
             transaction_obj.status = "Completed"
             transaction_obj.zerodha_postback = data
         else:
-            transaction_obj.status = data.get("status","Cancelled").title()
+            transaction_obj.status = data.get("status", "Cancelled").title()
             transaction_obj.zerodha_postback = data
         transaction_obj.save()
 
-        return Response(data={"msg":"Done"}, status=200)
+        return Response(data={"msg": "Done"}, status=200)

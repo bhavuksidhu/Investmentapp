@@ -54,6 +54,7 @@ from api.serializers import (
     TradeSerializer,
     TransactionGroupedByDateSerializer,
     TransactionSerializer,
+    TransactionUpdateSerializer,
     UploadedFileSerializer,
     UserProfileRegisterSerializer,
     UserProfileSerializer,
@@ -357,7 +358,7 @@ class GetFundsViewSet(GetViewSet):
             return ZerodhaData.objects.get(local_user=self.request.user)
         except ZerodhaData.DoesNotExist:
             raise NoDataException
-
+            
 
 class AboutUsViewSet(GetViewSet):
     serializer_class = AboutUsSerializer
@@ -523,27 +524,41 @@ class TransactionViewSet(
         for transaction in transactions:
             created_at = str(transaction.created_at.date())
             if created_at in grouped_by_date:
-                grouped_by_date[created_at].append(transaction.__dict__)
+                grouped_by_date[created_at].append(transaction)
             else:
-                grouped_by_date[created_at] = [transaction.__dict__]
+                grouped_by_date[created_at] = [transaction]
         grouped_by_date = [
             {"date": key, "transactions": value}
             for key, value in grouped_by_date.items()
         ]
 
-        print(grouped_by_date)
+        serializer = TransactionGroupedByDateSerializer(grouped_by_date, many=True)
+        return self.get_paginated_response(serializer.data)
 
-        serializer = TransactionGroupedByDateSerializer(data=grouped_by_date, many=True)
-        if serializer.is_valid():
-            return self.get_paginated_response(serializer.data)
-        else:
-            return Response(
-                {
-                    "errors": serializer.errors,
-                    "status": status.HTTP_400_BAD_REQUEST,
-                },
-                status.HTTP_400_BAD_REQUEST
-            )
+    def perform_partial_update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        serializer.save()
+    
+    @extend_schema(
+        request=TransactionUpdateSerializer,
+        parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)],
+    )
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.perform_partial_update(request, *args, **kwargs)
 
 
 class TransactionLatestView(APIView):
@@ -664,23 +679,14 @@ class JournalViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         for entry in entries:
             created_at = str(entry.created_at.date())
             if created_at in grouped_by_date:
-                grouped_by_date[created_at].append(entry.__dict__)
+                grouped_by_date[created_at].append(entry)
             else:
-                grouped_by_date[created_at] = [entry.__dict__]
+                grouped_by_date[created_at] = [entry]
         grouped_by_date = [
-            {"date": key, "entries": value}
-            for key, value in grouped_by_date.items()
+            {"date": key, "entries": value} for key, value in grouped_by_date.items()
         ]
-        serializer = JournalGroupedByDateSerializer(data=grouped_by_date, many=True)
-        if serializer.is_valid():
-            return self.get_paginated_response(serializer.data)
-        else:
-            return Response(
-                {
-                    "errors": serializer.errors,
-                    "status": status.HTTP_400_BAD_REQUEST,
-                }
-            )
+        serializer = JournalGroupedByDateSerializer(grouped_by_date, many=True)        
+        return self.get_paginated_response(serializer.data)
 
 
 class InvestmentInsightViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -736,6 +742,7 @@ class TradeViewSet(
             name="trade_response",
             fields={
                 "trade_url": serializers.CharField(),
+                "transaction_id" : serializers.IntegerField(),
                 "status": serializers.IntegerField(),
             },
         ),
@@ -760,6 +767,7 @@ class TradeViewSet(
         return Response(
             {
                 "trade_url": trade_url,
+                "transaction_id" : transaction_obj.id,
                 "status": status.HTTP_200_OK,
             },
             status=status.HTTP_200_OK,

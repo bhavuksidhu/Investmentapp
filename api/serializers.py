@@ -233,6 +233,14 @@ class TransactionSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
+class TransactionUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = [
+            "id",
+            "if_not_invest_then_what",
+        ]
+        read_only_fields = ["id",]
 
 class TransactionGroupedByDateSerializer(serializers.Serializer):
     date = serializers.DateField()
