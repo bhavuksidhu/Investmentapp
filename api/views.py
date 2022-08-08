@@ -359,7 +359,7 @@ class GetFundsViewSet(GetViewSet):
             return ZerodhaData.objects.get(local_user=self.request.user)
         except ZerodhaData.DoesNotExist:
             raise NoDataException
-            
+
 
 class AboutUsViewSet(GetViewSet):
     serializer_class = AboutUsSerializer
@@ -514,9 +514,34 @@ class TransactionViewSet(
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return self.request.user.transactions.filter()
+        from_date = self.request.GET.get("from_date", None)
+        to_date = self.request.GET.get("to_date", None)
+        query = self.request.user.transactions.filter()
+        if from_date:
+            query = query.filter(created_at__date__gte=from_date)
+        if to_date:
+            query = query.filter(created_at__date__lte=to_date)
+        return query
 
-    @extend_schema(responses=TransactionGroupedByDateSerializer)
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="from_date",
+                location=OpenApiParameter.QUERY,
+                description="From date",
+                required=False,
+                type=datetime.date,
+            ),
+            OpenApiParameter(
+                name="to_date",
+                location=OpenApiParameter.QUERY,
+                description="To Date",
+                required=False,
+                type=datetime.date,
+            ),
+        ],
+        responses=TransactionGroupedByDateSerializer,
+    )
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         transactions = self.paginate_queryset(queryset)
@@ -537,13 +562,13 @@ class TransactionViewSet(
         return self.get_paginated_response(serializer.data)
 
     def perform_partial_update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
@@ -552,13 +577,13 @@ class TransactionViewSet(
 
     def perform_update(self, serializer):
         serializer.save()
-    
+
     @extend_schema(
         request=TransactionUpdateSerializer,
         parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)],
     )
     def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = True
+        kwargs["partial"] = True
         return self.perform_partial_update(request, *args, **kwargs)
 
 
@@ -686,7 +711,7 @@ class JournalViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         grouped_by_date = [
             {"date": key, "entries": value} for key, value in grouped_by_date.items()
         ]
-        serializer = JournalGroupedByDateSerializer(grouped_by_date, many=True)        
+        serializer = JournalGroupedByDateSerializer(grouped_by_date, many=True)
         return self.get_paginated_response(serializer.data)
 
 
@@ -743,7 +768,7 @@ class TradeViewSet(
             name="trade_response",
             fields={
                 "trade_url": serializers.CharField(),
-                "transaction_id" : serializers.IntegerField(),
+                "transaction_id": serializers.IntegerField(),
                 "status": serializers.IntegerField(),
             },
         ),
@@ -768,7 +793,7 @@ class TradeViewSet(
         return Response(
             {
                 "trade_url": trade_url,
-                "transaction_id" : transaction_obj.id,
+                "transaction_id": transaction_obj.id,
                 "status": status.HTTP_200_OK,
             },
             status=status.HTTP_200_OK,
