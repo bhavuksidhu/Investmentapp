@@ -30,7 +30,6 @@
                     <table style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>S.No</th>
                                 <th>ID</th>
                                 <th>Symbol</th>
                                 <th>Series</th>
@@ -40,7 +39,6 @@
                         <tbody>
                             {% for stock in stocks %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
                                     <td>{{ stock.id }}</td>
                                     <td>{{ stock.symbol }}</td>
                                     <td>{{ stock.series }}</td>

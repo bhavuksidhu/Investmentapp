@@ -24,7 +24,6 @@
                     <table style="width: 120%;">
                         <thead>
                             <tr>
-                                <th>S.No</th>
                                 <th>Customer ID</th>
                                 <th>Name</th>
                                 <th>Contact Number</th>
@@ -39,7 +38,6 @@
                         <tbody>
                             {% for user in user_list %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
                                     <td class="user_id">CU{{ user.id }}</td>
                                     <td>{{ user.profile.first_name }} {{ user.profile.last_name }}</td>
                                     <td>{{ user.phone_number }}</td>

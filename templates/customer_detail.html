@@ -140,7 +140,6 @@
                         <table style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>S.No</th>
                                     <th>Order  Id</th>
                                     <th>Date of Purchase</th>
                                     <th>Stock Name</th>
@@ -159,9 +158,6 @@
                             <tbody>
                                 {% for transaction in transactions %}
                                     <tr>
-                                        <td>
-                                            {{ forloop.counter }}
-                                        </td>
                                         <td>
                                             ORD{{ transaction.id }}
                                         </td>
@@ -238,9 +234,6 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        S.No
-                                    </th>
-                                    <th>
                                         Date of Invest
                                     </th>
                                     <th>
@@ -254,9 +247,6 @@
                             <tbody>
                                 {% for entry in journal %}
                                     <tr>
-                                        <td>
-                                            {{ forloop.counter }}
-                                        </td>
                                         <td>
                                             {{ entry.created_at }}
                                         </td>
