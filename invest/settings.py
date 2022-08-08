@@ -92,7 +92,7 @@ DATABASES = {
         "NAME": "invest",
         "USER": "invest_user",
         "PASSWORD": "(PtWZ5nh}m6]?W8s",
-        "HOST": "13.127.159.81",
+        "HOST": "13.126.235.166",
         "PORT": "5432",
     }
 }
