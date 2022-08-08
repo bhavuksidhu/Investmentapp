@@ -342,7 +342,7 @@ class CustomerDetailView(LoginRequiredMixin, View):
         journal_to_date = self.request.GET.get("journal_to_date", None)
 
         active_tab = self.request.GET.get("active_tab","personal")
-        q = self.request.GET.get("q", None)
+        q = self.request.GET.get("q", "")
 
         context["q"] = q
         context["transaction_from_date"] = transaction_from_date
