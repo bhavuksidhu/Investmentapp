@@ -491,7 +491,10 @@ class SubscriptionManagementView(LoginRequiredMixin, ListView):
         if to_date:
             query = query.filter(date_to__lte=to_date)
 
-        if q:
+        if q and "CU" in q:
+            q = int(q.replace("CU","").strip())
+            query = query.filter(user__id=q)
+        elif q:
             query = query.filter(
                 Q(user__email__icontains=q)
                 | Q(user__phone_number__icontains=q)
