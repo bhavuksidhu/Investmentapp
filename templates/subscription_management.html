@@ -74,7 +74,7 @@
                             {% for subscription in subscriptions %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ subscription.id }}</td>
+                                    <td>SUB{{ subscription.id }}</td>
                                     <td>CU{{ subscription.user.id }}</td>
                                     <td>{{ subscription.user.profile.first_name }} {{ subscription.user.profile.first_name }}</td>
                                     <td>{{ subscription.user.email }}</td>
@@ -233,6 +233,7 @@
             for(i=0;i<inputs.length;i++){
                 inputs[i].value = ""
             }
+            document.getElementById("search_form").submit();
         });
     </script>
 {% endblock %}

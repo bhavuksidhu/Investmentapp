@@ -390,9 +390,6 @@ class CustomerEditView(DetailView):
     def post(self, request, *args, **kwargs):
         first_name = request.POST.get("first_name", None)
         last_name = request.POST.get("last_name", None)
-        email = request.POST.get("email", None)
-        phone_number = request.POST.get("phone_number", None)
-        pan_number = request.POST.get("pan_number", None)
         date_of_birth = request.POST.get("date_of_birth", None)
         gender = request.POST.get("gender", None)
         address = request.POST.get("address", None)
@@ -403,18 +400,10 @@ class CustomerEditView(DetailView):
         except User.DoesNotExist:
             return self.get(self, request, *args, **kwargs)
 
-        print(first_name)
-
         if first_name:
             profile.first_name = first_name
         if last_name:
             profile.last_name = last_name
-        if email:
-            user.email = email
-        if phone_number:
-            user.phone_number = phone_number
-        if pan_number:
-            profile.pan_number = pan_number
         if date_of_birth:
             profile.date_of_birth = date_of_birth
         if gender:
@@ -610,17 +599,31 @@ class StaticContentManagementView(LoginRequiredMixin, View):
 
         if about_us:
             static_content_obj.about_us = about_us
+        else:
+            messages.add_message(request, messages.ERROR, "About Us can't be empty!")
+            return JsonResponse({"message": "OK"})
 
         if terms_and_conditions:
             static_content_obj.terms_and_conditions = terms_and_conditions
+        else:
+            messages.add_message(request, messages.ERROR, "Terms & Conditions can't be empty!")
+            return JsonResponse({"message": "OK"})
 
         if privacy_policy:
             static_content_obj.privacy_policy = privacy_policy
+        else:
+            messages.add_message(request, messages.ERROR, "Privacy Policy can't be empty!")
+            return JsonResponse({"message": "OK"})
 
         static_content_obj.save()
 
         if faqs:
             faqs = json.loads(faqs)
+            for faq in faqs:
+                if not faq["question"] or faq["answer"]:
+                    messages.add_message(request, messages.ERROR, "FAQ Question/Answer cannot be empty!")
+                    return JsonResponse({"message": "OK"})
+            
             FAQ.objects.all().delete()
             for faq in faqs:
                 FAQ.objects.create(question=faq["question"], answer=faq["answer"])
@@ -650,6 +653,7 @@ class SettingsView(LoginRequiredMixin, View):
                     request.user.save()
                     update_session_auth_hash(request, request.user)
                     messages.add_message(request, messages.SUCCESS, "Password updated!")
+                    return redirect("adminpanel:dashboard")
                 else:
                     messages.add_message(request, messages.ERROR, "Wrong old password.")
         else:
