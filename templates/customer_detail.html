@@ -291,6 +291,7 @@
             inputs[i].value = ""
         }
         document.querySelector("#insight_active").value="insight"
+        document.getElementById("insight_form").submit();
     });
     $('#journal_reset_button').on("click", function (e) {
         let inputs = document.querySelectorAll("#journal_form input")
@@ -298,6 +299,7 @@
             inputs[i].value = ""
         }
         document.querySelector("#journal_active").value="journal"
+        document.getElementById("journal_form").submit();
     });
 </script>
 {% endblock %}
