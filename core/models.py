@@ -94,6 +94,7 @@ class UserSetting(models.Model):
     DEVICE_TYPE_CHOICES = [("Apple", "Apple"), ("Android", "Android")]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
     notification_preference = models.BooleanField(default=True)
+    show_after_trade_modal = models.BooleanField(default=True)
     device_token = models.CharField(default="", max_length=500, null=True, blank=True)
     device_type = models.CharField(
         default="", max_length=20, choices=DEVICE_TYPE_CHOICES

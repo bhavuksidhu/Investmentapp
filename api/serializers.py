@@ -52,12 +52,6 @@ class UploadedFileSerializer(serializers.ModelSerializer):
         return profile_photo
 
 
-class UserSettingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSetting
-        fields = ["notification_preference", "device_token", "device_type"]
-
-
 class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -145,7 +139,7 @@ class UserProfileRegisterSerializer(WritableNestedModelSerializer, serializers.M
 class UserSettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSetting
-        fields = ["notification_preference", "device_token", "device_type"]
+        fields = ["notification_preference","show_after_trade_modal", "device_token", "device_type"]
 
     def create(self, validated_data):
         request = self.context.get("request", None)
