@@ -6,7 +6,6 @@
             <div class="TitleBox">
                 <h4>Settings:</h4>
             </div>
-            {% include "fragments/messages.html" %}
             <div class="StaticBoxArea">
                 <div id="accordion">
                     <div class="card">
@@ -38,6 +37,7 @@
                                                            name="old_password"
                                                            class="form-control"
                                                            placeholder="Enter your old Password" required>
+                                                           <span class="encrypt-toggle"><i class="fa fa-eye" aria-hidden="true"></i></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -51,6 +51,7 @@
                                                            name="new_password"
                                                            class="form-control"
                                                            placeholder="Enter New Password" required>
+                                                           <span class="encrypt-toggle"><i class="fa fa-eye" aria-hidden="true"></i></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -64,6 +65,7 @@
                                                            name="new_password_2"
                                                            class="form-control"
                                                            placeholder="Re-enter your password" required>
+                                                           <span class="encrypt-toggle"><i class="fa fa-eye" aria-hidden="true"></i></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -77,6 +79,20 @@
                     </div>
                 </div>
             </div>
+            {% include "fragments/messages.html" %}
         </div>
     </div>
+
+<script>
+    $(".encrypt-toggle").on("click",function(e){
+        let div = e.target.closest("div")
+        let input = div.querySelector("input")
+        if (input.type == "password"){
+            input.type = "text"
+        }
+        else{
+            input.type = "password"
+        }
+    })
+</script>
 {% endblock %}

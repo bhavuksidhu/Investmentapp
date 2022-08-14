@@ -52,6 +52,9 @@ class LoginView(View):
                 if user.is_superuser:
                     if user.check_password(password):
                         login(request, user)
+                        messages.add_message(
+                            request, messages.SUCCESS, "Logged in Successfully!"
+                        )
                         return redirect("adminpanel:dashboard")
                     else:
                         messages.add_message(
@@ -77,6 +80,7 @@ class LogoutView(View):
 
     def get(self, request, *args, **kwargs):
         logout(request)
+        messages.add_message(request, messages.SUCCESS, "Logged out Successfully!")
         return redirect("adminpanel:login")
 
 
@@ -295,20 +299,22 @@ class CustomerDetailView(LoginRequiredMixin, View):
 
     def get_data(self):
         q = self.request.GET.get("q", None)
-        user =  User.objects.select_related("profile").get(id=self.kwargs.get("pk"))
+        user = User.objects.select_related("profile").get(id=self.kwargs.get("pk"))
 
-        base_transaction_query = user.transactions.filter(
-            verified=True
-        )
+        base_transaction_query = user.transactions.filter(verified=True)
 
-        #Transactions Section
+        # Transactions Section
         transactions_query = base_transaction_query
         transaction_from_date = self.request.GET.get("transaction_from_date", None)
         transaction_to_date = self.request.GET.get("transaction_to_date", None)
         if transaction_from_date:
-            transactions_query = transactions_query.filter(created_at__date__gte=transaction_from_date)
+            transactions_query = transactions_query.filter(
+                created_at__date__gte=transaction_from_date
+            )
         if transaction_to_date:
-            transactions_query = transactions_query.filter(created_at__date__lte=transaction_to_date)
+            transactions_query = transactions_query.filter(
+                created_at__date__lte=transaction_to_date
+            )
 
         if q:
             q = q.strip().lower()
@@ -318,20 +324,24 @@ class CustomerDetailView(LoginRequiredMixin, View):
                     transactions_query = transactions_query.filter(id=transaction_id)
                 except:
                     pass
-        
-        #Journal Section
+
+        # Journal Section
         journals_query = base_transaction_query.filter(transaction_type="BUY")
         journal_from_date = self.request.GET.get("journal_from_date", None)
         journal_to_date = self.request.GET.get("journal_to_date", None)
         if journal_from_date:
-            journals_query = journals_query.filter(created_at__date__gte=journal_from_date)
+            journals_query = journals_query.filter(
+                created_at__date__gte=journal_from_date
+            )
         if journal_to_date:
-            journals_query = journals_query.filter(created_at__date__lte=journal_to_date)
-        
+            journals_query = journals_query.filter(
+                created_at__date__lte=journal_to_date
+            )
+
         transactions = transactions_query
         journal = journals_query
 
-        return {"user": user,"transactions":transactions,"journal":journal}
+        return {"user": user, "transactions": transactions, "journal": journal}
 
     def get_context_data(self, **kwargs):
         context = {}
@@ -341,7 +351,7 @@ class CustomerDetailView(LoginRequiredMixin, View):
         journal_from_date = self.request.GET.get("journal_from_date", None)
         journal_to_date = self.request.GET.get("journal_to_date", None)
 
-        active_tab = self.request.GET.get("active_tab","personal")
+        active_tab = self.request.GET.get("active_tab", "personal")
         q = self.request.GET.get("q", "")
 
         context["q"] = q
@@ -361,11 +371,7 @@ class CustomerDetailView(LoginRequiredMixin, View):
         context["transactions"] = data["transactions"]
         context["journal"] = data["journal"]
 
-        return render(
-            request,
-            self.template_name,
-            context=context
-        )
+        return render(request, self.template_name, context=context)
 
 
 class CustomerEditView(DetailView):
@@ -414,6 +420,9 @@ class CustomerEditView(DetailView):
         try:
             profile.save()
             user.save()
+            messages.add_message(
+                request, messages.SUCCESS, "Details updated successfully!"
+            )
         except Exception as e:
             print(e)
 
@@ -481,7 +490,7 @@ class SubscriptionManagementView(LoginRequiredMixin, ListView):
             query = query.filter(date_to__lte=to_date)
 
         if q and "CU" in q:
-            q = int(q.replace("CU","").strip())
+            q = int(q.replace("CU", "").strip())
             query = query.filter(user__id=q)
         elif q:
             query = query.filter(
@@ -542,6 +551,9 @@ class StockUploadView(LoginRequiredMixin, View):
 
         Stock.objects.all().delete()
         [Stock.objects.create(**x) for x in df.T.to_dict().values()]
+        messages.add_message(
+                            request, messages.SUCCESS, "Stock-list uploaded successfully!"
+                        )
         return redirect("adminpanel:stock-management")
 
 
@@ -606,13 +618,17 @@ class StaticContentManagementView(LoginRequiredMixin, View):
         if terms_and_conditions:
             static_content_obj.terms_and_conditions = terms_and_conditions
         else:
-            messages.add_message(request, messages.ERROR, "Terms & Conditions can't be empty!")
+            messages.add_message(
+                request, messages.ERROR, "Terms & Conditions can't be empty!"
+            )
             return JsonResponse({"message": "OK"})
 
         if privacy_policy:
             static_content_obj.privacy_policy = privacy_policy
         else:
-            messages.add_message(request, messages.ERROR, "Privacy Policy can't be empty!")
+            messages.add_message(
+                request, messages.ERROR, "Privacy Policy can't be empty!"
+            )
             return JsonResponse({"message": "OK"})
 
         static_content_obj.save()
@@ -621,9 +637,11 @@ class StaticContentManagementView(LoginRequiredMixin, View):
             faqs = json.loads(faqs)
             for faq in faqs:
                 if not faq["question"] or faq["answer"]:
-                    messages.add_message(request, messages.ERROR, "FAQ Question/Answer cannot be empty!")
+                    messages.add_message(
+                        request, messages.ERROR, "FAQ Question/Answer cannot be empty!"
+                    )
                     return JsonResponse({"message": "OK"})
-            
+
             FAQ.objects.all().delete()
             for faq in faqs:
                 FAQ.objects.create(question=faq["question"], answer=faq["answer"])

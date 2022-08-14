@@ -169,6 +169,8 @@ class Notification(models.Model):
     NOTIFICATION_TYPES = [
         ("News", "News"),
         ("Stock-Listing", "Stock-Listing"),
+        ("Purchase", "Purchase"),
+        ("Sale", "Sale"),
         ("Others", "Others"),
     ]
     head = models.TextField()

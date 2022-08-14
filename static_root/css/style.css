@@ -809,6 +809,7 @@ span.SecondCircle {
     background-color: #ecf0fa !important;
     padding: 20px;
     min-height: 100vh;
+    position: relative;
 }
 
 .WelcomeBack {
@@ -1786,3 +1787,15 @@ span.SecondCircle {
     color: #777E90;
     font-weight: 500
 }
+
+span.TostMessage {
+    display: inline-block;
+    padding: 13px 22px;
+    color: #fff;
+    font-size: 15px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+span.TostMessage p {}

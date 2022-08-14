@@ -3,7 +3,7 @@ import urllib.parse
 
 import requests
 from adminpanel.models import AdminNotification
-from core.models import Transaction, User, ZerodhaData
+from core.models import Notification, Transaction, User, ZerodhaData
 from django.conf import settings
 from django.http import HttpResponseNotFound
 from drf_spectacular.utils import extend_schema, inline_serializer
@@ -324,6 +324,16 @@ class PostBackView(APIView):
                 notification_type="TRADE",
                 title=f"New trade!",
                 content=f"A new trade just took place, ID : ORD{transaction_obj.id}.",
+            )
+
+            user = transaction_obj.user
+            notification_type = (
+                "Purchase" if transaction_obj.transaction_type == "BUY" else "Sale"
+            )
+            head = f"{notification_type} Complete!"
+            body = f"Your {notification_type.lower()} order for {transaction_obj.trading_symbol} was completed successfully!"
+            Notification.objects.create(
+                user=user, notification_type=notification_type, head=head, body=body
             )
         else:
             transaction_obj.status = data.get("status", "Cancelled").title()
