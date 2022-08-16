@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <title>Invest Thrift</title>
+        <meta charset="UTF-8">
+        <meta name="description" content="">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="{% static 'zcss/style.css' %}">
+        <link type="text/css"
+              rel="stylesheet"
+              href="{% static 'zcss/responsive.css' %}">
+    </head>
+    <body>
+        <div class="MainBox" style="display: None">
+            <div class="InnerBox">
+                <figure>
+                    <img src="/media/images/illustration2.png" alt="illustration2">
+                </figure>
+                <div class="TextBox">
+                    <h5>{{ result }}</h5>
+                    <p>{{ message }} <br> You can close this window.</p>
+                    <button class="Button">Okay</button>
+                </div>
+            </div>
+        </div>
+        <div class="MainBox2"  style="display: None">
+            <div class="InnerBox2">
+                <figure>
+                    <img src="/media/images/illustration4.png" alt="illustration4">
+                </figure>
+                <div class="TextBox">
+                    <h5>{{ result }}</h5>
+                    <p>{{ message }} <br> You can close this window.</p>
+                    <button class="Button">Okay</button>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.querySelector(".MainBox2").style.display = "flex"
+        }
+        else{
+            document.querySelector(".MainBox").style.display = "flex"
+        }
+    </script>
+    <script>
+        function closeWindow(){
+        let customWindow = window.open('', '_blank', '');
+        customWindow.close();
+    }
+    </script>
+</html>

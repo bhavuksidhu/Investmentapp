@@ -6,6 +6,8 @@ from adminpanel.models import AdminNotification
 from core.models import Notification, Transaction, User, ZerodhaData
 from django.conf import settings
 from django.http import HttpResponseNotFound
+from django.shortcuts import render
+from django.views.generic import View
 from drf_spectacular.utils import extend_schema, inline_serializer
 from kiteconnect import KiteConnect
 from rest_framework import serializers, status
@@ -41,35 +43,26 @@ class Redirect(APIView):
         zerodha_status = request.query_params.get("status", None)
         request_token = request.query_params.get("request_token", None)
 
+        result = "Success"
+        message = "Thank you! Your transaction has been completed successfully"
+
         if action == "basket":
-            data = kite.generate_session(request_token, api_secret=KITE_CREDS["secret"])
-            return Response(
-                {
-                    "errors": None,
-                    "data": data,
-                    "status": status.HTTP_200_OK,
-                },
-                status=status.HTTP_200_OK,
+            return render(
+                request, "zerodha_redirect.html", {"result": result, "message": message}
             )
 
         if not uuid:
-            return Response(
-                {
-                    "errors": "KYC linking Failed!",
-                    "data": None,
-                    "status": status.HTTP_401_UNAUTHORIZED,
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
+            result = "Failure"
+            message = "Uh oh.. KYC linking failed, Please try again!"
+            return render(
+                request, "zerodha_redirect.html", {"result": result, "message": message}
             )
 
         if zerodha_status == "cancelled":
-            return Response(
-                {
-                    "errors": "Zerodha Auth Failed",
-                    "data": None,
-                    "status": status.HTTP_401_UNAUTHORIZED,
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
+            result = "Failure"
+            message = "Uh oh.. KYC linking failed, Please try again!"
+            return render(
+                request, "zerodha_redirect.html", {"result": result, "message": message}
             )
 
         if action and type and zerodha_status and request_token:
@@ -91,39 +84,26 @@ class Redirect(APIView):
                     data["funds"] = funds
                     ZerodhaData.objects.create(**data)
 
-                    return Response(
-                        {
-                            "errors": "OK",
-                            "data": data,
-                            "status": status.HTTP_200_OK,
-                        },
-                        status=status.HTTP_200_OK,
+                    result = "Success"
+                    message = "Thank you! KYC linked successfully!"
+                    return render(
+                        request,
+                        "zerodha_redirect.html",
+                        {"result": result, "message": message},
                     )
                 except User.DoesNotExist:
-                    return Response(
-                        {
-                            "errors": "Zerodha Auth Failed",
-                            "data": None,
-                            "status": status.HTTP_401_UNAUTHORIZED,
-                        },
-                        status=status.HTTP_401_UNAUTHORIZED,
+                    result = "Failure"
+                    message = "Uh oh.. KYC linking failed, Please try again!"
+                    return render(
+                        request,
+                        "zerodha_redirect.html",
+                        {"result": result, "message": message},
                     )
 
-            return Response(
-                {
-                    "errors": "Zerodha Auth Failed",
-                    "data": None,
-                    "status": status.HTTP_401_UNAUTHORIZED,
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-        return Response(
-            {
-                "errors": "Improper Request",
-                "data": None,
-                "status": status.HTTP_400_BAD_REQUEST,
-            },
-            status=status.HTTP_400_BAD_REQUEST,
+        result = "Failure"
+        message = "Uh oh.. KYC linking failed, Please try again!"
+        return render(
+            request, "zerodha_redirect.html", {"result": result, "message": message}
         )
 
 
