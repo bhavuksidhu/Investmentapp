@@ -14,6 +14,7 @@ from core.models import (
     UserSubscription,
     ZerodhaData,
 )
+from core.utils import send_notification
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotFound
@@ -63,7 +64,6 @@ from api.serializers import (
     UserSubscriptionSerializer,
 )
 from api.utils import NoDataException, StandardResultsSetPagination
-from core.utils import send_notification
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
 
@@ -434,10 +434,15 @@ class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         except UserSetting.DoesNotExist:
             print("No Settings exist for user, aborting notification service.")
 
+        head = f"Subscription Purchased!"
+        body = f"Your subscription was renewal was successfull."
+        Notification.objects.create(
+            user=request.user, notification_type="Subscription", head=head, body=body
+        )
         if registration_id:
-            head = f"Subscription Purchased!"
-            body = f"Your subscription was renewal was successfull."
-            send_notification(registration_id=registration_id,message_title=head,message_body=body)
+            send_notification(
+                registration_id=registration_id, message_title=head, message_body=body
+            )
         else:
             print("No device_token exist for user, aborting notification service.")
 

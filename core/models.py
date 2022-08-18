@@ -171,7 +171,9 @@ class Notification(models.Model):
         ("Stock-Listing", "Stock-Listing"),
         ("Purchase", "Purchase"),
         ("Sale", "Sale"),
+        ("Subscription", "Subscription"),
         ("Others", "Others"),
+
     ]
     head = models.TextField()
     body = models.TextField()
