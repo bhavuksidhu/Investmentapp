@@ -20,7 +20,7 @@ with open("creds.json", "r", encoding="utf-8") as f:
     creds = json.load(f)
     KITE_CREDS = creds["KITE_CREDS"]
     GMAIL_CREDS = creds["GMAIL_CREDS"]
-
+    FCM_SERVER_KEY = creds["FCM_CREDS"]["server_key"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/

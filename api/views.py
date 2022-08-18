@@ -63,6 +63,7 @@ from api.serializers import (
     UserSubscriptionSerializer,
 )
 from api.utils import NoDataException, StandardResultsSetPagination
+from core.utils import send_notification
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
 
@@ -428,6 +429,17 @@ class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             title=f"Subscription Purchased!",
             content=f"User - CU{request.user.id}, has just purchased a subscription!",
         )
+        try:
+            registration_id = request.user.settings.device_token
+        except UserSetting.DoesNotExist:
+            print("No Settings exist for user, aborting notification service.")
+
+        if registration_id:
+            head = f"Subscription Purchased!"
+            body = f"Your subscription was renewal was successfull."
+            send_notification(registration_id=registration_id,message_title=head,message_body=body)
+        else:
+            print("No device_token exist for user, aborting notification service.")
 
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
