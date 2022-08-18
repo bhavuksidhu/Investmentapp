@@ -317,6 +317,7 @@ class PostBackView(APIView):
             Notification.objects.create(
                 user=user, notification_type=notification_type, head=head, body=body
             )
+            
             try:
                 registration_id = user.settings.device_token
             except UserSetting.DoesNotExist:
@@ -326,7 +327,7 @@ class PostBackView(APIView):
                 send_notification(registration_id=registration_id,message_title=head,message_body=body)
             else:
                 print("No device_token exist for user, aborting notification service.")
-                
+
         else:
             transaction_obj.status = data.get("status", "Cancelled").title()
             transaction_obj.zerodha_postback = data
