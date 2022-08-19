@@ -933,3 +933,37 @@ class SendVerififcationEmailView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+class CheckOldPassword(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        request=inline_serializer(
+            name="check_old_pass_request",
+            fields={
+                "old_password": serializers.CharField(allow_null=True),
+            },
+        ),
+        responses=inline_serializer(
+            name="check_old_pass_response",
+            fields={
+                "old_password_is_correct": serializers.BooleanField(),
+                "status": serializers.IntegerField(),
+            },
+        ),
+    )
+    def post(self, request: Request, *args, **kwargs):
+        
+        if request.user.check_password(request.data["old_password"]):
+            old_password_is_correct = True
+        else:
+            old_password_is_correct = False
+
+        return Response(
+                {
+                    "old_password_is_correct": old_password_is_correct,
+                    "status": status.HTTP_200_OK,
+                },
+                status=status.HTTP_200_OK,
+            )

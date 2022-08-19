@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from api.views import (
     AboutUsViewSet,
     BasicUserViewSet,
+    CheckOldPassword,
     ContactDataViewSet,
     FAQViewSet,
     GetFundsViewSet,
@@ -82,6 +83,7 @@ urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("check/email-password/",CheckEmailPassword.as_view(),name="check-email-password"),
+    path("check/old-password/",CheckOldPassword.as_view(),name="check-old-password"),
     path("portfolio/",PortFolioView.as_view(),name="portfolio"),
     path("investment-insight/transactions/latest/",TransactionLatestView.as_view(),name="transaction-latest"),
     path("verify/send-verification-email/",SendVerififcationEmailView.as_view(),name="send-verification-email"),
