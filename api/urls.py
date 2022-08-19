@@ -29,7 +29,7 @@ from api.views import (
     UserProfilePhotoViewSet,
     UserProfileViewSet,
     UserSettingViewSet,
-    CheckEmailPassword,
+    CheckEmailPhoneNumber,
     InvestmentInsightViewSet,
     VerifyEmailView
 )
@@ -82,7 +82,7 @@ urlpatterns = [
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
-    path("check/email-password/",CheckEmailPassword.as_view(),name="check-email-password"),
+    path("check/email-phone/",CheckEmailPhoneNumber.as_view(),name="check-email-phone"),
     path("check/old-password/",CheckOldPassword.as_view(),name="check-old-password"),
     path("portfolio/",PortFolioView.as_view(),name="portfolio"),
     path("investment-insight/transactions/latest/",TransactionLatestView.as_view(),name="transaction-latest"),

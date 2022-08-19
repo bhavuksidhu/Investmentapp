@@ -817,17 +817,17 @@ class TradeViewSet(
         )
 
 
-class CheckEmailPassword(APIView):
+class CheckEmailPhoneNumber(APIView):
     @extend_schema(
         request=inline_serializer(
-            name="check_email_pass_request",
+            name="check_email_phone_request",
             fields={
                 "email": serializers.CharField(allow_null=True),
                 "phone_number": serializers.CharField(allow_null=True),
             },
         ),
         responses=inline_serializer(
-            name="check_email_pass_response",
+            name="check_email_phone_response",
             fields={
                 "user_exists": serializers.BooleanField(),
                 "status": serializers.IntegerField(),
