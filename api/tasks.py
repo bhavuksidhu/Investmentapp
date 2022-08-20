@@ -35,9 +35,9 @@ def update_stock_prices():
     )
 
     if response.status_code == 200:
-        for k, v in response.json().items():
+        for k, v in response.json()["data"].items():
             exchange, symbol = k.split(":")
-            price = v["average_price"]
+            price = v["last_price"]
 
             try:
                 market_quote: MarketQuote = MarketQuote.objects.get(

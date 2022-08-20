@@ -18,6 +18,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils import timezone
 
 from api.utils import check_kyc_status
 
@@ -83,6 +84,7 @@ class Redirect(APIView):
                     # Create new data
                     data["local_user_id"] = user.id
                     data["funds"] = funds
+                    data["created_at"] = timezone.now()
                     ZerodhaData.objects.create(**data)
 
                     result = "Success"
