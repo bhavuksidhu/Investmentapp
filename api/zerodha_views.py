@@ -3,8 +3,7 @@ import urllib.parse
 
 import requests
 from adminpanel.models import AdminNotification
-from core.models import (Notification, Transaction, User, UserSetting,
-                         ZerodhaData)
+from core.models import Notification, Transaction, User, UserSetting, ZerodhaData
 from core.utils import send_notification
 from django.conf import settings
 from django.http import HttpResponseNotFound
@@ -317,14 +316,18 @@ class PostBackView(APIView):
             Notification.objects.create(
                 user=user, notification_type=notification_type, head=head, body=body
             )
-            
+
             try:
                 registration_id = user.settings.device_token
             except UserSetting.DoesNotExist:
                 print("No Settings exist for user, aborting notification service.")
 
             if registration_id:
-                send_notification(registration_id=registration_id,message_title=head,message_body=body)
+                send_notification(
+                    registration_id=registration_id,
+                    message_title=head,
+                    message_body=body,
+                )
             else:
                 print("No device_token exist for user, aborting notification service.")
 

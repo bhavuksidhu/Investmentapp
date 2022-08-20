@@ -160,6 +160,10 @@ class ZerodhaData(models.Model):
     login_time = models.DateTimeField(null=True)
     meta = models.JSONField(null=True)
     funds = models.FloatField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class Notification(models.Model):
@@ -173,7 +177,6 @@ class Notification(models.Model):
         ("Sale", "Sale"),
         ("Subscription", "Subscription"),
         ("Others", "Others"),
-
     ]
     head = models.TextField()
     body = models.TextField()
@@ -201,7 +204,7 @@ class Transaction(models.Model):
         max_length=5, choices=TRANSACTION_CHOICES, null=True
     )
     order_type = models.TextField(default="MARKET")
-    if_not_invest_then_what = models.TextField(default="",null=True,blank=True)
+    if_not_invest_then_what = models.TextField(default="", null=True, blank=True)
     verified = models.BooleanField(default=False)
     status = models.TextField(default="Pending")
     executed = models.BooleanField(
@@ -218,13 +221,12 @@ class Transaction(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+
 class InvestmentInsight(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="insights"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="insights")
     created_at = models.DateTimeField(auto_now_add=True)
     value = models.FloatField()
-    
+
     class Meta:
         ordering = ["created_at"]
 
@@ -243,6 +245,7 @@ class MarketQuote(models.Model):
     price = models.FloatField()
     exchange = models.TextField()
     change = models.FloatField(null=True)
+
 
 class EmailVerificationRecord(models.Model):
     uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)

@@ -786,11 +786,26 @@ class TradeViewSet(
             fields={
                 "trade_url": serializers.CharField(),
                 "transaction_id": serializers.IntegerField(),
+                "errors": serializers.CharField(),
                 "status": serializers.IntegerField(),
             },
         ),
     )
     def create(self, request, *args, **kwargs):
+
+        if request.user.transactions.filter(verified=True).count() < 3 or request.user.subscription.active:
+            pass
+        else:
+            return Response(
+            {
+                "trade_url": None,
+                "transaction_id": None,
+                "errors": "You need purchase subscription to perform this action!",
+                "status": status.HTTP_402_PAYMENT_REQUIRED,
+            },
+            status=status.HTTP_402_PAYMENT_REQUIRED,
+        )
+
         try:
             transaction_obj: Transaction = Transaction.objects.create(
                 **{"user": request.user, **request.data}
@@ -800,6 +815,8 @@ class TradeViewSet(
             return Response(
                 {
                     "trade_url": None,
+                    "transaction_id": None,
+                    "errors": "Err.. Please try again!",
                     "status": status.HTTP_400_BAD_REQUEST,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
@@ -811,6 +828,7 @@ class TradeViewSet(
             {
                 "trade_url": trade_url,
                 "transaction_id": transaction_obj.id,
+                "errors": None,
                 "status": status.HTTP_200_OK,
             },
             status=status.HTTP_200_OK,

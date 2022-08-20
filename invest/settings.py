@@ -97,6 +97,11 @@ DATABASES = {
     }
 }
 
+REDIS_URL = 'redis://localhost:6379'
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND=REDIS_URL
+CELERY_TIMEZONE = 'Asia/Kolkata'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -174,3 +179,4 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'
 
 LOGIN_URL = '/adminpanel/login/'
+
