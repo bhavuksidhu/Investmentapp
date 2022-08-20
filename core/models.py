@@ -160,7 +160,7 @@ class ZerodhaData(models.Model):
     login_time = models.DateTimeField(null=True)
     meta = models.JSONField(null=True)
     funds = models.FloatField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
 
     class Meta:
         ordering = ["-created_at"]

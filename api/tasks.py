@@ -23,11 +23,11 @@ def update_stock_prices():
         "Authorization": f"token {api_key}:{access_token}",
     }
 
-    stocks = Stock.objects.values_list("symbol")
+    stocks = MarketQuote.objects.values_list("trading_symbol")
     stocks = [_[0] for _ in stocks]
     query_string = ""
     for stock in stocks:
-        query_string = query_string + f"&i=NSE:{stock['Symbol']}"
+        query_string = query_string + f"&i=NSE:{stock}"
 
     query_string = query_string.strip("&")
     response = requests.get(
@@ -122,3 +122,7 @@ def deactivate_subscriptions():
             )
         else:
             print("No device_token exist for user, aborting notification service.")
+
+@shared_task
+def temp():
+    return "Working!"

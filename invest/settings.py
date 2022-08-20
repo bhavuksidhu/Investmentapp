@@ -26,12 +26,12 @@ with open("creds.json", "r", encoding="utf-8") as f:
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-n3w&41cfhpj@9sb5*=v2kc69xw-7es&u(fmb^*ha3-k(xz#!e_"
+SECRET_KEY = "859^*a+m2y*=hh#r6w7n0ak^$jw!q)wb+eqvc6+mlaflmt*dry"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1","localhost","invest-thrift.com","www.invest-thrift.com"]
 
 
 # Application definition
@@ -92,7 +92,7 @@ DATABASES = {
         "NAME": "invest",
         "USER": "invest_user",
         "PASSWORD": "(PtWZ5nh}m6]?W8s",
-        "HOST": "13.126.235.166",
+        "HOST": "localhost",
         "PORT": "5432",
     }
 }
@@ -180,3 +180,7 @@ DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'
 
 LOGIN_URL = '/adminpanel/login/'
 
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
