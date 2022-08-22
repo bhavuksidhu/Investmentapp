@@ -213,7 +213,7 @@ class LoginView(APIView):
                 except User.DoesNotExist:
                     return Response(
                         {
-                            "errors": "No user with that phone number.",
+                            "errors": "No user exists with this mobile number.",
                             "token": None,
                             "status": status.HTTP_404_NOT_FOUND,
                         },
@@ -835,13 +835,14 @@ class TradeViewSet(
         )
 
 
-class CheckEmailPhoneNumber(APIView):
+class CheckEmailPhonePanNumber(APIView):
     @extend_schema(
         request=inline_serializer(
-            name="check_email_phone_request",
+            name="check_email_phone_pan_request",
             fields={
                 "email": serializers.CharField(allow_null=True),
                 "phone_number": serializers.CharField(allow_null=True),
+                "pan_number": serializers.CharField(allow_null=True)
             },
         ),
         responses=inline_serializer(
@@ -864,6 +865,13 @@ class CheckEmailPhoneNumber(APIView):
         if "phone_number" in request.data:
             try:
                 User.objects.get(phone_number=request.data["phone_number"])
+                exists = True
+            except User.DoesNotExist:
+                pass
+
+        if "pan_number" in request.data:
+            try:
+                UserProfile.objects.get(pan_number=request.data["pan_number"])
                 exists = True
             except User.DoesNotExist:
                 pass
