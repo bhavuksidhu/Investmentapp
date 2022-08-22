@@ -873,7 +873,7 @@ class CheckEmailPhonePanNumber(APIView):
             try:
                 UserProfile.objects.get(pan_number=request.data["pan_number"])
                 exists = True
-            except User.DoesNotExist:
+            except UserProfile.DoesNotExist:
                 pass
 
         return Response(
