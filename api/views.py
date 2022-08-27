@@ -690,7 +690,7 @@ class JournalViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         from_date = self.request.GET.get("from_date", None)
         to_date = self.request.GET.get("to_date", None)
-        query = self.request.user.transactions.filter()
+        query = self.request.user.transactions.filter(verified=True)
         if from_date:
             query = query.filter(created_at__date__gte=from_date)
         if to_date:
@@ -848,37 +848,44 @@ class CheckEmailPhonePanNumber(APIView):
         responses=inline_serializer(
             name="check_email_phone_response",
             fields={
-                "user_exists": serializers.BooleanField(),
+                "email_exists": serializers.BooleanField(),
+                "phone_exists": serializers.BooleanField(),
+                "pan_exists": serializers.BooleanField(),
                 "status": serializers.IntegerField(),
             },
         ),
     )
     def post(self, request: Request, *args, **kwargs):
-        exists = False
+        email_exists = False
+        phone_exists = False
+        pan_exists = False
+        
         if "email" in request.data:
             try:
                 User.objects.get(email=request.data["email"])
-                exists = True
+                email_exists = True
             except User.DoesNotExist:
                 pass
 
         if "phone_number" in request.data:
             try:
                 User.objects.get(phone_number=request.data["phone_number"])
-                exists = True
+                phone_exists = True
             except User.DoesNotExist:
                 pass
 
         if "pan_number" in request.data:
             try:
                 UserProfile.objects.get(pan_number=request.data["pan_number"])
-                exists = True
+                pan_exists = True
             except User.DoesNotExist:
                 pass
 
         return Response(
             {
-                "user_exists": exists,
+                "email_exists": email_exists,
+                "phone_exists": phone_exists,
+                "pan_exists": pan_exists,
                 "status": status.HTTP_200_OK,
             },
             status=status.HTTP_200_OK,
