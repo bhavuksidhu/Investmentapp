@@ -878,8 +878,9 @@ class CheckEmailPhonePanNumber(APIView):
             try:
                 UserProfile.objects.get(pan_number=request.data["pan_number"])
                 pan_exists = True
-            except User.DoesNotExist:
+            except UserProfile.DoesNotExist:
                 pass
+
 
         return Response(
             {
