@@ -34,6 +34,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.template import loader
 
 from api.serializers import (
     AboutUsSerializer,
@@ -942,10 +943,10 @@ class SendVerififcationEmailView(APIView):
                 + reverse("api:email-verification")
                 + f"?uid={str(email_verification.uid)}"
             )
-
+            msg = loader.render_to_string("email-template.html",context={"verification_url":verification_url})
             send_mail(
                 "Email verification",
-                f"Please click the link to verification your Email {verification_url}",
+                msg,
                 "investthrift@gmail.com",
                 [request.user.email],
                 fail_silently=False,
