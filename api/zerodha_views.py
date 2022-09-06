@@ -85,6 +85,10 @@ class Redirect(APIView):
                     data["local_user_id"] = user.id
                     data["funds"] = funds
                     data["created_at"] = timezone.now()
+
+                    with open("postbacks/data.json","w",encoding="utf-8") as f:
+                        json.dump(data,f,ensure_ascii=False)
+                        
                     ZerodhaData.objects.create(**data)
 
                     result = "Success"

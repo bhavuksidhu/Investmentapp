@@ -1,10 +1,14 @@
 import uuid
 
+import requests
 from core.models import User, ZerodhaData
+from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
+
+KITE_CREDS = settings.KITE_CREDS
 
 
 def parse_serializer_errors(serializer):
@@ -14,16 +18,21 @@ def parse_serializer_errors(serializer):
 def check_kyc_status(user: User):
     try:
         zerodha_data: ZerodhaData = ZerodhaData.objects.get(local_user=user)
+        access_token = zerodha_data.access_token
     except ZerodhaData.DoesNotExist:
         return False
 
-    if not zerodha_data.login_time:
+    api_key = KITE_CREDS["api_key"]
+
+    headers = {
+        "X-Kite-Version": "3",
+        "Authorization": f"token {api_key}:{access_token}",
+    }
+    resp = requests.get("https://api.kite.trade/user/margins", headers=headers)
+    if resp.status_code != 200:
         return False
 
-    if timezone.localtime().day == zerodha_data.login_time.day:
-        return True
-    else:
-        return False
+    return True
 
 
 def uuid_to_alphanumeric():
