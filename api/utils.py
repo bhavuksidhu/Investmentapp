@@ -4,6 +4,7 @@ import requests
 from core.models import User, ZerodhaData
 from django.conf import settings
 from django.utils import timezone
+from kiteconnect import KiteConnect
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
@@ -30,9 +31,23 @@ def check_kyc_status(user: User):
     }
     resp = requests.get("https://api.kite.trade/user/margins", headers=headers)
     if resp.status_code != 200:
-        return False
-
+        return refresh_access_token(zerodha_data)
     return True
+
+
+def refresh_access_token(zerodha_data: ZerodhaData):
+    try:
+        kite = KiteConnect(api_key=KITE_CREDS["api_key"])
+        kite.set_access_token(zerodha_data.access_token)
+        resp = kite.renew_access_token(
+            refresh_token=zerodha_data.refresh_token, api_secret=KITE_CREDS["secret"]
+        )
+        zerodha_data.access_token = resp["access_token"]
+        zerodha_data.save()
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
 def uuid_to_alphanumeric():

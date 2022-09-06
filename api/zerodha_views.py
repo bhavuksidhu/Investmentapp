@@ -239,7 +239,18 @@ class RefreshFundsView(APIView):
     )
     def get(self, request, *args, **kwargs):
         api_key = KITE_CREDS["api_key"]
-
+        kyc_done = check_kyc_status(user=request.user)
+        
+        if not kyc_done:
+            return Response(
+                {
+                    "errors": "KYC NOT DONE OR EXPIRED",
+                    "funds": None,
+                    "status": status.HTTP_403_FORBIDDEN,
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+            
         try:
             zerodha_data: ZerodhaData = request.user.zerodha_data
             access_token = zerodha_data.access_token
