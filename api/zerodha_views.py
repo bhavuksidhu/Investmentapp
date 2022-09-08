@@ -49,6 +49,9 @@ class Redirect(APIView):
         message = "Thank you! Your transaction has been completed successfully"
 
         if action == "basket":
+            if zerodha_status == "cancelled":
+                result = "Cancelled"
+                message = "Your cancelled your transaction"
             return render(
                 request, "zerodha_redirect.html", {"result": result, "message": message}
             )
