@@ -636,7 +636,7 @@ class StaticContentManagementView(LoginRequiredMixin, View):
         if faqs:
             faqs = json.loads(faqs)
             for faq in faqs:
-                if not faq["question"] or faq["answer"]:
+                if not faq["question"] or not faq["answer"]:
                     messages.add_message(
                         request, messages.ERROR, "FAQ Question/Answer cannot be empty!"
                     )
