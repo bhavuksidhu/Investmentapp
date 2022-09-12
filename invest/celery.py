@@ -11,7 +11,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.beat_schedule = {
     "update_stock_prices": {
         "task": "api.tasks.update_stock_prices",
-         "schedule": crontab(hour=0, minute=0),
+         "schedule": crontab(hour="*", minute=0),
     },
     "calculate_portfolio_value": {
     "task": "api.tasks.calculate_portfolio_value",
