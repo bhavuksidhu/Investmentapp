@@ -1,5 +1,6 @@
 import requests
 from celery import shared_task
+from api.utils import refresh_access_token
 from core.models import (
     InvestmentInsight,
     MarketQuote,
@@ -15,7 +16,7 @@ from django.utils import timezone
 @shared_task
 def update_stock_prices():
     latest_zerodha_data: ZerodhaData = ZerodhaData.objects.first()
-
+    refresh_access_token(latest_zerodha_data)
     access_token = latest_zerodha_data.access_token
     api_key = latest_zerodha_data.api_key
     headers = {
