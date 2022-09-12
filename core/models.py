@@ -161,9 +161,10 @@ class ZerodhaData(models.Model):
     meta = models.JSONField(null=True)
     funds = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["-updated_at"]
 
 
 class Notification(models.Model):
