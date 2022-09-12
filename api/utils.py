@@ -1,10 +1,9 @@
+import hashlib
 import uuid
 
 import requests
 from core.models import User, ZerodhaData
 from django.conf import settings
-from django.utils import timezone
-from kiteconnect import KiteConnect
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
@@ -36,14 +35,40 @@ def check_kyc_status(user: User):
 
 
 def refresh_access_token(zerodha_data: ZerodhaData):
+
+    api_key = KITE_CREDS["api_key"]
+    apy_secret = KITE_CREDS["secret"]
+
     try:
-        kite = KiteConnect(api_key=KITE_CREDS["api_key"])
-        kite.set_access_token(zerodha_data.access_token)
-        resp = kite.renew_access_token(
-            refresh_token=zerodha_data.refresh_token, api_secret=KITE_CREDS["secret"]
+        refresh_token = zerodha_data.refresh_token
+
+        h = hashlib.sha256(
+            api_key.encode("utf-8")
+            + refresh_token.encode("utf-8")
+            + apy_secret.encode("utf-8")
         )
-        zerodha_data.access_token = resp["access_token"]
+        checksum = h.hexdigest()
+
+        url = "https://api.kite.trade/session/refresh_token"
+
+        data = {
+            "api_key": api_key,
+            "refresh_token": refresh_token,
+            "checksum": checksum,
+        }
+
+        resp = requests.post(url,data=data)
+        
+        json_data = resp.json()["data"]
+
+        access_token = json_data["access_token"]
+        refresh_token = json_data["refresh_token"]
+
+        zerodha_data.access_token = access_token
+        zerodha_data.refresh_token = refresh_token
+
         zerodha_data.save()
+
         return True
     except Exception as e:
         print(e)

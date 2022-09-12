@@ -11,12 +11,16 @@ from core.models import (
 )
 from core.utils import send_notification
 from django.utils import timezone
+from django.db.models import Q
 
 
 @shared_task
 def update_stock_prices():
-    latest_zerodha_data: ZerodhaData = ZerodhaData.objects.first()
+    
+    latest_zerodha_data: ZerodhaData = ZerodhaData.objects.filter(~Q(refresh_token='')).first()
     refresh_access_token(latest_zerodha_data)
+    latest_zerodha_data.refresh_from_db()
+
     access_token = latest_zerodha_data.access_token
     api_key = latest_zerodha_data.api_key
     headers = {
