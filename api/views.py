@@ -495,7 +495,7 @@ class MarketFilterViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         price = float(price)
         lower_price = price - 10
 
-        query = MarketQuote.objects.filter(price_gt=0).filter(price__lte=price, price__gte=lower_price)
+        query = MarketQuote.objects.filter(price__gt=0).filter(price__lte=price, price__gte=lower_price)
 
         if keyword:
             query = query.filter(
