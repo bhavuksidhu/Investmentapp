@@ -197,7 +197,7 @@ class FundsSerializer(serializers.ModelSerializer):
 class MarketQuoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarketQuote
-        fields = ["company_name", "trading_symbol", "price", "exchange", "change"]
+        fields = ["company_name", "trading_symbol", "price", "exchange", "change","extra_text"]
 
 
 class TradeSerializer(serializers.ModelSerializer):
