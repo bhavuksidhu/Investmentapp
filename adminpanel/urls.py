@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (CustomerDetailView, CustomerEditView, CustomerManagementView, DashboardView,
                     ForgotPasswordView, LoginView, LogoutView, NotificationsView, PasswordResetConfirmationView, PasswordResetView, SettingsView,
-                    StaticContentManagementView,InvestingReportView, StockManagementView, StockUploadTemplateView, StockUploadView,SubscriptionManagementView, TipAddView, TipEditView, TipManagementView)
+                    StaticContentManagementView,InvestingReportView, StockEditView, StockManagementView, StockUploadTemplateView, StockUploadView,SubscriptionManagementView, TipAddView, TipEditView, TipManagementView)
 
 app_name = "adminpanel"
 urlpatterns = [
@@ -21,6 +21,7 @@ urlpatterns = [
     path("stock-upload/",StockUploadView.as_view(),name="stock-upload"),
     path("stock-upload-template/",StockUploadTemplateView.as_view(),name="stock-upload-template"),
     path("stock-management/",StockManagementView.as_view(),name="stock-management"),
+    path("stock-edit/<int:pk>/",StockEditView.as_view(),name="stock-edit"),
     path("static-content-management/", StaticContentManagementView.as_view(),name="static-content-management"),
     path("settings/", SettingsView.as_view(),name="settings"),
     path("tip-management/", TipManagementView.as_view(),name="tip-management"),

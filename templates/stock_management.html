@@ -9,6 +9,7 @@
                     <a href={% url "adminpanel:stock-upload" %} class="Button ">+ Add Stock List</a>
                 </div>
             </div>
+            {% include "fragments/messages.html" %}
             <div class="InnerBox">
                 <div class="FlexMain">
                     <div class="Search">
@@ -30,19 +31,23 @@
                     <table style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Symbol</th>
                                 <th>Series</th>
-                                <th>Index Listing</th>
+                                <th>Extra Text</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for stock in stocks %}
                                 <tr>
-                                    <td>{{ stock.id }}</td>
                                     <td>{{ stock.symbol }}</td>
                                     <td>{{ stock.series }}</td>
-                                    <td>{{ stock.index_listing }}</td>
+                                    <td>{{ stock.extra_text|default_if_none:"" }}</td>
+                                    <td>
+                                        <a class="Blue" href="{% url "adminpanel:stock-edit" stock.id %}">
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

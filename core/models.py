@@ -233,19 +233,20 @@ class InvestmentInsight(models.Model):
 
 
 class Stock(models.Model):
-    exchange = models.TextField()
+    company_name = models.TextField()
     symbol = models.TextField()
-    series = models.TextField(default="", null="")
-    index_listing = models.TextField(default="", null="")
+    series = models.TextField(default="", null=True)
+    extra_text = models.TextField(default="", null=True)
 
 
 class MarketQuote(models.Model):
     company_name = models.TextField(null=True, default="")
-    instrument_token = models.TextField()
+    instrument_token = models.TextField(null=True,default="")
     trading_symbol = models.TextField()
     price = models.FloatField()
     exchange = models.TextField()
     change = models.FloatField(null=True)
+    extra_text = models.TextField(null=True)
 
 
 class EmailVerificationRecord(models.Model):

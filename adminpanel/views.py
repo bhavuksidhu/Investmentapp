@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 from core.models import (
+    MarketQuote,
     Stock,
     Transaction,
     User,
@@ -544,23 +545,79 @@ class StockUploadView(LoginRequiredMixin, View):
             return redirect("adminpanel:stock-upload")
 
         df = pd.read_excel(request.FILES.get("stock_file"))
-        if df["exchange"].isnull().values.any() or df["symbol"].isnull().values.any():
+        if "symbol" not in df or df["symbol"].isnull().values.any():
             messages.add_message(
-                request, messages.ERROR, "Exchance & Symbol columns can't be empty!"
+                request, messages.ERROR, "Symbol columns can't be empty!"
             )
             return redirect("adminpanel:stock-upload")
 
         Stock.objects.all().delete()
+        df = df.fillna('')
         [Stock.objects.create(**x) for x in df.T.to_dict().values()]
+
+        stocks = Stock.objects.all()
+
+        for stock in stocks:
+            try:
+                market_quote: MarketQuote = MarketQuote.objects.get(
+                    trading_symbol=stock.symbol
+                )
+                market_quote.extra_text = stock.extra_text
+                market_quote.save()
+            except MarketQuote.DoesNotExist:
+                MarketQuote.objects.create(
+                    company_name=stock.company_name,
+                    trading_symbol=stock.symbol,
+                    exchange="NSE",
+                    price=0.0,
+                    extra_text=stock.extra_text,
+                )
+
+        #Delete leftover stocks
+        new_symbols = [stock.symbol for stock in stocks]
+        market_quotes = MarketQuote.objects.all()
+        for quote in market_quotes:
+            if quote.trading_symbol not in new_symbols:
+                quote.delete()
+
         messages.add_message(
-                            request, messages.SUCCESS, "Stock-list uploaded successfully!"
-                        )
+            request, messages.SUCCESS, "Stock-list uploaded successfully!"
+        )
         return redirect("adminpanel:stock-management")
 
 
 class StockUploadTemplateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwagrs):
         return FileResponse(open("stocks_template.xlsx", "rb"))
+
+class StockEditView(LoginRequiredMixin, DetailView):
+    template_name = "stock_edit.html"
+    mode = Stock
+    context_object_name = "stock"
+
+    def get_queryset(self):
+        return Stock.objects.filter(id=self.kwargs.get("pk"))
+
+    def post(self, request, *args, **kwargs):
+        company_name = request.POST.get("company_name", None)
+        series = request.POST.get("series", "")
+        extra_text = request.POST.get("extra_text", "")
+
+        try:
+            stock: Stock = Stock.objects.get(id=self.kwargs.get("pk"))
+        except Stock.DoesNotExist:
+            return self.get(self, request, *args, **kwargs)
+
+        stock.company_name = company_name
+        stock.series = series
+        stock.extra_text = extra_text
+        stock.save()
+
+        quote: MarketQuote = MarketQuote.objects.get(trading_symbol=stock.symbol)
+        quote.extra_text = extra_text
+        quote.save()
+
+        return redirect("adminpanel:stock-management")
 
 
 class StaticContentManagementView(LoginRequiredMixin, View):
@@ -703,12 +760,7 @@ class TipManagementView(LoginRequiredMixin, ListView):
         q = self.request.GET.get("q", None)
         if q:
             q = q.strip()
-            return (
-                Tip.objects
-                .filter(
-                    Q(text__icontains=q)
-                )
-            )
+            return Tip.objects.filter(Q(text__icontains=q))
         else:
             return Tip.objects.all()
 
@@ -721,7 +773,7 @@ class TipManagementView(LoginRequiredMixin, ListView):
         todo = request.POST.get("todo", None)
         selected_id = request.POST.get("selected_id", None)
 
-        print(todo,selected_id)
+        print(todo, selected_id)
 
         if todo and selected_id:
             try:
@@ -754,9 +806,10 @@ class TipEditView(LoginRequiredMixin, DetailView):
         tip.save()
         return redirect("adminpanel:tip-management")
 
+
 class TipAddView(LoginRequiredMixin, View):
     template_name = "tip_add.html"
-    
+
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
 
