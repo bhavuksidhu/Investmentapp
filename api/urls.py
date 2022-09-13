@@ -23,6 +23,7 @@ from api.views import (
     SubscriptionHistoryViewSet,
     SubscriptionViewSet,
     TermsNConditionsViewSet,
+    TipViewSet,
     TradeViewSet,
     TransactionLatestView,
     TransactionViewSet,
@@ -74,6 +75,7 @@ router.register(
     r"static/contact-details", ContactDataViewSet, basename="contact-details"
 )
 router.register(r"static/faqs", FAQViewSet, basename="faqs")
+router.register(r"static/tip", TipViewSet, basename="tips")
 
 
 urlpatterns = [

@@ -1,0 +1,162 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Tips Management{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Tips Management</h4>
+                <a class="Button" href="{% url 'adminpanel:tip-add' %}" style="width:revert">
+                    <i class="fa fa-plus"></i> Add Tip
+                </a>
+            </div>
+            <div class="InnerBox">
+                <div class="FlexMain">
+                    <div class="Search">
+                        <form action={% url "adminpanel:tip-management"%} method="GET">
+                            <input type="text"
+                                   placeholder="Enter tip text"
+                                   id="search_value" name="q" style="min-width:400px" {% if q %} value={{q}} {% endif %}>
+                            <button id="search" type="submit">Search</button>
+                            <button class="Reset" onclick="document.querySelector('#search_value').value=''">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="TableList">
+                    <table style="width: 120%;">
+                        <thead>
+                            <tr>
+                                <th>Tip ID</th>
+                                <th>Text</th>
+                                <th>Created</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tip in tip_list %}
+                                <tr>
+                                    <td class="tip_id">TIP-{{ tip.id }}</td>
+                                    <td>{{ tip.text }}</td>
+                                    <td>{{ tip.created_at }}</td>
+                                    <td>
+                                        <a class="Blue" href="{% url "adminpanel:tip-edit" tip.id %}">
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        </a>
+                                        <a class="Blue Delete"
+                                           href="javascript:void(0)"
+                                           data-toggle="modal"
+                                           data-target="#Delete">
+                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if is_paginated %}
+                    <div class="Pagination">
+                        <ul>
+                            <li>
+                                <a href="?page=1"><i class="fa fa-angle-double-left"></i></a>
+                            </li>
+                            {% if page_obj.has_previous %}
+                                <li>
+                                    <a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                                </li>
+                            {% endif %}
+                            {% for n in page_obj.paginator.page_range %}
+                                {% if page_obj.number == n %}
+                                    <li class="page-item active">
+                                        <li class="active">
+                                            <a href="javascript:void(0);">{{n}}</a>
+                                        </li>
+                                    </li>
+                                {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                                    <li>
+                                        <a href="?page={{ n }}">{{ n }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li>
+                                    <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="ModalBox">
+        <div id="Delete"
+             class="modal fade in"
+             style="display: none;"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Delete
+                            </h3>
+                            <p>
+                                Are you sure you want to Delete this Tip ?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal" class="yesBoss">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let selected_id = null;
+        let todo = "";
+    </script>
+    <script type="text/javascript">
+        $(".Delete").on("click", function(e){
+            todo = "delete"
+            selected_id =e.target.closest("tr").querySelector(".tip_id").textContent.replace("TIP-","")
+        })
+
+        $(".yesBoss").on("click",function(e){
+            modifyUser()
+        })
+    </script>
+    <script>
+
+        function modifyUser(){
+            let url = "{% url 'adminpanel:tip-management' %}"
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                }
+            });
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    "todo": todo,
+                    "selected_id": selected_id 
+                }
+            });
+            if(todo == "delete"){
+                setTimeout(reload, 2000);
+            }
+        }
+
+        function reload() {
+            document.location.reload();
+          }
+    </script>
+{% endblock %}

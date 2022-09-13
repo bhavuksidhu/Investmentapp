@@ -1,7 +1,8 @@
+from dataclasses import field
 import re
 from mimetypes import guess_type
 
-from adminpanel.models import FAQ, ContactData, StaticData
+from adminpanel.models import FAQ, ContactData, StaticData, Tip
 from core.models import (
     EmailVerificationRecord,
     InvestmentInsight,
@@ -383,6 +384,12 @@ class FAQSerializer(serializers.ModelSerializer):
         fields = ["question", "answer"]
         read_only_fields = ["question", "answer"]
 
+@extend_schema_serializer(many=False)
+class TipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tip
+        fields = ["text"]
+        read_only_fields = ["text"]
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:

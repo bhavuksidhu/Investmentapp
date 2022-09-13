@@ -1,7 +1,7 @@
 import datetime
 from datetime import timedelta
 
-from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData
+from adminpanel.models import FAQ, AdminNotification, ContactData, StaticData, Tip
 from core.models import (
     EmailVerificationRecord,
     MarketQuote,
@@ -14,6 +14,8 @@ from core.models import (
     UserSubscription,
     ZerodhaData,
 )
+
+from random import choice
 from core.utils import send_notification
 from django.core.mail import send_mail
 from django.db.models import Q
@@ -54,6 +56,7 @@ from api.serializers import (
     RegisterUserSerializer,
     ResetPasswordSerializer,
     TermsNConditionsSerializer,
+    TipSerializer,
     TradeSerializer,
     TransactionGroupedByDateSerializer,
     TransactionSerializer,
@@ -398,6 +401,13 @@ class FAQViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         return FAQ.objects.all()
 
+class TipViewSet(GetViewSet):
+    serializer_class = TipSerializer
+
+    def get_queryset(self):
+        pks = Tip.objects.values_list('pk', flat=True)
+        random_pk = choice(pks)
+        return Tip.objects.get(pk=random_pk)
 
 class NotificationViewSet(ListGetUpdateViewSet):
     serializer_class = NotificationSerializer

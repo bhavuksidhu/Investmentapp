@@ -30,6 +30,7 @@ from adminpanel.models import (
     ContactData,
     PasswordReset,
     StaticData,
+    Tip,
 )
 
 
@@ -690,3 +691,76 @@ class NotificationsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return AdminNotification.objects.all()
+
+
+class TipManagementView(LoginRequiredMixin, ListView):
+    template_name = "tip_management.html"
+    model = Tip
+    context_object_name = "tip_list"
+    paginate_by = 5
+
+    def get_queryset(self):
+        q = self.request.GET.get("q", None)
+        if q:
+            q = q.strip()
+            return (
+                Tip.objects
+                .filter(
+                    Q(text__icontains=q)
+                )
+            )
+        else:
+            return Tip.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", None)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        todo = request.POST.get("todo", None)
+        selected_id = request.POST.get("selected_id", None)
+
+        print(todo,selected_id)
+
+        if todo and selected_id:
+            try:
+                tip: Tip = Tip.objects.get(id=int(selected_id))
+                if todo == "delete":
+                    tip.delete()
+            except Tip.DoesNotExist:
+                return JsonResponse({"message": "Failed to find tip"})
+
+        return JsonResponse({"message": "OK"})
+
+
+class TipEditView(LoginRequiredMixin, DetailView):
+    template_name = "tip_edit.html"
+    mode = Tip
+    context_object_name = "tip"
+
+    def get_queryset(self):
+        return Tip.objects.filter(id=self.kwargs.get("pk"))
+
+    def post(self, request, *args, **kwargs):
+        tip_text = request.POST.get("tip_text", None)
+
+        try:
+            tip: Tip = Tip.objects.get(id=self.kwargs.get("pk"))
+        except Tip.DoesNotExist:
+            return self.get(self, request, *args, **kwargs)
+
+        tip.text = tip_text
+        tip.save()
+        return redirect("adminpanel:tip-management")
+
+class TipAddView(LoginRequiredMixin, View):
+    template_name = "tip_add.html"
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        tip_text = request.POST.get("tip_text", None)
+        Tip.objects.create(text=tip_text)
+        return redirect("adminpanel:tip-management")

@@ -34,4 +34,10 @@ class AdminNotification(models.Model):
 class PasswordReset(models.Model):
     uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
+class Tip(models.Model):
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']

@@ -1,0 +1,25 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Add Tip{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Enter your tip</h4>
+                <div class="BackPage">
+                    <a href={% url "adminpanel:tip-management" %}><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
+                </div>
+            </div>
+            <form action={% url "adminpanel:tip-add" %} method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea rows="10" name="tip_text" class="form-control" id="tip_text" spellcheck="false"></textarea>
+                    <div class="Save">
+                        <button class="Button" type="submit">Save</button>
+                    </div>
+                </div>
+            </form>
+            {% include "fragments/messages.html" %}
+        </div>
+    </div>
+    <script>
+{% endblock %}
