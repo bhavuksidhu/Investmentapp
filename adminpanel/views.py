@@ -650,17 +650,6 @@ class StaticContentManagementView(LoginRequiredMixin, View):
                 messages.add_message(request, messages.ERROR, "Invalid email")
                 return JsonResponse({"message": "OK"})
 
-            if (
-                len(contact_data["contact_number"]) > 13
-                or len(contact_data["contact_number"]) < 8
-            ):
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "Invalid phone number (Must be between 8-13 characters)",
-                )
-                return JsonResponse({"message": "OK"})
-
             contact_data_obj.company_email = contact_data["contact_email"].lower()
             contact_data_obj.company_number = contact_data["contact_number"]
             contact_data_obj.company_address = contact_data["contact_address"]
