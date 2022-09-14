@@ -1,6 +1,6 @@
 import requests
 from celery import shared_task
-from api.utils import refresh_access_token
+from api.utils import check_kyc_status, refresh_access_token
 from core.models import (
     InvestmentInsight,
     MarketQuote,
@@ -18,7 +18,7 @@ from django.db.models import Q
 def update_stock_prices():
     
     latest_zerodha_data: ZerodhaData = ZerodhaData.objects.filter(~Q(refresh_token='')).first()
-    refresh_access_token(latest_zerodha_data)
+    check_kyc_status(latest_zerodha_data.local_user)
     latest_zerodha_data.refresh_from_db()
 
     access_token = latest_zerodha_data.access_token
