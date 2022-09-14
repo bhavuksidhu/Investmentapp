@@ -5,55 +5,70 @@
         <div class="WrapperBox">
             <div class="TitleBox">
                 <h4>Tips Management</h4>
-                <a class="Button" href="{% url 'adminpanel:tip-add' %}" style="width:revert">
+                <a class="Button"
+                   href="{% url 'adminpanel:tip-add' %}"
+                   style="width:revert">
                     <i class="fa fa-plus"></i> Add Tip
                 </a>
             </div>
+            {% include "fragments/messages.html" %}
             <div class="InnerBox">
                 <div class="FlexMain">
                     <div class="Search">
-                        <form action={% url "adminpanel:tip-management"%} method="GET">
-                            <input type="text"
-                                   placeholder="Enter tip text"
-                                   id="search_value" name="q" style="min-width:400px" {% if q %} value={{q}} {% endif %}>
+                        <form action={% url "adminpanel:tip-management" %} method="GET">
+                            <input type="text" placeholder="Enter tip text" id="search_value" name="q" style="min-width:400px" {% if q %} value={{ q }}{% endif %}>
                             <button id="search" type="submit">Search</button>
-                            <button class="Reset" onclick="document.querySelector('#search_value').value=''">
+                            <button class="Reset"
+                                    onclick="document.querySelector('#search_value').value=''">
                                 <i class="fa fa-refresh"></i>
                             </button>
                         </form>
                     </div>
                 </div>
                 <div class="TableList">
-                    <table style="width: 120%;">
-                        <thead>
-                            <tr>
-                                <th>Tip ID</th>
-                                <th>Text</th>
-                                <th>Created</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for tip in tip_list %}
+                    <form url="{% url 'adminpanel:tip-management' %}" method="POST" id="form">
+                        {% csrf_token %}
+                        <table style="width: 100%;">
+                            <thead>
                                 <tr>
-                                    <td class="tip_id">TIP-{{ tip.id }}</td>
-                                    <td>{{ tip.text }}</td>
-                                    <td>{{ tip.created_at }}</td>
-                                    <td>
-                                        <a class="Blue" href="{% url "adminpanel:tip-edit" tip.id %}">
-                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                        </a>
-                                        <a class="Blue Delete"
-                                           href="javascript:void(0)"
-                                           data-toggle="modal"
-                                           data-target="#Delete">
-                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                        </a>
-                                    </td>
+                                    <th>Tip ID</th>
+                                    <th>Text</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
                                 </tr>
+                            </thead>
+                            <tbody>
+                                {% for tip in tip_list %}
+                                    <tr>
+                                        <td class="tip_id">TIP-{{ tip.id }}</td>
+                                        <td style="text-align:left; max-width:400px">{{ tip.text }}</td>
+                                        <td>{{ tip.created_at }}</td>
+                                        <td>
+                                            <a class="Blue" href="{% url "adminpanel:tip-edit" tip.id %}">
+                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                            </a>
+                                            <a class="Blue Delete"
+                                               href="javascript:void(0)"
+                                               data-toggle="modal"
+                                               data-target="#Delete">
+                                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                            </a>
+                                            <label class="Switch">
+                                                <input type="checkbox"
+                                                       name="activator"
+                                                       value="{{tip.id}}"
+                                                       {% if tip.is_active %}checked{% endif %}>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </td>
+                                    </tr>
                                 {% endfor %}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                        <div style="display:flex; flex-direction:row-reverse;">
+                            <button class="Button" style="width:revert">Save</button>
+                        </div>
+                    </form>
                 </div>
                 {% if is_paginated %}
                     <div class="Pagination">
@@ -103,12 +118,8 @@
                     <div class="modal-body">
                         <div class="Decline">
                             <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
-                            <h3>
-                                Delete
-                            </h3>
-                            <p>
-                                Are you sure you want to Delete this Tip ?
-                            </p>
+                            <h3>Delete</h3>
+                            <p>Are you sure you want to Delete this Tip ?</p>
                             <h4>
                                 <a href="javascript:void(0);" data-dismiss="modal">no</a>
                                 <a href="javascript:void(0);" data-dismiss="modal" class="yesBoss">Yes</a>
@@ -134,7 +145,9 @@
         })
     </script>
     <script>
-
+        function updateSelectedUserId(element){
+            selected_id = element.closest("tr").querySelector(".tip_id").textContent.replace("TIP-","")
+        }
         function modifyUser(){
             let url = "{% url 'adminpanel:tip-management' %}"
             $.ajaxSetup({
@@ -150,7 +163,7 @@
                     "selected_id": selected_id 
                 }
             });
-            if(todo == "delete"){
+            if(todo=="delete"){
                 setTimeout(reload, 2000);
             }
         }
@@ -158,5 +171,37 @@
         function reload() {
             document.location.reload();
           }
+    </script>
+    <script>
+        $("#form").on("submit", function (e) {
+            e.preventDefault();
+
+            let inputs = document.querySelectorAll('.Switch input[type="checkbox"]')
+            let checked_inputs = []
+
+            inputs.forEach(x => {if(x.checked){checked_inputs.push(x)}})
+
+            console.log(checked_inputs.length)
+            if(checked_inputs.length>1){
+                Eggy({
+                    title: 'Error!',
+                    message: 'Only one tip can be active at a time',
+                    type: 'error',
+                    duration: 4000
+                })
+                return
+            }
+            else if(checked_inputs.length == 0){
+                Eggy({
+                    title: 'Error!',
+                    message: 'At least one tip needs to be active.',
+                    type: 'error',
+                    duration: 4000
+                })
+                return
+            }
+           event.currentTarget.submit();
+        })
+
     </script>
 {% endblock %}

@@ -744,7 +744,7 @@ class TipManagementView(LoginRequiredMixin, ListView):
     template_name = "tip_management.html"
     model = Tip
     context_object_name = "tip_list"
-    paginate_by = 5
+    paginate_by = 25
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
@@ -768,12 +768,31 @@ class TipManagementView(LoginRequiredMixin, ListView):
         if todo and selected_id:
             try:
                 tip: Tip = Tip.objects.get(id=int(selected_id))
+                if tip.is_active:
+                    messages.add_message(
+                        request, messages.ERROR, "You cannot delete an active tip!"
+                    )
+                    return JsonResponse({"message": "OK"})
                 if todo == "delete":
                     tip.delete()
             except Tip.DoesNotExist:
                 return JsonResponse({"message": "Failed to find tip"})
+    
+            return JsonResponse({"message": "OK"})
+        else:
+            try:
+                selected_id = int(request.POST.get("activator"))
+                tip: Tip = Tip.objects.get(id=int(selected_id))
+                Tip.objects.all().update(is_active=False)
+                tip.is_active = True
+                tip.save()
+            except:
+                messages.add_message(
+                        request, messages.ERROR, "Something went wrong, please try again!"
+                    )
+            return redirect("adminpanel:tip-management")
 
-        return JsonResponse({"message": "OK"})
+
 
 
 class TipEditView(LoginRequiredMixin, DetailView):
@@ -805,5 +824,6 @@ class TipAddView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         tip_text = request.POST.get("tip_text", None)
-        Tip.objects.create(text=tip_text)
+        Tip.objects.all().update(is_active=False)
+        Tip.objects.create(text=tip_text,is_active=True)
         return redirect("adminpanel:tip-management")

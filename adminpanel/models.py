@@ -39,6 +39,7 @@ class PasswordReset(models.Model):
 class Tip(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-created_at']

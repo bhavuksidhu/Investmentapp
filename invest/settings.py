@@ -29,7 +29,7 @@ with open("creds.json", "r", encoding="utf-8") as f:
 SECRET_KEY = "859^*a+m2y*=hh#r6w7n0ak^$jw!q)wb+eqvc6+mlaflmt*dry"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1","localhost","invest-thrift.com","www.invest-thrift.com"]
 
@@ -93,7 +93,7 @@ DATABASES = {
         "NAME": "invest",
         "USER": "invest_user",
         "PASSWORD": "(PtWZ5nh}m6]?W8s",
-        "HOST": "localhost",
+        "HOST": "13.127.229.175",
         "PORT": "5432",
     }
 }
@@ -181,7 +181,7 @@ DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'
 
 LOGIN_URL = '/adminpanel/login/'
 
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
