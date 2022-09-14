@@ -428,7 +428,7 @@ class CustomerEditView(DetailView):
         except Exception as e:
             print(e)
 
-        return redirect("adminpanel:customer-edit", self.kwargs.get("pk"))
+        return redirect("adminpanel:customer-detail", self.kwargs.get("pk"))
 
 
 class InvestingReportView(LoginRequiredMixin, ListView):

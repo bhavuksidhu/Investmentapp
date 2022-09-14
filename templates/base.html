@@ -8,9 +8,15 @@
         <title>{% block title %}Invest Thrift{% endblock %}</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
         <link type="text/css" rel="stylesheet" href="{% static 'css/style.css'%}">
+
+        <!-- EggyJs CSS-->
+        <link href="{% static 'css/eggy.css' %}" rel="stylesheet">
+        <link href="{% static 'css/progressbar.css' %}" rel="stylesheet">
+        <link href="{% static 'css/theme.css' %}" rel="stylesheet">
     </head>
     <body>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'js/eggy.js' %}"></script>
         {%block body%}
 
         {% endblock %}

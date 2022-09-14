@@ -1,13 +1,12 @@
-<style>
-    span.TostMessage.success {background-color: #299e52;}
-    span.TostMessage.info {background-color: #2196F3;}
-    span.TostMessage.error {background-color: #FF2400;}
-</style>
-
 {% if messages %}
+    <script>        
         {% for message in messages %}
-                <span class="TostMessage {{ message.tags }}" onclick="this.style.display='none';">
-                    <p>{{message}}</p>
-                </span>
+            Eggy({
+                title: '{{message.tags}}',
+                message: '{{message}}',
+                type: '{{message.tags}}',
+                duration: 4000
+            })
         {% endfor %}
+    </script>
 {% endif %}

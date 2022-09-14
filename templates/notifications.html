@@ -5,7 +5,11 @@
     <div class="WrapperBox">
 
         <div class="TitleBox">
-            <h4>    Notification </h4>
+            {% if {{notification_list|length}} > 1 %}
+            <h4>Notifications</h4>
+            {% else %}
+            <h4>Notification</h4>
+            {% endif %}
             <!-- <div class="AddButton">
                 <a href="stock-bulk-add.html" class="Button ">+ Add Stock List</a>
             </div> -->
