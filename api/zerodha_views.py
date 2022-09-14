@@ -78,7 +78,7 @@ class Redirect(APIView):
                 kite.set_access_token(data["access_token"])
 
                 margins_data = kite.margins()
-                funds = margins_data["equity"]["available"]["cash"]
+                funds = margins_data["equity"]["net"]
 
                 try:
                     user: User = User.objects.get(uuid=uuid)
@@ -282,7 +282,7 @@ class RefreshFundsView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
         else:
-            current_funds = resp.json()["data"]["equity"]["available"]["cash"]
+            current_funds = resp.json()["data"]["equity"]["net"]
             zerodha_data.funds = current_funds
             zerodha_data.save()
             return Response(
