@@ -43,13 +43,13 @@ def update_stock_prices():
         for k, v in response.json()["data"].items():
             exchange, symbol = k.split(":")
             price = v["last_price"]
+            close = v["ohlc"]["close"]
 
             try:
                 market_quote: MarketQuote = MarketQuote.objects.get(
                     trading_symbol=symbol
                 )
-                old_price = market_quote.price
-                change = old_price - price
+                change = close - price
                 market_quote.price = price
                 market_quote.change = change
                 market_quote.save()
