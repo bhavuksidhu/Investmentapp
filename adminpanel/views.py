@@ -664,6 +664,7 @@ class StaticContentManagementView(LoginRequiredMixin, View):
             contact_data_obj.company_email = contact_data["contact_email"].lower()
             contact_data_obj.company_number = contact_data["contact_number"]
             contact_data_obj.company_address = contact_data["contact_address"]
+            contact_data_obj.website = contact_data["contact_website"]
 
             contact_data_obj.save()
 

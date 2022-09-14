@@ -545,7 +545,7 @@ class TransactionViewSet(
     def get_queryset(self):
         from_date = self.request.GET.get("from_date", None)
         to_date = self.request.GET.get("to_date", None)
-        query = self.request.user.transactions.filter()
+        query = self.request.user.transactions.filter(verified=True)
         if from_date:
             query = query.filter(created_at__date__gte=from_date)
         if to_date:

@@ -6,6 +6,7 @@ class ContactData(models.Model):
     company_email = models.EmailField(null=True)
     company_number = models.CharField(max_length=20, unique=True, null=True)
     company_address = models.TextField()
+    website = models.TextField(default="")
     
 
 # Create your models here.
