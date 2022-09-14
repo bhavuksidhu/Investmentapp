@@ -12,7 +12,7 @@
             <form action={% url "adminpanel:tip-add" %} method="POST">
                 {% csrf_token %}
                 <div class="form-group">
-                    <textarea rows="10" name="tip_text" class="form-control" id="tip_text" spellcheck="false"></textarea>
+                    <textarea rows="10" name="tip_text" class="form-control" id="tip_text" spellcheck="false" required></textarea>
                     <div class="Save">
                         <button class="Button" type="submit">Save</button>
                     </div>

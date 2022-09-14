@@ -775,22 +775,15 @@ class TipManagementView(LoginRequiredMixin, ListView):
                     return JsonResponse({"message": "OK"})
                 if todo == "delete":
                     tip.delete()
+                if todo == "activate":
+                    Tip.objects.all().update(is_active=False)
+                    tip.is_active = True
+                    tip.save()
             except Tip.DoesNotExist:
                 return JsonResponse({"message": "Failed to find tip"})
-    
-            return JsonResponse({"message": "OK"})
-        else:
-            try:
-                selected_id = int(request.POST.get("activator"))
-                tip: Tip = Tip.objects.get(id=int(selected_id))
-                Tip.objects.all().update(is_active=False)
-                tip.is_active = True
-                tip.save()
-            except:
-                messages.add_message(
-                        request, messages.ERROR, "Something went wrong, please try again!"
-                    )
-            return redirect("adminpanel:tip-management")
+
+        return JsonResponse({"message": "OK"})
+
 
 
 

@@ -405,9 +405,7 @@ class TipViewSet(GetViewSet):
     serializer_class = TipSerializer
 
     def get_queryset(self):
-        pks = Tip.objects.values_list('pk', flat=True)
-        random_pk = choice(pks)
-        return Tip.objects.get(pk=random_pk)
+        return Tip.objects.filter(is_active=True).first()
 
 class NotificationViewSet(ListGetUpdateViewSet):
     serializer_class = NotificationSerializer
