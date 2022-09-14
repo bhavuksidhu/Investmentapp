@@ -374,8 +374,8 @@ class TermsNConditionsSerializer(serializers.ModelSerializer):
 class ContactDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactData
-        fields = ["company_email", "company_number", "company_address"]
-        read_only_fields = ["company_email", "company_number", "company_address"]
+        fields = ["company_email", "company_number", "company_address","website"]
+        read_only_fields = ["company_email", "company_number", "company_address","website"]
 
 
 class FAQSerializer(serializers.ModelSerializer):
