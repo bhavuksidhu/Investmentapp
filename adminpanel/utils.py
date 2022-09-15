@@ -19,4 +19,5 @@ def send_tip_notification(tip_text):
                 registration_id=registration_id,
                 message_title=title,
                 message_body=body,
+                notification_type="Tip"
             )
