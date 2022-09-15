@@ -5,7 +5,7 @@ from core.utils import send_notification
 
 def send_tip_notification(tip_text):
     title = "Fun Fact!"
-    body = f"Hey there! We have a fun fact for you. Check out now. ...({tip_text[:100]})"
+    body = f"Hey there! We have a fun fact for you. Check out now. ... {tip_text[:100]}"
 
     user_settings = UserSetting.objects.all()
     for setting in user_settings:
