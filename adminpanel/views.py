@@ -235,7 +235,7 @@ class CustomerManagementView(LoginRequiredMixin, ListView):
     template_name = "customer_management.html"
     model = User
     context_object_name = "user_list"
-    paginate_by = 5
+    paginate_by = 20
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
@@ -436,7 +436,7 @@ class InvestingReportView(LoginRequiredMixin, ListView):
     template_name = "investing_reports.html"
     model = Transaction
     context_object_name = "transaction_list"
-    paginate_by = 5
+    paginate_by = 20
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
@@ -477,7 +477,7 @@ class SubscriptionManagementView(LoginRequiredMixin, ListView):
     template_name = "subscription_management.html"
     model = UserSubscriptionHistory
     context_object_name = "subscriptions"
-    paginate_by = 5
+    paginate_by = 20
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
@@ -746,7 +746,7 @@ class TipManagementView(LoginRequiredMixin, ListView):
     template_name = "tip_management.html"
     model = Tip
     context_object_name = "tip_list"
-    paginate_by = 25
+    paginate_by = 20
 
     def get_queryset(self):
         q = self.request.GET.get("q", None)
