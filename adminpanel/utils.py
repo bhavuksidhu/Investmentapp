@@ -1,5 +1,5 @@
 
-from core.models import UserSetting
+from core.models import Notification, UserSetting
 from core.utils import send_notification
 
 
@@ -11,6 +11,9 @@ def send_tip_notification(tip_text):
     for setting in user_settings:
         registration_id = setting.device_token
 
+        # Notification.objects.create(
+        #         user=setting.user, notification_type=notification_type, head=head, body=body
+        #     )
         if registration_id:
             send_notification(
                 registration_id=registration_id,
