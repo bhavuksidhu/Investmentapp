@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -135,6 +135,13 @@ class UserSubscriptionHistory(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+    @property
+    def total_amount(self):
+        return ((self.amount / 100) * 18) + self.amount
+    
+    @property
+    def valid_till(self):
+        return self.created_at + timedelta(days=365)
 
 class ZerodhaData(models.Model):
     local_user = models.OneToOneField(

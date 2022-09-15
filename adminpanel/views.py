@@ -475,7 +475,7 @@ class InvestingReportView(LoginRequiredMixin, ListView):
 
 class SubscriptionManagementView(LoginRequiredMixin, ListView):
     template_name = "subscription_management.html"
-    model = UserSubscription
+    model = UserSubscriptionHistory
     context_object_name = "subscriptions"
     paginate_by = 5
 
@@ -485,21 +485,21 @@ class SubscriptionManagementView(LoginRequiredMixin, ListView):
         from_date = self.request.GET.get("from_date", None)
         to_date = self.request.GET.get("to_date", None)
 
-        query = UserSubscription.objects.select_related()
+        query = UserSubscriptionHistory.objects.select_related()
 
         if from_date:
-            query = query.filter(date_from__gte=from_date)
+            query = query.filter(created_at__gte=from_date)
         if to_date:
-            query = query.filter(date_to__lte=to_date)
+            query = query.filter(created_at__lte=to_date)
 
         if q and "CU" in q:
             q = int(q.replace("CU", "").strip())
-            query = query.filter(user__id=q)
+            query = query.filter(subscription__user__id=q)
         elif q:
             query = query.filter(
-                Q(user__email__icontains=q)
-                | Q(user__phone_number__icontains=q)
-                | Q(user__profile__first_name__icontains=q)
+                Q(subscription__user__email__icontains=q)
+                | Q(subscription__user__phone_number__icontains=q)
+                | Q(subscription__user__profile__first_name__icontains=q)
             )
 
         return query

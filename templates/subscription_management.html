@@ -70,27 +70,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for subscription in subscriptions %}
+                            {% for history in subscriptions %}
                                 <tr>
-                                    <td>SUB{{ subscription.id }}</td>
-                                    <td>CU{{ subscription.user.id }}</td>
-                                    <td>{{ subscription.user.profile.first_name }} {{ subscription.user.profile.first_name }}</td>
-                                    <td>{{ subscription.user.email }}</td>
-                                    <td>{{ subscription.date_from }}</td>
-                                    <td>{{ subscription.date_to }}</td>
+                                    <td>SUB{{ history.id }}</td>
+                                    <td>CU{{ history.subscription.user.id }}</td>
+                                    <td>{{ history.subscription.user.profile.first_name }} {{ history.subscription.user.profile.first_name }}</td>
+                                    <td>{{ history.subscription.user.email }}</td>
+                                    <td>{{ history.subscription.created_at }}</td>
+                                    <td>{{ history.subscription.valid_till }}</td>
                                     <td>
-                                        {{ subscription.amount }} INR
+                                        {{ history.amount }} INR
                                     </td>
                                     <td>
                                         18 %
                                     </td>
                                     <td>
-                                        {{ subscription.total_amount }} INR
+                                        {{ history.total_amount }} INR
                                     </td>
                                     <td>
                                         Online
                                     </td>
-                                    {% if subscription.active %}
+                                    {% if history.subscription.active %}
                                         <td>
                                             Complete
                                         </td>
