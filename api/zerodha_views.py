@@ -338,6 +338,9 @@ class PostBackView(APIView):
             )
 
             try:
+                if not user.settings.notification_preference:
+                    transaction_obj.save()
+                    return Response(data={"msg": "Done"}, status=200) 
                 registration_id = user.settings.device_token
             except UserSetting.DoesNotExist:
                 print("No Settings exist for user, aborting notification service.")

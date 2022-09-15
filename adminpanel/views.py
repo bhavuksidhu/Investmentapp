@@ -33,6 +33,7 @@ from adminpanel.models import (
     StaticData,
     Tip,
 )
+from adminpanel.utils import send_tip_notification
 
 
 # Create your views here.
@@ -552,7 +553,7 @@ class StockUploadView(LoginRequiredMixin, View):
             return redirect("adminpanel:stock-upload")
 
         Stock.objects.all().delete()
-        df = df.fillna('')
+        df = df.fillna("")
         [Stock.objects.create(**x) for x in df.T.to_dict().values()]
 
         stocks = Stock.objects.all()
@@ -573,7 +574,7 @@ class StockUploadView(LoginRequiredMixin, View):
                     extra_text=stock.extra_text,
                 )
 
-        #Delete leftover stocks
+        # Delete leftover stocks
         new_symbols = [stock.symbol for stock in stocks]
         market_quotes = MarketQuote.objects.all()
         for quote in market_quotes:
@@ -589,6 +590,7 @@ class StockUploadView(LoginRequiredMixin, View):
 class StockUploadTemplateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwagrs):
         return FileResponse(open("stocks_template.xlsx", "rb"))
+
 
 class StockEditView(LoginRequiredMixin, DetailView):
     template_name = "stock_edit.html"
@@ -779,13 +781,11 @@ class TipManagementView(LoginRequiredMixin, ListView):
                     Tip.objects.all().update(is_active=False)
                     tip.is_active = True
                     tip.save()
+                    send_tip_notification(tip.text)
             except Tip.DoesNotExist:
                 return JsonResponse({"message": "Failed to find tip"})
 
         return JsonResponse({"message": "OK"})
-
-
-
 
 
 class TipEditView(LoginRequiredMixin, DetailView):
@@ -818,5 +818,6 @@ class TipAddView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         tip_text = request.POST.get("tip_text", None)
         Tip.objects.all().update(is_active=False)
-        Tip.objects.create(text=tip_text,is_active=True)
+        Tip.objects.create(text=tip_text, is_active=True)
+        send_tip_notification(tip_text)
         return redirect("adminpanel:tip-management")
