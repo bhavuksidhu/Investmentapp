@@ -217,7 +217,7 @@ class DashboardView(LoginRequiredMixin, View):
         ]
         if context["total_revenue"] is None:
             context["total_revenue"] = 0
-        context["total_subscribed_users"] = user_query.filter(subscription__is_active=True).count()
+        context["total_subscribed_users"] = user_query.filter(subscription__active=True).count()
         context["from_period"] = from_period
         context["from_date"] = from_date
         context["to_date"] = to_date
