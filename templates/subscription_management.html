@@ -59,9 +59,8 @@
                                 <th>Subscription Id</th>
                                 <th>Customer  Id</th>
                                 <th>Customer  Name</th>
-                                <th>Mobile number &amp; email</th>
-                                <th>Subscription Date</th>
-                                <th>Valid Till</th>
+                                <th>Customer Email</th>
+                                <th>Subscription Purchase Date</th>
                                 <th>Amount</th>
                                 <th>Applicable taxes</th>
                                 <th>Total Amount</th>
@@ -77,7 +76,7 @@
                                     <td>{{ history.subscription.user.profile.first_name }} {{ history.subscription.user.profile.first_name }}</td>
                                     <td>{{ history.subscription.user.email }}</td>
                                     <td>{{ history.created_at }}</td>
-                                    <td>{{ history.valid_till }}</td>
+                                    {% comment %} <td>{{ history.valid_till }}</td> {% endcomment %}
                                     <td>
                                         {{ history.amount }} INR
                                     </td>
