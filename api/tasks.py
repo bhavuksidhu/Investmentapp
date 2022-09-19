@@ -49,7 +49,7 @@ def update_stock_prices():
                 market_quote: MarketQuote = MarketQuote.objects.get(
                     trading_symbol=symbol
                 )
-                change = close - price
+                change = price - close
                 market_quote.price = price
                 market_quote.change = change
                 market_quote.save()
