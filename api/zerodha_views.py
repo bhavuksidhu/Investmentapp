@@ -95,11 +95,11 @@ class Redirect(APIView):
                     ZerodhaData.objects.create(**data)
 
                     result = "Success"
-                    message = "Thank you! KYC linked successfully!"
+                    message = "Congratulations! Your trading account is successfully linked."
                     return render(
                         request,
                         "zerodha_redirect.html",
-                        {"result": result, "message": message},
+                        {"result": result, "message": message, "linked":True},
                     )
                 except User.DoesNotExist:
                     result = "Failure"
