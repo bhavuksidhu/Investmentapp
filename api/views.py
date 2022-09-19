@@ -445,7 +445,7 @@ class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             print("No Settings exist for user, aborting notification service.")
 
         head = f"Subscription Purchased!"
-        body = f"Your subscription was renewed successfully."
+        body = f"Your subscription renewal is successful."
         Notification.objects.create(
             user=request.user, notification_type="Subscription", head=head, body=body
         )
