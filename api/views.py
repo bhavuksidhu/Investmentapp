@@ -803,7 +803,7 @@ class TradeViewSet(
     )
     def create(self, request, *args, **kwargs):
 
-        if request.user.transactions.filter(verified=True).count() < 3 or request.user.subscription.active:
+        if request.user.transactions.filter(verified=True).count() < 1 or request.user.subscription.active:
             pass
         else:
             return Response(

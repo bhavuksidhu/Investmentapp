@@ -112,7 +112,7 @@ class UserSubscription(models.Model):
     @property
     def amount(self):
         if self.date_to and self.date_from:
-            return ((self.date_to - self.date_from).days / 365) * 39
+            return ((self.date_to - self.date_from).days / 365) * 69
         else:
             return 0
 
