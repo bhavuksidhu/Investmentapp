@@ -32,7 +32,8 @@ from api.views import (
     UserSettingViewSet,
     CheckEmailPhonePanNumber,
     InvestmentInsightViewSet,
-    VerifyEmailView
+    VerifyEmailView,
+    DeleteUserView
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 
@@ -90,6 +91,7 @@ urlpatterns = [
     path("investment-insight/transactions/latest/",TransactionLatestView.as_view(),name="transaction-latest"),
     path("verify/send-verification-email/",SendVerififcationEmailView.as_view(),name="send-verification-email"),
     path("verify/email/",VerifyEmailView.as_view(),name="email-verification"),
+    path("settings/delete-user/",DeleteUserView.as_view(),name="delete-user"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),
