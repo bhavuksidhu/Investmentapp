@@ -31,7 +31,8 @@ from api.views import (
     UserSettingViewSet,
     CheckEmailPhonePanNumber,
     InvestmentInsightViewSet,
-    VerifyEmailView
+    VerifyEmailView,
+    DeleteUserView
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 from payment.views import SubscribeView

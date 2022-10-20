@@ -301,6 +301,19 @@ class LogoutView(APIView):
             }
         )
 
+class DeleteUserView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request: Request, *args, **kwargs):
+        request.user.delete()
+        return Response(
+            {
+                "success": True,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 
 @extend_schema(
     request={
