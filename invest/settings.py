@@ -21,6 +21,7 @@ with open("creds.json", "r", encoding="utf-8") as f:
     KITE_CREDS = creds["KITE_CREDS"]
     GMAIL_CREDS = creds["GMAIL_CREDS"]
     FCM_SERVER_KEY = creds["FCM_CREDS"]["server_key"]
+    PAYU_CREDS = creds["PAYU_CREDS"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -29,7 +30,7 @@ with open("creds.json", "r", encoding="utf-8") as f:
 SECRET_KEY = "859^*a+m2y*=hh#r6w7n0ak^$jw!q)wb+eqvc6+mlaflmt*dry"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1","localhost","invest-thrift.com","www.invest-thrift.com"]
 
@@ -45,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "adminpanel",
     "core",
+    "api",
+    "payment",
     "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
@@ -93,7 +96,7 @@ DATABASES = {
         "NAME": "invest",
         "USER": "invest_user",
         "PASSWORD": "(PtWZ5nh}m6]?W8s",
-        "HOST": "localhost",
+        "HOST": "13.127.229.175",
         "PORT": "5432",
     }
 }
@@ -181,7 +184,12 @@ DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'
 
 LOGIN_URL = '/adminpanel/login/'
 
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
+
+if os.name == 'nt':
+    HOST = "127.0.0.1:8000"
+else:
+    HOST = "invest-thrift.com"

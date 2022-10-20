@@ -19,7 +19,6 @@ from api.views import (
     RegisterView,
     ResetPasswordView,
     SendVerififcationEmailView,
-    SubscribeViewSet,
     SubscriptionHistoryViewSet,
     SubscriptionViewSet,
     TermsNConditionsViewSet,
@@ -35,6 +34,7 @@ from api.views import (
     VerifyEmailView
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
+from payment.views import SubscribeView
 
 app_name = "api"
 
@@ -59,7 +59,7 @@ router.register(r"trade",TradeViewSet,basename="trade")
 router.register(r"journal",JournalViewSet,basename="journal")
 
 #Subscriptions
-router.register(r"subscription/subscribe",SubscribeViewSet,basename="subscribe")
+# router.register(r"subscription/subscribe",SubscribeViewSet,basename="subscribe")
 router.register(r"subscription/detail",SubscriptionViewSet,basename="subscription-detail")
 router.register(r"subscription/history",SubscriptionHistoryViewSet,basename="subscription-history")
 
@@ -90,6 +90,7 @@ urlpatterns = [
     path("investment-insight/transactions/latest/",TransactionLatestView.as_view(),name="transaction-latest"),
     path("verify/send-verification-email/",SendVerififcationEmailView.as_view(),name="send-verification-email"),
     path("verify/email/",VerifyEmailView.as_view(),name="email-verification"),
+    path("subscription/subscribe/",SubscribeView.as_view(),name="subscribe"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),

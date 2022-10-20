@@ -414,51 +414,51 @@ class NotificationViewSet(ListGetUpdateViewSet):
         return Notification.objects.filter(user=self.request.user)
 
 
-class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = UserSubscriptionHistorySerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+# class SubscribeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+#     serializer_class = UserSubscriptionHistorySerializer
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = (IsAuthenticated,)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        headers = self.get_success_headers(serializer.data)
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         headers = self.get_success_headers(serializer.data)
 
-        subscription: UserSubscription = self.request.user.subscription
-        if subscription.date_to and subscription.date_from:
-            subscription.date_to = subscription.date_to + timedelta(days=365)
-        else:
-            subscription.date_from = timezone.now().date()
-            subscription.date_to = timezone.now().date() + timedelta(days=365)
+#         subscription: UserSubscription = self.request.user.subscription
+#         if subscription.date_to and subscription.date_from:
+#             subscription.date_to = subscription.date_to + timedelta(days=365)
+#         else:
+#             subscription.date_from = timezone.now().date()
+#             subscription.date_to = timezone.now().date() + timedelta(days=365)
 
-        subscription.active = True
-        subscription.save()
+#         subscription.active = True
+#         subscription.save()
 
-        AdminNotification.objects.create(
-            title=f"Subscription Purchased!",
-            content=f"User - CU{request.user.id}, has just purchased a subscription!",
-        )
-        try:
-            registration_id = request.user.settings.device_token
-        except UserSetting.DoesNotExist:
-            print("No Settings exist for user, aborting notification service.")
+#         AdminNotification.objects.create(
+#             title=f"Subscription Purchased!",
+#             content=f"User - CU{request.user.id}, has just purchased a subscription!",
+#         )
+#         try:
+#             registration_id = request.user.settings.device_token
+#         except UserSetting.DoesNotExist:
+#             print("No Settings exist for user, aborting notification service.")
 
-        head = f"Subscription Purchased!"
-        body = f"Your subscription renewal is successful."
-        Notification.objects.create(
-            user=request.user, notification_type="Subscription", head=head, body=body
-        )
-        if registration_id:
-            send_notification(
-                registration_id=registration_id, message_title=head, message_body=body
-            )
-        else:
-            print("No device_token exist for user, aborting notification service.")
+#         head = f"Subscription Purchased!"
+#         body = f"Your subscription renewal is successful."
+#         Notification.objects.create(
+#             user=request.user, notification_type="Subscription", head=head, body=body
+#         )
+#         if registration_id:
+#             send_notification(
+#                 registration_id=registration_id, message_title=head, message_body=body
+#             )
+#         else:
+#             print("No device_token exist for user, aborting notification service.")
 
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+#         return Response(
+#             serializer.data, status=status.HTTP_201_CREATED, headers=headers
+#         )
 
 
 class SubscriptionViewSet(GetViewSet):

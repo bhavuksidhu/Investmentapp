@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            {% block title %}Invest Thrift - Subscription{% endblock %}
+        </title>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <form method="post" id="payu-form" action='https://secure.payu.in/_payment'>
+            <input type="hidden" name="key" value="{{ key }}" />
+            <input type="hidden" name="txnid" value="{{ order_id }}" />
+            <input type="hidden" name="productinfo" value="{{ product_info }}" />
+            <input type="hidden" name="amount" value="{{ amount }}" />
+            <input type="hidden" name="email" value="{{ email }}" />
+            <input type="hidden" name="firstname" value="{{ first_name }}" />
+            <input type="hidden" name="surl" value="{{ s_url }}" />
+            <input type="hidden" name="furl" value="{{ f_url }}" />
+            <input type="hidden" name="hash" value="{{hash_value}}" />
+        </form>
+        <script>
+            //document.getElementById("payu").value = your_payu;
+            document.getElementById("payu-form").submit();
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+        <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+    </body>
+</html>
