@@ -21,8 +21,8 @@ PAYU_CREDS_KEY = settings.PAYU_CREDS["key"]
 PAYU_CREDS_SALT = settings.PAYU_CREDS["salt"]
 
 PAYU_BASE_URL = "https://secure.payu.in/_payment"
-PAYU_S_RETURN_URL = f"http://{settings.HOST}/payments/success/"
-PAYU_F_RETURN_URL = f"http://{settings.HOST}/payments/faliure/"
+PAYU_S_RETURN_URL = f"https://{settings.HOST}/payments/success/"
+PAYU_F_RETURN_URL = f"https://{settings.HOST}/payments/faliure/"
 
 
 def create_order(
