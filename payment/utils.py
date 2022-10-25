@@ -19,6 +19,7 @@ from payment.models import PayUOrder
 
 PAYU_CREDS_KEY = settings.PAYU_CREDS["key"]
 PAYU_CREDS_SALT = settings.PAYU_CREDS["salt"]
+SUBSCRIPTION_AMOUNT = settings.SUBSCRIPTION_AMOUNT
 
 PAYU_BASE_URL = "https://secure.payu.in/_payment"
 PAYU_S_RETURN_URL = f"http://{settings.HOST}/payments/success/"
@@ -26,7 +27,7 @@ PAYU_F_RETURN_URL = f"http://{settings.HOST}/payments/faliure/"
 
 
 def create_order(
-    user: User, amount: float = 1.0, order_note: str = "Invet-Thrift Subscription Order"
+    user: User, amount: float = 69.0, order_note: str = "Invet-Thrift Subscription Order"
 ):
     order_id = str(uuid.uuid4())
 

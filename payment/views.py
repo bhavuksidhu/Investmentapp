@@ -6,6 +6,7 @@ from payment.utils import confirm_and_update_order, create_order, get_payment_co
 
 PAYU_CREDS_KEY = settings.PAYU_CREDS["key"]
 PAYU_CREDS_SALT = settings.PAYU_CREDS["salt"]
+SUBSCRIPTION_AMOUNT = settings.SUBSCRIPTION_AMOUNT
 
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -38,7 +39,7 @@ class SubscribeView(APIView):
         ),
     )
     def post(self, request: Request, *args, **kwargs):
-        amount = 1.0
+        amount = SUBSCRIPTION_AMOUNT
         order_id = create_order(request.user, amount)
         payment_link = f"http://{settings.HOST}/payments/subscribe/?order_id={order_id}"
         return Response(
