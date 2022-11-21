@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="Header">
+        <div class="Logo">
+            <img src="/media/images/inner-logo.png">
+        </div>
+        <div class="Navigation">
+            <a href={% url "adminpanel:notifications" %} class="Notification"><i class="fa fa-bell" aria-hidden="true"></i></a>
+            <div class="Avater">
+                <a href="javascript:void(0);">
+                    <figure>
+                        <img src="/media/images/user5.jpg">
+                    </figure>
+                    Anuradha
+                </a>
+                <ul>
+                    <li>
+                        <figure>
+                            <img src="/media/images/user5.jpg">
+                        </figure>
+                        <h4>
+                            Anuradha <span>Administrator</span>
+                        </h4>
+                    </li>
+                    <li>
+                        <a href={% url "adminpanel:settings" %}><span><i class="fa fa-cogs" aria-hidden="true"></i></span> Settings</a>
+                    </li>
+                    <li>
+                        <a href={% url "adminpanel:logout" %}><span><i class="fa fa-sign-out"></i></span> Logout</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="SidenavBar">
+        <div class="Logo">
+            <img src="/media/images/inner-logo.png">
+        </div>
+        <ul>
+            <li>
+                <a href={% url "adminpanel:dashboard" %}>
+                    <span><i class="fa fa-tachometer" aria-hidden="true"></i></span> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:customer-management" %}>
+                    <span><i class="fa fa-users" aria-hidden="true"></i></span> Customer Management
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:investing-reports" %}>
+                    <span><i class="fa fa-money" aria-hidden="true"></i></span> Investing Reports
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:subscription-management" %}>
+                    <span><i class="fa fa-inr" aria-hidden="true"></i></span> Subscription Management
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:stock-management" %}>
+                    <span><i class="fa fa-cubes" aria-hidden="true"></i></span> Stock Management
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:static-content-management" %}>
+                    <span><i class="fa fa-font"></i></span> Content Management
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:tip-management" %}>
+                    <span><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span> Tip Management
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:settings" %}>
+                    <span><i class="fa fa-cogs" aria-hidden="true"></i></span> Settings
+                </a>
+            </li>
+            <li>
+                <a href={% url "adminpanel:logout" %}>
+                    <span><i class="fa fa-sign-out"></i></span> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% block content %}{% endblock %}
+    <script>
+        document.querySelector(`[href='${window.location.pathname}']`).parentElement.classList.add("active");
+    </script>
+{% endblock %}

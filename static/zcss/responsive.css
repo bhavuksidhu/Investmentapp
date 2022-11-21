@@ -1,0 +1,22 @@
+
+@media(max-width:550px) {
+    .MainBox .InnerBox {
+        box-shadow: none;
+        padding: 30px;
+        width: 100%;
+        border: none;
+        background: #f3f5f7;
+    }
+    .MainBox {
+        background: #f3f5f7;
+    }
+    .MainBox2 .InnerBox2 {
+        box-shadow: none;
+        padding: 30px;
+        width: 100%;
+        border: none;
+    }
+    .MainBox2 {
+        background: #131313;
+    }
+}
