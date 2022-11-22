@@ -36,7 +36,7 @@ if os.name == "nt":
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "invest-thrift.com", "www.invest-thrift.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "invest-thrift.com", "www.invest-thrift.com", "3.109.192.153"]
 
 # Application definition
 
@@ -197,4 +197,5 @@ SECURE_BROWSER_XSS_FILTER = True
 if os.name == 'nt':
     HOST = "127.0.0.1:8000"
 else:
-    HOST = "invest-thrift.com"
+    # HOST = "invest-thrift.com"
+    HOST = "3.109.192.153"

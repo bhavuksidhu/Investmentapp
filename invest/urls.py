@@ -22,7 +22,7 @@ urlpatterns = [
     path("adminpanel/", include("adminpanel.urls", namespace="adminpanel")),
     path('api/', include("api.urls", namespace="api")),
     path('payments/', include("payment.urls", namespace="payment")),
-    path('quizzes/', include("quizzes.urls", namespace="quizzes")),
+    # path('quizzes/', include("quizzes.urls", namespace="quizzes")),
 
     #Schema/Docs
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
