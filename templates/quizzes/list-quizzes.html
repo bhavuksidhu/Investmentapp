@@ -1,0 +1,545 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Quizz Management{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Quizz Management</h4>
+                <div class="AddButton">
+                    <a href="{% url 'adminpanel:quizzes:create' %}" class="Button">+ Add Quiz</a>
+                </div>
+            </div>
+            {% include "fragments/messages.html" %}
+            <div class="InnerBox">
+                <div class="Filter">
+                    <div class="form-group">
+                        <label>Search</label>
+                        <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <div class="form-group">
+                        <label>From</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="date" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button>Apply</button>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="CommonTabs ">
+
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#Ongoing">Ongoing Quiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Completed ">Completed Quiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Upcoming ">Upcoming Quiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Results ">Results Awaited Quiz</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="Ongoing">
+                        <div class="InnerBox">
+                            <div class="TableList">
+
+                                {% if quizzes|length > 0 %}
+
+                                    <table>
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th><th>Quiz ID</th><th>Name</th>
+                                            <th>Start Date &amp; Time</th><th>End Date &amp; Time</th>
+                                            <th>Maximum Slots</th><th>Duration(in days)</th>
+                                            <th>Created</th><th>Status</th><th>action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for quiz in quizzes %}
+                                            <tr>
+                                                <td>{{ quiz.num }}</td>
+                                                <td>{{ quiz.pk }}</td>
+                                                <td>{{ quiz.name }}</td>
+                                                <td>{{ quiz.start_date_time|date:"d/m/Y H:i:s" }}</td>
+                                                <td>{{ quiz.end_date_time|date:"d/m/Y H:i:s" }}</td>
+                                                <td>{{ quiz.max_slots }}</td>
+                                                <td>{{ quiz.quiz_duration }}</td>
+                                                <td>{{ quiz.created_at|date:"d-m-Y" }}</td>
+                                                <td><span class="Green">Active</span></td>
+                                                <td>
+                                                    <a class="Blue" href="ongoing-quiz-detail.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+
+
+                                                    <label class="Switch">
+                                                        <input type="checkbox" checked="">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% if is_paginated %}
+                                    <div class="Pagination">
+                                        <p> Show
+                                            <select>
+                                                <option>5</option>
+                                                <option>10</option>
+                                                <option>20</option>
+                                                <option>30</option>
+                                                <option>40</option>
+                                                <option>50</option>
+                                            </select>
+                                            Entries
+                                        </p>
+                                        <ul>
+                                            <li><a href="javascript:void(0);"><i class="fa fa-angle-double-left"></i></a></li>
+                                            <li><a href="javascript:void(0);"><i class="fa fa-angle-left"></i></a></li>
+                                            <li class="active"><a href="javascript:void(0);">1</a></li>
+                                            <li><a href="javascript:void(0);">2</a></li>
+                                            <li><a href="javascript:void(0);">3</a></li>
+                                            <li><a href="javascript:void(0);"><i class="fa fa-angle-right"></i></a></li>
+                                            <li><a href="javascript:void(0);"><i class="fa fa-angle-double-right"></i></a></li>
+                                        </ul>
+                                    </div>
+                                {% endif %}
+
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        No quizzes have been created
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="Completed">
+                        <div class="InnerBox">
+                            <div class="TableList">
+                                <table style="width: 110%;">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Quiz ID</th>
+                                            <th>Quiz Name</th>
+                                            <th>Start Date &amp; Time</th>
+                                            <th>End Date &amp; Time</th>
+                                            <th>Maximum Slots</th>
+                                            <th>Quiz Duration(in days)</th>
+                                            <th>Create on</th>
+                                            <th>Status</th>
+                                            <th>action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Completed</span></td>
+                                            <td>
+                                                <a class="Blue" href="completed-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Completed</span></td>
+                                            <td>
+                                                <a class="Blue" href="completed-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Completed</span></td>
+                                            <td>
+                                                <a class="Blue" href="completed-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Completed</span></td>
+                                            <td>
+                                                <a class="Blue" href="completed-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Completed</span></td>
+                                            <td>
+                                                <a class="Blue" href="completed-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="Pagination">
+                                <p> Show
+                                    <select>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>20</option>
+                                        <option>30</option>
+                                        <option>40</option>
+                                        <option>50</option>
+                                    </select>
+                                    Entries
+                                </p>
+                                <ul>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-left"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-left"></i></a></li>
+                                    <li class="active"><a href="javascript:void(0);">1</a></li>
+                                    <li><a href="javascript:void(0);">2</a></li>
+                                    <li><a href="javascript:void(0);">3</a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-right"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-right"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="Upcoming">
+                        <!-- <div class="AddButton">
+                            <a href="customer-add.html" class="Button ">+ Add Customer</a>
+                        </div> -->
+                        <div class="InnerBox">
+                            <div class="TableList">
+                                <table style="width: 110%;">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Quiz ID</th>
+                                            <th>Quiz Name</th>
+                                            <th>Start Date &amp; Time</th>
+                                            <th>End Date &amp; Time</th>
+                                            <th>Maximum Slots</th>
+                                            <th>Quiz Duration(in days)</th>
+                                            <th>Create on</th>
+                                            <th>Status</th>
+                                            <th>action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Active</span></td>
+                                            <td>
+                                                <a class="Blue" href="upcoming-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="Blue" href="upcoming-edit.html">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="Blue" href="javascript:void(0)" data-toggle="modal" data-target="#OngoingDelete">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+
+                                                <label class="Switch">
+                                                    <input type="checkbox" checked="">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Active</span></td>
+                                            <td>
+                                                <a class="Blue" href="upcoming-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="Blue" href="upcoming-edit.html">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="Blue" href="javascript:void(0)" data-toggle="modal" data-target="#OngoingDelete">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+
+                                                <label class="Switch">
+                                                    <input type="checkbox" checked="">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Active</span></td>
+                                            <td>
+                                                <a class="Blue" href="upcoming-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="Blue" href="upcoming-edit.html">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="Blue" href="javascript:void(0)" data-toggle="modal" data-target="#OngoingDelete">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+
+                                                <label class="Switch">
+                                                    <input type="checkbox" checked="">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Active</span></td>
+                                            <td>
+                                                <a class="Blue" href="upcoming-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="Blue" href="upcoming-edit.html">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="Blue" href="javascript:void(0)" data-toggle="modal" data-target="#OngoingDelete">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+
+                                                <label class="Switch">
+                                                    <input type="checkbox" checked="">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Active</span></td>
+                                            <td>
+                                                <a class="Blue" href="upcoming-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="Blue" href="upcoming-edit.html">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="Blue" href="javascript:void(0)" data-toggle="modal" data-target="#OngoingDelete">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+
+                                                <label class="Switch">
+                                                    <input type="checkbox" checked="">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Green">Active</span></td>
+                                            <td>
+                                                <a class="Blue" href="upcoming-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="Blue" href="upcoming-edit.html">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="Blue" href="javascript:void(0)" data-toggle="modal" data-target="#OngoingDelete">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+
+                                                <label class="Switch">
+                                                    <input type="checkbox" checked="">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="Pagination">
+                                <p> Show
+                                    <select>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>20</option>
+                                        <option>30</option>
+                                        <option>40</option>
+                                        <option>50</option>
+                                    </select>
+                                    Entries
+                                </p>
+                                <ul>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-left"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-left"></i></a></li>
+                                    <li class="active"><a href="javascript:void(0);">1</a></li>
+                                    <li><a href="javascript:void(0);">2</a></li>
+                                    <li><a href="javascript:void(0);">3</a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-right"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-right"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="Results">
+                        <div class="InnerBox">
+                            <div class="TableList">
+                                <table style="width: 115%;">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Quiz ID</th>
+                                            <th>Quiz Name</th>
+                                            <th>Start Date &amp; Time</th>
+                                            <th>End Date &amp; Time</th>
+                                            <th>Maximum Slots</th>
+                                            <th>Quiz Duration(in days)</th>
+                                            <th>Create on</th>
+                                            <th>Status</th>
+                                            <th>action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>U-10</td>
+                                            <td>Math Quiz</td>
+                                            <td>20/02/2022</td>
+                                            <td>25/02/2022</td>
+                                            <td>22</td>
+                                            <td>7 Days</td>
+                                            <td>22-Oct-2022</td>
+                                            <td><span class="Orange">Result Awaited</span></td>
+                                            <td>
+                                                <a class="Blue" href="result-quiz-detail.html">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="Pagination">
+                                <p> Show
+                                    <select>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>20</option>
+                                        <option>30</option>
+                                        <option>40</option>
+                                        <option>50</option>
+                                    </select>
+                                    Entries
+                                </p>
+                                <ul>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-left"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-left"></i></a></li>
+                                    <li class="active"><a href="javascript:void(0);">1</a></li>
+                                    <li><a href="javascript:void(0);">2</a></li>
+                                    <li><a href="javascript:void(0);">3</a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-right"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fa fa-angle-double-right"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="ButtonMain ">
+                        <a href="javscript:void(0)" class="CommonButton">Save</a>
+                    </div> -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

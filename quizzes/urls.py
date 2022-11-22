@@ -1,9 +1,10 @@
 from django.urls import path
 
-from quizzes.views import QuizView
+from quizzes.views import ListQuizView, QuizViewAPI
 
-app_name = "payments"
+app_name = "quizzes"
 
 urlpatterns = [
-    path("create/", QuizView.as_view(), name="subscribe"),
+    path("create/", QuizViewAPI.as_view(), name="create"),
+    path("", ListQuizView.as_view(), name="list-quizzes"),
 ]

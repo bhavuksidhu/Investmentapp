@@ -8,13 +8,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.serializers import serialize
+from django.views.generic import CreateView, ListView
 from api.serializers import QuizSerializer
 from quizzes.models import Quiz, Prize, QuizFile
 
 
-class QuizView(APIView):
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+class QuizViewAPI(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer = QuizSerializer
     model = Quiz
 
@@ -86,3 +87,45 @@ class QuizView(APIView):
         response = self.model.objects.all().values()
 
         return Response({"quizzes": response}, status=200)
+
+
+class ListQuizView(ListView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    model = Quiz
+    ordering = "-created_at"
+    paginate_by = 20
+    template_name = "quizzes/list-quizzes.html"
+    context_object_name = "quizzes"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # if self.request.GET.get("page"):
+        quiz_queryset = Quiz.objects.all()[:self.paginate_by]
+
+        quizzes = list()
+        num = 0
+
+        for quiz in quiz_queryset:
+
+            num += 1
+
+            quizzes.append({
+                "num": num,
+                "pk": quiz.pk,
+                "name": quiz.name,
+                "start_date_time": quiz.start_date_time,
+                "end_date_time": quiz.end_date_time,
+                "active_start_time": quiz.active_start_time,
+                "active_end_time": quiz.active_end_time,
+                "max_slots": quiz.max_slots,
+                "quiz_duration": quiz.quiz_duration,
+                "created_at": quiz.created_at
+            })
+
+        context["quizzes"] = quizzes
+
+        return context
+
+

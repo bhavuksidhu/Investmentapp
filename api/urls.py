@@ -36,7 +36,7 @@ from api.views import (
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 from payment.views import SubscribeView
-from quizzes.views import QuizView
+from quizzes.views import QuizViewAPI
 
 app_name = "api"
 
@@ -87,14 +87,14 @@ urlpatterns = [
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
-    path("check/email-phone-pan/",CheckEmailPhonePanNumber.as_view(),name="check-email-phone-pan"),
-    path("check/old-password/",CheckOldPassword.as_view(),name="check-old-password"),
-    path("portfolio/",PortFolioView.as_view(), name="portfolio"),
-    path("investment-insight/transactions/latest/", TransactionLatestView.as_view(),name="transaction-latest"),
-    path("verify/send-verification-email/", SendVerififcationEmailView.as_view(),name="send-verification-email"),
-    path("verify/email/",VerifyEmailView.as_view(), name="email-verification"),
+    path("check/email-phone-pan/", CheckEmailPhonePanNumber.as_view(), name="check-email-phone-pan"),
+    path("check/old-password/", CheckOldPassword.as_view(), name="check-old-password"),
+    path("portfolio/", PortFolioView.as_view(), name="portfolio"),
+    path("investment-insight/transactions/latest/", TransactionLatestView.as_view(), name="transaction-latest"),
+    path("verify/send-verification-email/", SendVerififcationEmailView.as_view(), name="send-verification-email"),
+    path("verify/email/", VerifyEmailView.as_view(), name="email-verification"),
     path("subscription/subscribe/", SubscribeView.as_view(), name="subscribe"),
-    path("quizzes/", QuizView.as_view(), name="quizzes"),
+    path("quizzes/", QuizViewAPI.as_view(), name="quizzes"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),
