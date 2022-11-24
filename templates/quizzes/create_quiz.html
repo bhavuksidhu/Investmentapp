@@ -1,0 +1,213 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Quizz Management: Create New{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Add Quiz </h4>
+                <div class="BackPage">
+                    <a href="{% url 'adminpanel:quizzes:list-quizzes' %}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
+                </div>
+            </div>
+            {% include "fragments/messages.html" %}
+
+            <div class="CommonTabs ">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="Ongoing">
+                        <div class="InnerBox">
+                            {{ form.non_field_errors }}
+                            <form action="{% url 'adminpanel:quizzes:create-quiz' %}" method="post">{% csrf_token %}
+                                <div class="CommonForm">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="{{ form.name.id_for_label }}">Quiz Name</label>
+                                                {{ form.start_date_time.errors }}
+                                                {{ form.name }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label for="{{ form.start_date_time.id_for_label }}">Start Date & Time</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Date</label>
+                                                                {{ form.start_date_time.errors }}
+                                                                {{ form.start_date_time }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>End Date &amp; Time</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Date</label>
+                                                                <input type="date" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Time</label>
+                                                                <input type="time" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Quiz Active Hours</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Start Time</label>
+                                                                <input type="time" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>End Time</label>
+                                                                <input type="time" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Prices</label>
+                                                <div class="StoreBanners DosageBox">
+                                                    <ul>
+                                                        <li>
+                                                            <label>First Price</label>
+                                                            <input type="text" class="form-control" placeholder="Enter Price Name">
+                                                            <div class="UploadImages">
+                                                                <span> <img src="images/camera2.png"></span>
+                                                                <h6>Add images</h6>
+                                                                <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
+                                                                <input type="file">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <label>Second Price</label>
+                                                            <input type="text" class="form-control" placeholder="Enter Price Name">
+                                                            <div class="UploadImages">
+                                                                <span> <img src="images/camera2.png"></span>
+                                                                <h6>Add images</h6>
+                                                                <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
+                                                                <input type="file">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <label>Third Price</label>
+                                                            <input type="text" class="form-control" placeholder="Enter Price Name">
+                                                            <div class="UploadImages">
+                                                                <span> <img src="images/camera2.png"></span>
+                                                                <h6>Add images</h6>
+                                                                <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
+                                                                <input type="file">
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Max. Slots</label>
+                                                <input type="text" class="form-control" placeholder=" Enter Max. Slots">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Quiz Duration</label>
+                                                <input type="text" class="form-control" placeholder=" Enter Quiz Duration">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Instructions For Winners</label>
+                                                <textarea rows="5" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Rules To Play Quiz</label>
+                                                <textarea rows="5" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Terms And Condition</label>
+                                                <textarea rows="5" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Quiz Question File</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-4">
+                                                            <label>Day 1</label>
+                                                            <div class="AttachFile">
+                                                                <div class="FileMAIN">
+                                                                    <span>
+                                                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
+                                                                        <input type="file" name="">
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>Day 2</label>
+                                                            <div class="AttachFile">
+                                                                <div class="FileMAIN">
+                                                                    <span>
+                                                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
+                                                                        <input type="file" name="">
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>Day 3</label>
+                                                            <div class="AttachFile">
+                                                                <div class="FileMAIN">
+                                                                    <span>
+                                                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
+                                                                        <input type="file" name="">
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

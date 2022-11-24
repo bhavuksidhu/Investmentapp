@@ -585,6 +585,13 @@ input[type="date"] {
     color: #fff;
 }
 
+.DosageBox {
+  border: 1px solid #299e52;
+  border-radius: 10px;
+  padding: 10px 20px 20px 20px;
+  background: #299e5214;
+}
+
 .TitleBox {
     display: flex;
     align-items: center;
