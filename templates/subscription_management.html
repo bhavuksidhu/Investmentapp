@@ -1,0 +1,236 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Subscription Management{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Subscription Management</h4>
+            </div>
+            <div class="InnerBox">
+                <div class="Filter">
+                    <form action
+                          {% url "adminpanel:subscription-management" %}
+                          method="GET"
+                          id="search_form"
+                          style="display:flex">
+                        <div class="form-group">
+                            <label>Search</label>
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Enter User ID"
+                                   value="{{q}}"
+                                   name="q">
+                        </div>
+                        <div class="form-group">
+                            <label>From</label>
+                            <input type="date"
+                                   class="form-control"
+                                   value="{{ from_date }}"
+                                   max="{{ today_date }}"
+                                   name="from_date">
+                        </div>
+                        <div class="form-group">
+                            <label>To</label>
+                            <input type="date"
+                                   class="form-control"
+                                   value="{{ to_date }}"
+                                   max="{{ today_date }}"
+                                   name="to_date">
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type ="submit">Apply</button>
+                            <button type="button" class="Reset" id="reset_button">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- <div class="CommissionBox">
+              <article>
+                <h4>Commission Rate: <span>2%</span></h4>
+                <p><a href="javascript:void(0)" data-toggle="modal" data-target="#AddComission" class="CommissionEdit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></p>
+              </article>
+            </div> -->
+                <div class="TableList">
+                    <table style="width: 170%;">
+                        <thead>
+                            <tr>
+                                <th>Subscription Id</th>
+                                <th>Customer  Id</th>
+                                <th>Customer  Name</th>
+                                <th>Customer Email</th>
+                                <th>Subscription Purchase Date</th>
+                                <th>Amount</th>
+                                <th>Applicable taxes</th>
+                                <th>Total Amount</th>
+                                <th>Mode of payment</th>
+                                <th>Payment status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for history in subscriptions %}
+                                <tr>
+                                    <td>SUB{{ history.id }}</td>
+                                    <td>CU{{ history.subscription.user.id }}</td>
+                                    <td>{{ history.subscription.user.profile.first_name }} {{ history.subscription.user.profile.first_name }}</td>
+                                    <td>{{ history.subscription.user.email }}</td>
+                                    <td>{{ history.created_at }}</td>
+                                    {% comment %} <td>{{ history.valid_till }}</td> {% endcomment %}
+                                    <td>
+                                        {{ history.amount }} INR
+                                    </td>
+                                    <td>
+                                        18 %
+                                    </td>
+                                    <td>
+                                        {{ history.total_amount }} INR
+                                    </td>
+                                    <td>
+                                        Online
+                                    </td>
+                                    {% if history.subscription.active %}
+                                        <td>
+                                            Complete
+                                        </td>
+                                    {% else %}
+                                        <td>
+                                            Incomplete
+                                        </td>
+                                    {% endif %}
+                                    {% comment %} <td>
+                                <label class="Switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                                    </td> {% endcomment %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if is_paginated %}
+                    <div class="Pagination">
+                        <ul>
+                            <li>
+                                <a href="?page=1"><i class="fa fa-angle-double-left"></i></a>
+                            </li>
+                            {% if page_obj.has_previous %}
+                                <li>
+                                    <a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                                </li>
+                            {% endif %}
+                            {% for n in page_obj.paginator.page_range %}
+                                {% if page_obj.number == n %}
+                                    <li class="page-item active">
+                                        <li class="active">
+                                            <a href="javascript:void(0);">{{n}}</a>
+                                        </li>
+                                    </li>
+                                {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                                    <li>
+                                        <a href="?page={{ n }}">{{ n }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li>
+                                    <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="ModalBox">
+        <div id="AddComission" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Category">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Edit Commission Rate
+                            </h3>
+                            <form>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="">
+                                    <span>%</span>
+                                </div>
+                                <button class="Button ">
+                                    Update
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="BlockModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Block
+                            </h3>
+                            <p>
+                                Are you sure you want to block this Customer ?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="UnblockModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>
+                                Unblock
+                            </h3>
+                            <p>
+                                Are you sure you want to Unblock this Customer ?
+                            </p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    $('input[type="date"]').on("change", function (e) {
+        let from_date = Date.parse(document.querySelector('input[name="from_date"]').value)
+        let to_date = Date.parse(document.querySelector('input[name="to_date"]').value)
+
+        if (to_date < from_date){
+            document.querySelector('input[name="to_date"]').value = ""
+        }
+    });
+    </script>
+    <script>
+        $('#reset_button').on("click", function (e) {
+            let inputs = document.querySelectorAll("#search_form input")
+            for(i=0;i<inputs.length;i++){
+                inputs[i].value = ""
+            }
+            document.getElementById("search_form").submit();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Stock Management{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Stock Management</h4>
+                <div class="AddButton">
+                    <a href="{% url 'adminpanel:stock-upload' %}" class="Button">+ Add Stock List</a>
+                </div>
+            </div>
+            {% include "fragments/messages.html" %}
+            <div class="InnerBox">
+                <div class="FlexMain">
+                    <div class="Search">
+                        <form action={% url "adminpanel:stock-management" %} method="GET">
+                            <input id="search_value"
+                                   type="text"
+                                   placeholder="Enter Stock Symbol"
+                                   name="q"
+                                   value="{{q}}">
+                            <button type="submit">Search</button>
+                            <button class="Reset"
+                                    onclick="document.querySelector('#search_value').value=''">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="TableList">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Series</th>
+                                <th>Extra Text</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in stocks %}
+                                <tr>
+                                    <td>{{ stock.symbol }}</td>
+                                    <td>{{ stock.series }}</td>
+                                    <td>{{ stock.extra_text|default_if_none:"" }}</td>
+                                    <td>
+                                        <a class="Blue" href="{% url "adminpanel:stock-edit" stock.id %}">
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if is_paginated %}
+                    <div class="Pagination">
+                        <ul>
+                            <li>
+                                <a href="?page=1"><i class="fa fa-angle-double-left"></i></a>
+                            </li>
+                            {% if page_obj.has_previous %}
+                                <li>
+                                    <a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                                </li>
+                            {% endif %}
+                            {% for n in page_obj.paginator.page_range %}
+                                {% if page_obj.number == n %}
+                                    <li class="page-item active">
+                                        <li class="active">
+                                            <a href="javascript:void(0);">{{n}}</a>
+                                        </li>
+                                    </li>
+                                {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                                    <li>
+                                        <a href="?page={{ n }}">{{ n }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li>
+                                    <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

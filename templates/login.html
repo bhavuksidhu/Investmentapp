@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block body %}
+<div class="LoginPage">
+    <div class="LoginBox">
+        <div class="row">
+            <div class="col-sm-6 ">
+            <div class="loginLeft">
+                <figure>
+                    <img src="/media/images/Login2.png">
+                </figure>
+                <p>To keep connected with us please login .</p>
+            </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="RightLogin">
+                    <div class="MainRight">
+                        <figure>
+                            <img src="/media/images/logo2.png">
+                        </figure>
+                        <h3>Let's Start Investing. </h3>
+                        {% include "fragments/messages.html"%}
+                        <form action="{% url "adminpanel:login" %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Email ID</label>
+                                <input type="text" name="email" placeholder="Enter Email ID" class="form-control">
+                                <span class="Icon"><i class="fa fa-envelope"></i></span>
+                            </div>
+            
+                            <div class="form-group">
+                                <label>Password </label>
+                                <input type="password" name="password" placeholder="Enter Password" class="form-control">
+                                <span class="Icon"><i class="fa fa-unlock-alt"></i></span>
+                            </div>
+            
+                            <div class="Checkboxs">
+                                <a href="{% url "adminpanel:forgot-password" %}">Forgot password?</a>
+                            </div>
+                            <button type="submit" class="Button">Log In <i class="fa fa-sign-in"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="WrapperArea">
+    <div class="WrapperBox">
+
+        <div class="TitleBox">
+            {% if notification_list|length > 1 %}
+            <h4>Notifications</h4>
+            {% else %}
+            <h4>Notification</h4>
+            {% endif %}
+            <!-- <div class="AddButton">
+                <a href="stock-bulk-add.html" class="Button ">+ Add Stock List</a>
+            </div> -->
+        </div>
+        <div class="InnerBox">
+            <div class="NotificationArea">
+                {% if notification_list %}
+                <ul>
+                    {% for notification in notification_list %}
+                    <li>
+                        {% if notification.notification_type == "NEW_USER" %}
+                        <figure><img src="/media/icons/new_user.png"></figure>
+                        {% elif notification.notification_type == "SUBSCRIPTION" %}
+                        <figure><img src="/media/icons/subscription.png"></figure>
+                        {% else %}
+                        <figure><img src="/media/icons/trade.png"></figure>
+                        {% endif %}
+                        <h4>{{notification.title}}</h4>
+                        <p>{{notification.content}}</p>
+                        <h6>{{notification.created_at}}</h6>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <h4 style="text-align:center">No New Notifications</h4>
+                {% endif %}
+            </div>
+            {% if is_paginated %}
+            <div class="Pagination">
+                <ul>
+                    <li>
+                        <a href="?page=1"><i class="fa fa-angle-double-left"></i></a>
+                    </li>
+                    {% if page_obj.has_previous %}
+                        <li>
+                            <a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a>
+                        </li>
+                    {% endif %}
+                    {% for n in page_obj.paginator.page_range %}
+                        {% if page_obj.number == n %}
+                            <li class="page-item active">
+                                <li class="active">
+                                    <a href="javascript:void(0);">{{n}}</a>
+                                </li>
+                            </li>
+                        {% elif n > page_obj.number|add:'-3' and n < page_obj.number|add:'3' %}
+                            <li>
+                                <a href="?page={{ n }}">{{ n }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li>
+                            <a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

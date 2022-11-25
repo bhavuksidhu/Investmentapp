@@ -1,0 +1,12 @@
+{% if messages %}
+    <script>        
+        {% for message in messages %}
+            Eggy({
+                title: '{{message.tags}}',
+                message: '{{message}}',
+                type: '{{message.tags}}',
+                duration: 4000
+            })
+        {% endfor %}
+    </script>
+{% endif %}

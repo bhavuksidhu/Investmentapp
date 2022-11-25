@@ -1,0 +1,130 @@
+{% extends "logged_in_base.html" %}
+{% block page_css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+{% endblock page_css %}
+{% block title %}Quizz Management{% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Quizz Management</h4>
+                <div class="AddButton">
+                    <a href="{% url 'adminpanel:quizzes:create-quiz' %}" class="Button">+ Add Quiz</a>
+                </div>
+            </div>
+            {% include "messages.html" %}
+            <div class="InnerBox">
+                <div class="Filter">
+                    <div class="form-group">
+                        <label>Search</label>
+                        <input type="text" name="q" class="form-control" placeholder="Search" />
+                    </div>
+                    <div class="form-group">
+                        <label>From</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="date" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button>Apply</button>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="CommonTabs ">
+
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=ongoing">
+                            Ongoing Quiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=completed">
+                            Completed Quiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=upcoming">
+                            Upcoming Quiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=awaiting_results">
+                            Results Awaited Quiz</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="Ongoing">
+                        <div class="InnerBox">
+                            <div class="TableList">
+
+                                {% if quizzes|length > 0 %}
+
+                                    <table id="quizzes_table">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th><th>Quiz ID</th><th>Name</th>
+                                            <th>Start Date &amp; Time</th><th>End Date &amp; Time</th>
+                                            <th>Maximum Slots</th><th>Duration(in days)</th>
+                                            <th>Created</th><th>Status</th><th>action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for quiz in quizzes %}
+                                            <tr>
+                                                <td>{{ quiz.num }}.</td>
+                                                <td>{{ quiz.pk }}</td>
+                                                <td>{{ quiz.name }}</td>
+                                                <td>
+                                                    {{ quiz.start_date|date:"d/m/Y" }}
+                                                    <span class="text-uppercase">{{ quiz.start_time }}</span>
+                                                </td>
+                                                <td>{{ quiz.end_date|date:"d/m/Y" }}
+                                                    <span class="text-uppercase">{{ quiz.end_time }}</span>
+                                                </td>
+                                                <td>{{ quiz.max_slots }}</td>
+                                                <td>{{ quiz.quiz_duration }}</td>
+                                                <td>{{ quiz.created_at|date:"d-m-Y" }}</td>
+                                                <td><span class="Green">Active</span></td>
+                                                <td>
+                                                    <a class="Blue" href="{% url 'adminpanel:quizzes:quiz-details' pk=quiz.pk %}">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+
+                                                    <label class="Switch">
+                                                        <input type="checkbox" checked="">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        No quizzes found
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block page_js %}
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#quizzes_table').DataTable({
+                "searching":false
+            });
+        });
+    </script>
+{% endblock %}
