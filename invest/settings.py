@@ -34,9 +34,9 @@ SECRET_KEY = "859^*a+m2y*=hh#r6w7n0ak^$jw!q)wb+eqvc6+mlaflmt*dry"
 if os.name == "nt":
     DEBUG = True
 else:
-    DEBUG = False
+    DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "invest-thrift.com", "www.invest-thrift.com", "3.109.192.153"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "invest-thrift.com", "www.invest-thrift.com", "3.109.192.153", "ec2-3-109-192-153.ap-south-1.compute.amazonaws.com"]
 
 # Application definition
 
@@ -189,13 +189,13 @@ LOGIN_URL = '/adminpanel/login/'
 SUBSCRIPTION_AMOUNT = 69
 
 # TODO Change to True in prod
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
+#SECURE_SSL_REDIRECT = False
+#SESSION_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
+#SECURE_BROWSER_XSS_FILTER = True
 
 if os.name == 'nt':
     HOST = "127.0.0.1:8000"
 else:
     # HOST = "invest-thrift.com"
-    HOST = "3.109.192.153"
+    HOST = "ec2-3-109-192-153.ap-south-1.compute.amazonaws.com"
