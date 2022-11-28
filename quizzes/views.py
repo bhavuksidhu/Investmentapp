@@ -78,14 +78,14 @@ class QuizViewAPI(APIView):
                 prize_images.append({
                     "name": f"{name_prefix} {prize.name}",
                     "prize_metadata": prize.prize_metadata,
-                    "image_url": prize.image.url,
+                    "image_url": request.build_absolute_uri(prize.image.url),
                 })
 
             question_files = []
             for question_file in quiz.question_files():
                 question_files.append({
                     "name": question_file.name,
-                    "quiz_file": question_file.file.url,
+                    "quiz_file": request.build_absolute_uri(question_file.file.url),
                     "file_metadata": question_file.file_metadata,
                 })
 
