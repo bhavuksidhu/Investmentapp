@@ -6,7 +6,7 @@ from .views import (CustomerDetailView, CustomerEditView, CustomerManagementView
 
 app_name = "adminpanel"
 urlpatterns = [
-    path("", LoginView.as_view(), name="base"),
+    # path("", LoginView.as_view(), name="base"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
