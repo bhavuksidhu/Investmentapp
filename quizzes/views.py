@@ -1,4 +1,6 @@
 from datetime import date
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -107,7 +109,7 @@ class QuizViewAPI(APIView):
         return Response({"quizzes": quizzes}, status=200)
 
 
-class CreateQuizView(CreateView):
+class CreateQuizView(LoginRequiredMixin, CreateView):
     permission_classes = (IsAdminUser,)
 
     serializer = QuizSerializer
@@ -195,8 +197,7 @@ class CreateQuizView(CreateView):
             return render(request, self.template_name, context)
 
 
-class ListQuizView(ListView):
-    authentication_classes = (TokenAuthentication,)
+class ListQuizView(LoginRequiredMixin, ListView):
     permission_classes = (IsAuthenticated,)
     model = Quiz
     ordering = "created_at"
@@ -257,8 +258,8 @@ class ListQuizView(ListView):
         return context
 
 
-class QuizDetailView(DetailView):
+class QuizDetailView(LoginRequiredMixin,DetailView):
     model = Quiz
     template_name = "quizzes/quiz_details.html"
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 

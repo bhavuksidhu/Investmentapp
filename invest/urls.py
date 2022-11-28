@@ -18,8 +18,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+from adminpanel.views import DashboardView
+
 urlpatterns = [
     path("adminpanel/", include("adminpanel.urls", namespace="adminpanel")),
+    path("", DashboardView.as_view(), name="dashboard"),
     path('api/', include("api.urls", namespace="api")),
     path('payments/', include("payment.urls", namespace="payment")),
 
@@ -27,6 +30,7 @@ urlpatterns = [
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
 ]
 
 if settings.DEBUG:
