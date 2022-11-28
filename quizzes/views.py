@@ -90,9 +90,9 @@ class QuizViewAPI(APIView):
             quizzes.append({
                 "name": quiz.name,
                 "start_date": quiz.start_date,
-                "start_time": quiz.start_time,
+                "start_time": f"{quiz.start_date}T{quiz.start_time}.000Z",
                 "end_date": quiz.end_date,
-                "end_time": quiz.end_time,
+                "end_time": f"{quiz.end_date}T{quiz.end_time}.000Z",
                 "active_start_time": quiz.active_start_time,
                 "active_end_time": quiz.active_end_time,
                 "max_slots": quiz.max_slots,

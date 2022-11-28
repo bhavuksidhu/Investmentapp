@@ -198,5 +198,5 @@ SECURE_BROWSER_XSS_FILTER = True
 if os.name == 'nt':
     HOST = "127.0.0.1:8000"
 else:
-    # HOST = "invest-thrift.com"
-    HOST = "3.109.192.153"
+    HOST = "invest-thrift.com"
+    # HOST = "3.109.192.153"
