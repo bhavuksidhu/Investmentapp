@@ -32,12 +32,12 @@ def save_file(file, quiz, media_dir):
 
 
 def name_prefix(index):
-    if index == 1:
-        return "First Prize: "
+    if index == 0:
+        return "first_prize"
+    elif index == 1:
+        return "second_prize"
     elif index == 2:
-        return "Second Prize: "
-    elif index == 3:
-        return "Third Prize: "
+        return "third_prize"
     else:
         return None
 

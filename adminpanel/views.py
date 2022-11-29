@@ -2,6 +2,8 @@ import json
 from datetime import datetime, timedelta
 
 import pandas as pd
+from rest_framework.authtoken.models import Token
+
 from core.models import (
     MarketQuote,
     Stock,

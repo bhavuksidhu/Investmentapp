@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Investing-App-Backend-main.iml" filepath="$PROJECT_DIR$/.idea/Investing-App-Backend-main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/trading_backend.iml" filepath="$PROJECT_DIR$/.idea/trading_backend.iml" />
     </modules>
   </component>
 </project>

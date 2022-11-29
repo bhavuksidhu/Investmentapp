@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -74,11 +75,11 @@ class QuizViewAPI(APIView):
             prize_images = []
 
             for index, prize in enumerate(quiz.prizes()):
-                name_prefix = quiz_utils.name_prefix(index)
+
                 prize_images.append({
-                    "name": f"{name_prefix} {prize.name}",
-                    "prize_metadata": prize.prize_metadata,
-                    "image_url": request.build_absolute_uri(prize.image.url),
+                    "prize_key": quiz_utils.name_prefix(index),
+                    "prize_name": prize.name,
+                    "prize_image": request.build_absolute_uri(prize.image.url),
                 })
 
             question_files = []
@@ -206,9 +207,10 @@ class ListQuizView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
 
-        # token = Token.objects.create(user=user)
-
         context = super().get_context_data(**kwargs)
+
+        # token = Token.objects.get(user=self.request.user)
+        # print(token)
 
         quiz_queryset = Quiz.objects.all()
         status = self.request.GET.get("status")
