@@ -40,19 +40,19 @@
 
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=ongoing">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=ongoing" id="ongoing_quiz">
                             Ongoing Quiz</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=completed">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=completed" id="completed_quiz">
                             Completed Quiz</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=upcoming">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=upcoming" id="upcoming_quiz">
                             Upcoming Quiz</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=awaiting_results">
+                        <a class="nav-link" href="{% url 'adminpanel:quizzes:list-quizzes' %}?status=awaiting_results" id="awaiting_results_quiz">
                             Results Awaited Quiz</a>
                     </li>
                 </ul>
@@ -124,6 +124,31 @@
             $('#quizzes_table').DataTable({
                 "searching":false
             });
+
+            const query_params = new Proxy(new URLSearchParams(window.location.search), {
+              get: (searchParams, prop) => searchParams.get(prop),
+            });
+
+            switch (query_params.status) {
+                case "ongoing":
+                    document.getElementById("ongoing_quiz").classList.add("active")
+                    break;
+                case "upcoming":
+                    document.getElementById("upcoming_quiz").classList.add("active")
+                    break;
+                case "completed":
+                    document.getElementById("completed_quiz").classList.add("active")
+                    break;
+                case "awaiting_results":
+                    document.getElementById("awaiting_results_quiz").classList.add("active")
+                    break;
+                default:
+                    document.getElementById("ongoing_quiz").classList.add("active")
+
+
+            }
+
+
         });
     </script>
 {% endblock %}
