@@ -110,8 +110,11 @@
                                                             <span class="text-danger">{{ form.first_prize_name.errors }}</span>
                                                                 {{ form.first_prize_name }}
                                                             <div class="UploadImages">
-                                                                <span> <img src="/media/images/camera2.png" alt="Prize Image" /></span>
-                                                                <h6>Add images</h6>
+                                                                <span>
+                                                                    <img id="{{ form.first_prize_image.id_for_label }}_img"
+                                                                         src="/media/images/camera2.png" alt="Prize Image" />
+                                                                </span>
+                                                                <h6 id="{{ form.first_prize_image.id_for_label }}_name">Add image</h6>
                                                                 <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
                                                                 {{ form.first_prize_image.errors }}
                                                                 {{ form.first_prize_image }}
@@ -122,8 +125,11 @@
                                                             {{ form.second_prize_name.errors }}
                                                                 {{ form.second_prize_name }}
                                                             <div class="UploadImages">
-                                                                <span> <img src="/media/images/camera2.png" alt="Prize Image" /></span>
-                                                                <h6>Add images</h6>
+                                                                <span>
+                                                                    <img id="{{ form.second_prize_image.id_for_label }}_img"
+                                                                         src="/media/images/camera2.png" alt="Prize Image" />
+                                                                </span>
+                                                                <h6 id="{{ form.second_prize_image.id_for_label }}_name">Add image</h6>
                                                                 <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
                                                                 {{ form.second_prize_image.errors }}
                                                                 {{ form.second_prize_image }}
@@ -134,8 +140,11 @@
                                                             {{ form.third_prize_name.errors }}
                                                                 {{ form.third_prize_name }}
                                                             <div class="UploadImages">
-                                                                <span> <img src="/media/images/camera2.png" alt="Prize Image" /></span>
-                                                                <h6>Add images</h6>
+                                                                <span>
+                                                                    <img id="{{ form.third_prize_image.id_for_label }}_img"
+                                                                         src="/media/images/camera2.png" alt="Prize Image" />
+                                                                </span>
+                                                                <h6 id="{{ form.third_prize_image.id_for_label }}_name">Add image</h6>
                                                                 <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
                                                                 {{ form.third_prize_image.errors }}
                                                                 {{ form.third_prize_image }}
@@ -243,7 +252,31 @@
 {% block page_js %}
 <script>
     $(document).ready(()=>{
-        window.alert("")
+        document.getElementById("id_first_prize_image").onchange = function () {
+            document.getElementById("id_first_prize_image_name").textContent = this.files[0].name;
+            let oFReader = new FileReader();
+            oFReader.readAsDataURL(this.files[0]);
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("id_first_prize_image_img").src = oFREvent.target.result;
+            };
+
+        };
+        document.getElementById("id_second_prize_image").onchange = function () {
+          document.getElementById("id_second_prize_image_name").textContent = this.files[0].name;
+          let oFReader = new FileReader();
+            oFReader.readAsDataURL(this.files[0]);
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("id_second_prize_image_img").src = oFREvent.target.result;
+            };
+        };
+        document.getElementById("id_third_prize_image").onchange = function () {
+          document.getElementById("id_third_prize_image_name").textContent = this.files[0].name;
+          let oFReader = new FileReader();
+            oFReader.readAsDataURL(this.files[0]);
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("id_third_prize_image_img").src = oFREvent.target.result;
+            };
+        };
     });
 </script>
 {% endblock page_js %}
