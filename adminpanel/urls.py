@@ -6,13 +6,13 @@ from .views import (CustomerDetailView, CustomerEditView, CustomerManagementView
 
 app_name = "adminpanel"
 urlpatterns = [
-    # path("", LoginView.as_view(), name="base"),
+    path("", DashboardView.as_view(), name="base"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path("password-reset-confirmation/", PasswordResetConfirmationView.as_view(), name="password-reset-confirmation"),
     path("password-reset/", PasswordResetView.as_view(),name="password-reset"),
-    path("dashboard/", DashboardView.as_view(),name="dashboard"),
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("customer-management/", CustomerManagementView.as_view(), name="customer-management"),
     path("customer-detail/<int:pk>/", CustomerDetailView.as_view(), name="customer-detail"),
     path("customer-edit/<int:pk>/", CustomerEditView.as_view(), name="customer-edit"),

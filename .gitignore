@@ -128,5 +128,5 @@ dmypy.json
 .pyre/
 creds.json
 data.json
-.idea
+.idea/
 .gitignore
