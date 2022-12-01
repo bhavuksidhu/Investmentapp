@@ -73,7 +73,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                         <div class="col-sm-12">
@@ -97,7 +96,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                         <div class="col-sm-12">
@@ -214,6 +212,9 @@
 
 {% block page_js %}
 <script>
+    const form_elem = document.getElementById("quiz_form");
+    let diffDays = 0;
+
     function addQuestionButton(day_number) {
 
         let col_sm_4 = document.createElement("div");
@@ -240,7 +241,9 @@
 
         let file_input = document.createElement("input");
         file_input.setAttribute("type", "file");
+        file_input.setAttribute("id", "question_file_day_"+day_number);
         file_input.setAttribute("name", "question_file_day_"+day_number);
+        form_elem.appendChild(file_input);
 
         spn.appendChild(file_input);
         file_main.appendChild(spn)
@@ -255,6 +258,9 @@
     $(document).ready(()=>{
 
         $("#quiz_question_wrapper").html("Set start date and end date above to upload daily quizzes.");
+        if (document.getElementById("id_end_date").value !== null){
+            document.getElementById("id_end_date").value = null;
+        }
 
         document.getElementById("id_first_prize_image").onchange = function () {
             document.getElementById("id_first_prize_image_name").textContent = this.files[0].name;
@@ -292,30 +298,44 @@
 
                 let oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
-                let diffDays = (date2.getTime() - date1.getTime()) / (oneDay);
+                diffDays = (date2.getTime() - date1.getTime()) / (oneDay);
                 if (diffDays < 0){
                     console.log(diffDays);
                     window.alert("End date must be greater than start date");
                 }else{
                     console.log(diffDays)
+
                     let quiz_duration = document.getElementById("id_quiz_duration")
-                    quiz_duration.setAttribute("name", "quiz_duration");
-                    quiz_duration.setAttribute("value", diffDays.toString());
+                    quiz_duration.value = diffDays;
                     quiz_duration.disabled = true;
                     $("#quiz_question_wrapper").html("");
+
                     for (let i = 0; i < diffDays; i++) {
                         addQuestionButton(i+1);
                     }
                 }
-
             }
         });
+    });
 
-        // $("#quiz_form").submit((e)=>{
-        //     e.preventDefault();
-        //     console.log($("#quiz_form").serialize())
-        // });
-        
+    $(form_elem).one("submit", (e) => {
+        e.preventDefault();
+        let formData = new FormData(form_elem);
+        {#document.getElementById("id_quiz_duration").value = diffDays;#}
+
+        console.log(form_elem.elements.quiz_duration.value);
+
+        $("<input type='hidden' value="+diffDays+" />")
+            .attr("name", "quiz_duration")
+            .appendTo("#quiz_form");
+
+        for (let i = 0; i < diffDays; i++) {
+            $("#question_file_day_"+i+1)
+            .appendTo("#quiz_form");
+        }
+
+        $(form_elem).submit();
+
     });
 </script>
 {% endblock page_js %}

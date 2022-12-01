@@ -119,11 +119,6 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
 
         form = self.form_class(data=request.POST, files=request.FILES)
 
-        print("==============================")
-        print(request.POST.get("quiz_duration"))
-        print(request.POST.get("max_slots"))
-        print("==============================")
-
         if form.is_valid():
 
             quiz = Quiz.objects.create(
@@ -166,45 +161,20 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
             ########################
             #  Question files      #
             ########################
-            #  1st question file
-            if files.get("question_file_day_1"):
-                QuestionFile.objects.create(
-                    quiz=quiz,
-                    name="First question file",
-                    file=files.get("question_file_day_1")
-                )
+            quiz_files_count = int(form.cleaned_data['quiz_duration'])
 
-            #  2nd question file
-            if files.get("question_file_day_2"):
-                QuestionFile.objects.create(
-                    quiz=quiz,
-                    name="Second question file",
-                    file=form.files.get("question_file_day_2")
-                )
-            #  3rd question file
-            if files.get("question_file_day_3"):
-                QuestionFile.objects.create(
-                    quiz=quiz,
-                    name="Third question file",
-                    file=form.files.get("question_file_day_3")
-                )
+            if quiz_files_count > 0:
+                for index in range(quiz_files_count):
+                    QuestionFile.objects.create(
+                        quiz=quiz,
+                        name=quiz_utils.get_quiz_file_name(index),
+                        file=files.get(f"question_file_day_{index+1}")
+                    )
 
-            context = {}
-            context["form"] = form
-            context["quiz"] = quiz
-            messages.info(request, message="Quiz created successfully", extra_tags="alert alert-success")
-
-            return redirect(to='adminpanel:quizzes:quiz-details', pk=quiz.pk)
+            return redirect(to=f"/adminpanel/quizzes/details/{quiz.pk}/")
         else:
-            response = {
-                "message": "Errors occurred",
-                "errors": form.errors
-            }
-            context = {}
-            context["form"] = form
-            context["response"] = response
-            messages.error(request, message="Errors occurred in the form", extra_tags="alert alert-danger")
-
+            messages.error(request, "Validation errors occurred", extra_tags="alert alert-danger")
+            context = {"form": form}
             return render(request, self.template_name, context)
 
 

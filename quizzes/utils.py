@@ -69,3 +69,28 @@ def datetime_cmp(d1, d2):
     Compares two timestamps.  Tolerates dates.
     """
     return ensure_datetime(d1) < ensure_datetime(d2)
+
+
+def get_quiz_file_name(index):
+    if index == 0:
+        return "First question file"
+    elif index == 1:
+        return "Second question file"
+    elif index == 2:
+        return "Third question file"
+    elif index == 3:
+        return "Fourth question file"
+    elif index == 4:
+        return "Fifth question file"
+    elif index == 5:
+        return "Sixth question file"
+    elif index == 6:
+        return "Seventh question file"
+    elif index == 7:
+        return "Eighth question file"
+    elif index == 8:
+        return "Ninth question file"
+    elif index == 9:
+        return "Tenth question file"
+    else:
+        return "Question file"
