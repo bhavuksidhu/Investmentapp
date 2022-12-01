@@ -48,14 +48,12 @@ class QuizViewAPI(APIView):
 
             prize_images = request.FILES.getlist('prize_images')
             for file in prize_images:
-
                 file_path = quiz_utils.save_file(file, quiz, "prize_images")
 
                 Prize.objects.create(quiz_id=quiz, name=file.name, image=file_path)
 
             prize_files = request.FILES.getlist('prize_files')
             for file in prize_files:
-
                 file_path = quiz_utils.save_file(file, quiz, "quiz_files")
                 QuestionFile.objects.create(quiz_id=quiz, name=file.name, file=file_path)
 
@@ -75,7 +73,6 @@ class QuizViewAPI(APIView):
             prize_images = []
 
             for index, prize in enumerate(quiz.prizes()):
-
                 prize_images.append({
                     "prize_key": quiz_utils.name_prefix(index),
                     "prize_name": prize.name,
@@ -121,6 +118,12 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
 
         form = self.form_class(data=request.POST, files=request.FILES)
+
+        print("==============================")
+        print(request.POST.get("quiz_duration"))
+        print(request.POST.get("max_slots"))
+        print("==============================")
+
         if form.is_valid():
 
             quiz = Quiz.objects.create(
@@ -136,7 +139,6 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
                 winner_instructions=form.cleaned_data['winner_instructions'],
                 terms=form.cleaned_data['terms'],
                 rules=form.cleaned_data['rules'],
-
             )
 
             # 1st prize image
@@ -159,25 +161,33 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
                 image=form.files.get("third_prize_image")
             )
 
-            # Question files
+            files = form.files
+
+            ########################
+            #  Question files      #
+            ########################
             #  1st question file
-            QuestionFile.objects.create(
-                quiz=quiz,
-                name="First question file",
-                file=form.files.get("first_question_file")
-            )
+            if files.get("question_file_day_1"):
+                QuestionFile.objects.create(
+                    quiz=quiz,
+                    name="First question file",
+                    file=files.get("question_file_day_1")
+                )
+
             #  2nd question file
-            QuestionFile.objects.create(
-                quiz=quiz,
-                name="Second question file",
-                file=form.files.get("second_question_file")
-            )
+            if files.get("question_file_day_2"):
+                QuestionFile.objects.create(
+                    quiz=quiz,
+                    name="Second question file",
+                    file=form.files.get("question_file_day_2")
+                )
             #  3rd question file
-            QuestionFile.objects.create(
-                quiz=quiz,
-                name="Third question file",
-                file=form.files.get("third_question_file")
-            )
+            if files.get("question_file_day_3"):
+                QuestionFile.objects.create(
+                    quiz=quiz,
+                    name="Third question file",
+                    file=form.files.get("question_file_day_3")
+                )
 
             context = {}
             context["form"] = form
@@ -237,7 +247,6 @@ class ListQuizView(LoginRequiredMixin, ListView):
         num = 0
 
         for quiz in filtered_quizzes:
-
             num += 1
 
             quizzes.append({
@@ -260,8 +269,7 @@ class ListQuizView(LoginRequiredMixin, ListView):
         return context
 
 
-class QuizDetailView(LoginRequiredMixin,DetailView):
+class QuizDetailView(LoginRequiredMixin, DetailView):
     model = Quiz
     template_name = "quizzes/quiz_details.html"
     permission_classes = (IsAuthenticated,)
-

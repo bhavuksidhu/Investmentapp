@@ -1,5 +1,5 @@
 {% extends "logged_in_base.html" %}
-{% block title %}Quizz Management: Create New{% endblock %}
+{% block title %}Quiz Management: Create New {% endblock %}
 {% block content %}
     <div class="WrapperArea">
         <div class="WrapperBox">
@@ -15,7 +15,7 @@
                 <div class="tab-content">
                     <div class="tab-pane active" id="Ongoing">
                         <div class="InnerBox">
-                            <form action="{% url 'adminpanel:quizzes:create-quiz' %}" method="post" enctype="multipart/form-data">
+                            <form action="{% url 'adminpanel:quizzes:create-quiz' %}" method="post" enctype="multipart/form-data" id="quiz_form">
                                 {% csrf_token %}
                                 <div class="text-danger" style="display: block;">
                                     {{ form.non_field_errors }}
@@ -192,46 +192,9 @@
                                         </div>
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label>Quiz Question File</label>
+                                                <label>Quiz Question Files</label>
                                                 <div class="DosageBox">
-                                                    <div class="row">
-                                                        <div class="col-sm-4">
-                                                            <label>Day 1</label>
-                                                            <div class="AttachFile">
-                                                                <div class="FileMAIN">
-                                                                    <span>
-                                                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
-                                                                        {{ form.first_question_file.errors }}
-                                                                        {{ form.first_question_file }}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <label>Day 2</label>
-                                                            <div class="AttachFile">
-                                                                <div class="FileMAIN">
-                                                                    <span>
-                                                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
-                                                                        {{ form.second_question_file.errors }}
-                                                                        {{ form.second_question_file }}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <label>Day 3</label>
-                                                            <div class="AttachFile">
-                                                                <div class="FileMAIN">
-                                                                    <span>
-                                                                        <i class="fa fa-upload" aria-hidden="true"></i> Upload
-                                                                        {{ form.third_question_file.errors }}
-                                                                        {{ form.third_question_file }}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <div class="row" id="quiz_question_wrapper"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -251,7 +214,48 @@
 
 {% block page_js %}
 <script>
+    function addQuestionButton(day_number) {
+
+        let col_sm_4 = document.createElement("div");
+        col_sm_4.setAttribute("class", "col-sm-4");
+
+        let question_label = document.createElement("label");
+        question_label.setAttribute("class", "mt-4")
+        question_label.textContent = "Day " + day_number
+
+        col_sm_4.appendChild(question_label);
+
+        let file_wrapper = document.createElement("div");
+        file_wrapper.setAttribute("class", "AttachFile");
+
+        let file_main = document.createElement("div");
+        file_main.setAttribute("class", "FileMAIN");
+
+        let spn = document.createElement("span");
+        let i = document.createElement("i");
+        i.setAttribute("class", "fa fa-upload");
+        i.setAttribute("aria-hidden", "true");
+        spn.appendChild(i);
+        spn.append("Upload");
+
+        let file_input = document.createElement("input");
+        file_input.setAttribute("type", "file");
+        file_input.setAttribute("name", "question_file_day_"+day_number);
+
+        spn.appendChild(file_input);
+        file_main.appendChild(spn)
+
+        file_wrapper.appendChild(file_main);
+
+        col_sm_4.appendChild(file_wrapper);
+
+        $("#quiz_question_wrapper").append(col_sm_4);
+
+    }
     $(document).ready(()=>{
+
+        $("#quiz_question_wrapper").html("Set start date and end date above to upload daily quizzes.");
+
         document.getElementById("id_first_prize_image").onchange = function () {
             document.getElementById("id_first_prize_image_name").textContent = this.files[0].name;
             let oFReader = new FileReader();
@@ -259,7 +263,6 @@
             oFReader.onload = function (oFREvent) {
                 document.getElementById("id_first_prize_image_img").src = oFREvent.target.result;
             };
-
         };
         document.getElementById("id_second_prize_image").onchange = function () {
           document.getElementById("id_second_prize_image_name").textContent = this.files[0].name;
@@ -277,6 +280,42 @@
                 document.getElementById("id_third_prize_image_img").src = oFREvent.target.result;
             };
         };
+
+        // calculate difference in days
+
+        let start_date = document.getElementById("id_start_date");
+        let end_date = document.getElementById("id_end_date");
+        $("#id_end_date").change((ev)=>{
+            if (start_date.value !== null && end_date.value !== null){
+                const date1 = new Date(start_date.value);
+                const date2 = new Date(end_date.value);
+
+                let oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+                let diffDays = (date2.getTime() - date1.getTime()) / (oneDay);
+                if (diffDays < 0){
+                    console.log(diffDays);
+                    window.alert("End date must be greater than start date");
+                }else{
+                    console.log(diffDays)
+                    let quiz_duration = document.getElementById("id_quiz_duration")
+                    quiz_duration.setAttribute("name", "quiz_duration");
+                    quiz_duration.setAttribute("value", diffDays.toString());
+                    quiz_duration.disabled = true;
+                    $("#quiz_question_wrapper").html("");
+                    for (let i = 0; i < diffDays; i++) {
+                        addQuestionButton(i+1);
+                    }
+                }
+
+            }
+        });
+
+        // $("#quiz_form").submit((e)=>{
+        //     e.preventDefault();
+        //     console.log($("#quiz_form").serialize())
+        // });
+        
     });
 </script>
 {% endblock page_js %}
