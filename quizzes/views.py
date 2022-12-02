@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from pandas.io.sas.sas_constants import magic
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -165,10 +166,12 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
 
             if quiz_files_count > 0:
                 for index in range(quiz_files_count):
+                    quiz_file = files.get(f"question_file_day_{index + 1}")
+
                     QuestionFile.objects.create(
                         quiz=quiz,
                         name=quiz_utils.get_quiz_file_name(index),
-                        file=files.get(f"question_file_day_{index+1}")
+                        file=quiz_file
                     )
 
             return redirect(to=f"/adminpanel/quizzes/details/{quiz.pk}/")
