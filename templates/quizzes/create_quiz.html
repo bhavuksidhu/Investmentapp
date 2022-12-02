@@ -248,12 +248,21 @@
         spn.appendChild(file_input);
         file_main.appendChild(spn)
 
+
+        let file_name = document.createElement("div");
+        file_name.setAttribute("id", "question_file_day_"+day_number+"_name");
+        file_main.appendChild(file_name);
+
+        file_input.addEventListener("change", (evt)=>{
+            console.log(file_input)
+            document.getElementById("question_file_day_"+day_number+"_name").textContent = file_input.files[0].name;
+        });
+
         file_wrapper.appendChild(file_main);
 
         col_sm_4.appendChild(file_wrapper);
 
         $("#quiz_question_wrapper").append(col_sm_4);
-
     }
     $(document).ready(()=>{
 

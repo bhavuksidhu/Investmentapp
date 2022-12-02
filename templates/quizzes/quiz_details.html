@@ -109,7 +109,7 @@
                             {% for question_file in quiz.question_files %}
                                 <div class="col-sm-2">
                                     <p>Day {{ forloop.counter }}</p>
-                                    <a href="{{ question_file.file.url }}" >
+                                    <a href="{{ question_file.file.url }}" download="{{ question_file.file.url }}" >
                                         <figure>
                                             <img src="/media/images/Download.png" alt="{{ question_file.file.name }}">
                                         </figure>
