@@ -1,5 +1,6 @@
 from datetime import date
 
+import pandas
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from pandas.io.sas.sas_constants import magic
@@ -12,7 +13,7 @@ from rest_framework.views import APIView
 from django.views.generic import CreateView, ListView, DetailView
 from api.serializers import QuizSerializer
 from quizzes import utils as quiz_utils
-from quizzes.models import Quiz, Prize, QuestionFile
+from quizzes.models import Quiz, Prize, QuestionFile, Question, QuestionOption
 from quizzes.forms import CreateQuizForm
 from django.contrib import messages
 
@@ -80,12 +81,18 @@ class QuizViewAPI(APIView):
                     "prize_image": request.build_absolute_uri(prize.image.url),
                 })
 
-            question_files = []
-            for question_file in quiz.question_files():
-                question_files.append({
-                    "name": question_file.name,
-                    "quiz_file": request.build_absolute_uri(question_file.file.url),
-                    "file_metadata": question_file.file_metadata,
+            questions = []
+            for question in quiz.questions():
+
+                options = []
+                for option in QuestionOption.objects.filter(question=question.pk):
+                    options.append(option.option)
+
+                questions.append({
+                    "number": question.pk,
+                    "question": question.question_text,
+                    "options": options,
+                    "correct_option": question.correct_choice,
                 })
 
             quizzes.append({
@@ -102,7 +109,7 @@ class QuizViewAPI(APIView):
                 "rules": quiz.rules,
                 "terms": quiz.terms,
                 "prize_images": prize_images,
-                "question_files": question_files
+                "questions": questions
             })
 
         return Response({"quizzes": quizzes}, status=200)
@@ -168,11 +175,23 @@ class CreateQuizView(LoginRequiredMixin, CreateView):
                 for index in range(quiz_files_count):
                     quiz_file = files.get(f"question_file_day_{index + 1}")
 
-                    QuestionFile.objects.create(
+                    question_file_obj = QuestionFile.objects.create(
                         quiz=quiz,
                         name=quiz_utils.get_quiz_file_name(index),
                         file=quiz_file
                     )
+
+                    # save questions to db
+                    df = pandas.read_excel(question_file_obj.file.path)
+                    for question, row in df.iterrows():
+                        qstn = Question.objects.create(
+                            quiz=quiz, question_text=row['question'], correct_choice=row['correct_option']
+                        )
+
+                        QuestionOption.objects.create(question=qstn, option=row['option1'])
+                        QuestionOption.objects.create(question=qstn, option=row['option2'])
+                        QuestionOption.objects.create(question=qstn, option=row['option3'])
+                        QuestionOption.objects.create(question=qstn, option=row['option4'])
 
             return redirect(to=f"/adminpanel/quizzes/details/{quiz.pk}/")
         else:

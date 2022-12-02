@@ -45,6 +45,9 @@ class Quiz(models.Model):
     def question_files(self):
         return QuestionFile.objects.filter(quiz_id=self.pk)
 
+    def questions(self):
+        return Question.objects.filter(quiz_id=self.pk)
+
 
 class Prize(models.Model):
     quiz = models.ForeignKey(to=Quiz, on_delete=models.CASCADE)
@@ -64,3 +67,18 @@ class QuestionFile(models.Model):
 
     def __str__(self):
         return "%s for quiz_id= %s" % (self.name, self.quiz_id)
+
+
+class Question(models.Model):
+    quiz = models.ForeignKey(to=Quiz, on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=1000, default="")
+    correct_choice = models.CharField(max_length=250, default="")
+
+    def options(self):
+        return QuestionOption.objects.filter(question_id=self.pk)
+
+
+class QuestionOption(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    option = models.CharField(max_length=250)
+    is_correct = models.BooleanField(default=False)
