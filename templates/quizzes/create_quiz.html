@@ -241,8 +241,10 @@
 
         let file_input = document.createElement("input");
         file_input.setAttribute("type", "file");
+        file_input.setAttribute("accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         file_input.setAttribute("id", "question_file_day_"+day_number);
         file_input.setAttribute("name", "question_file_day_"+day_number);
+        file_input.setAttribute("required", "");
         form_elem.appendChild(file_input);
 
         spn.appendChild(file_input);

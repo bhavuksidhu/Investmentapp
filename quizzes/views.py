@@ -1,9 +1,9 @@
+import secrets
 from datetime import date
 
 import pandas
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from pandas.io.sas.sas_constants import magic
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -95,6 +95,9 @@ class QuizViewAPI(APIView):
                     "correct_option": question.correct_choice,
                 })
 
+                secure_random = secrets.SystemRandom()  # creates a secure random object.
+                random_questions = secure_random.sample(questions, 6)
+
             quizzes.append({
                 "name": quiz.name,
                 "start_date": quiz.start_date,
@@ -109,7 +112,7 @@ class QuizViewAPI(APIView):
                 "rules": quiz.rules,
                 "terms": quiz.terms,
                 "prize_images": prize_images,
-                "questions": questions
+                "questions": random_questions
             })
 
         return Response({"quizzes": quizzes}, status=200)
