@@ -1,5 +1,6 @@
 from django.db import models
 
+from core.models import UserProfile
 from quizzes.utils import question_files_upload_dir, prize_images_dir
 
 
@@ -48,6 +49,9 @@ class Quiz(models.Model):
     def questions(self):
         return Question.objects.filter(quiz_id=self.pk)
 
+    class Meta:
+        ordering = ["-created_at"]
+
 
 class Prize(models.Model):
     quiz = models.ForeignKey(to=Quiz, on_delete=models.CASCADE)
@@ -82,3 +86,19 @@ class QuestionOption(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     option = models.CharField(max_length=250)
     is_correct = models.BooleanField(default=False)
+
+
+class WinnerConsent(models.Model):
+    profile = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
+    first_name = models.CharField(max_length=50, blank=False, null=False)
+    second_name = models.CharField(max_length=50, blank=False, null=False)
+    country_code = models.CharField(max_length=5, blank=False, null=False)
+    phone_number = models.CharField(max_length=25, blank=False, null=False)
+    email = models.EmailField(max_length=100, null=False, blank=False)
+    address = models.TextField(max_length=500, null=False, blank=False)
+    terms_consent = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    consented_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]

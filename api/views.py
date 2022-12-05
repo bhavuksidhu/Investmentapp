@@ -66,7 +66,7 @@ from api.serializers import (
     UserProfileSerializer,
     UserSettingSerializer,
     UserSubscriptionHistorySerializer,
-    UserSubscriptionSerializer,
+    UserSubscriptionSerializer, WinnerConsentSerializer,
 )
 from api.utils import NoDataException, StandardResultsSetPagination
 
@@ -1024,3 +1024,10 @@ class QuizViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = InsightSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+
+class WinnerConsentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = WinnerConsentSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+

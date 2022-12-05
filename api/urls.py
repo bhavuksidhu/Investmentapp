@@ -95,6 +95,7 @@ urlpatterns = [
     path("verify/email/", VerifyEmailView.as_view(), name="email-verification"),
     path("subscription/subscribe/", SubscribeView.as_view(), name="subscribe"),
     path("quizzes/", QuizViewAPI.as_view(), name="quizzes"),
+    path("quizzes/", QuizViewAPI.as_view(), name="quizzes"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),

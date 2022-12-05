@@ -80,6 +80,7 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
     pan_number = models.CharField(default="", max_length=12, unique=True)
     address = models.TextField(default="")
+    coin_balance = models.FloatField(default=0.0)
 
     @property
     def age(self):
@@ -260,3 +261,18 @@ class MarketQuote(models.Model):
 class EmailVerificationRecord(models.Model):
     uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class CoinHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ACTION_CHOICES = [
+        ("PURCHASE", 'Purchase'),
+    ]
+    action = models.CharField(
+        max_length=50, blank=True, null=False,
+        choices=ACTION_CHOICES,
+        default="PURCHASE",
+    )
+    notes = models.TextField(max_length=500, null=True)
+    date_time = models.DateTimeField(auto_created=True)
+

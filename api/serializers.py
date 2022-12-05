@@ -24,7 +24,7 @@ from drf_spectacular.utils import extend_schema_serializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 
-from quizzes.models import Quiz
+from quizzes.models import Quiz, WinnerConsent
 from .utils import PAN_REGEX
 
 ## UserSerializers
@@ -437,3 +437,10 @@ class QuizSerializer(serializers.ModelSerializer):
         model = Quiz
         fields = ("name", "start_date_time", "end_date_time", "active_start_time", "active_end_time",
                   "max_slots", "quiz_duration", "winner_instructions", "rules", "terms")
+
+
+class WinnerConsentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WinnerConsent
+        fields = ("first_name", "last_name", "country_code", "phone_number", "email", "address",
+                  "terms_consent")
