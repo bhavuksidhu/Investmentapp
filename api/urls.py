@@ -32,7 +32,7 @@ from api.views import (
     CheckEmailPhonePanNumber,
     InvestmentInsightViewSet,
     VerifyEmailView,
-    DeleteUserView, QuizViewSet
+    QuizViewSet
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 from payment.views import SubscribeView

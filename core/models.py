@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, timedelta
+from django.conf import settings
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -8,10 +9,14 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from djmoney.money import Money
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
 # Create your models here.
+from wallets.models import Wallet, WalletTransaction
+
+logger = settings.LOGGER
 
 
 class UploadedFile(models.Model):
@@ -80,7 +85,6 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=7, choices=GENDER_CHOICES, null=True)
     pan_number = models.CharField(default="", max_length=12, unique=True)
     address = models.TextField(default="")
-    coin_balance = models.FloatField(default=0.0)
 
     @property
     def age(self):
@@ -90,6 +94,27 @@ class UserProfile(models.Model):
             - self.date_of_birth.year
             - (today.timetuple()[1:3] < self.date_of_birth.timetuple()[1:3])
         )
+
+    @property
+    def wallet(self):
+        try:
+            wallet = Wallet.objects.get(userprofile_id=self.pk)
+        except Wallet.DoesNotExist:
+            logger.info(f"Wallet for {self.last_name} does not exist, creating new.")
+            wallet = Wallet.objects.create(
+                userprofile_id=self.pk,
+                coin_balance=settings.INITIAL_COIN_BALANCE
+            )
+            WalletTransaction.objects.create(
+                wallet=wallet,
+                amount=settings.INITIAL_COIN_BALANCE,
+                coin_balance=settings.INITIAL_COIN_BALANCE,
+                notes="Initial coin balance"
+            )
+
+            wallet.coin_balance = settings.INITIAL_COIN_BALANCE
+            wallet.save()
+        return wallet
 
 
 class UserSetting(models.Model):
@@ -263,16 +288,4 @@ class EmailVerificationRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class CoinHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    ACTION_CHOICES = [
-        ("PURCHASE", 'Purchase'),
-    ]
-    action = models.CharField(
-        max_length=50, blank=True, null=False,
-        choices=ACTION_CHOICES,
-        default="PURCHASE",
-    )
-    notes = models.TextField(max_length=500, null=True)
-    date_time = models.DateTimeField(auto_created=True)
 

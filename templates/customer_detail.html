@@ -33,11 +33,14 @@
                      id="Personal">
                     <div class="CustomerBox">
                         <h6 class="Register">
-                            <span>Registered on {{ user.created_at }}</span>
+                            <span>Registered on {{ user.created_at|date:"d-m-Y H:i" }}</span>
+                        </h6>
+                        <h6 class="Register">
+                            <span>Wallet Bal. {{ user.profile.wallet.coin_balance }}</span>
                         </h6>
                         <div class="CustomerHead">
                             <figure>
-                                <img src="{{ user.profile.profile_photo.url }}">
+                                <img src="{{ user.profile.profile_photo.url }}" />
                             </figure>
                             <figcaption>
                                 <div class="MainHeading">
@@ -60,36 +63,37 @@
                                     </label> {% endcomment %}
                                 </div>
                             </div>
-                            <h4>
-                                <span class="Strong">Name :</span> <samp>{{ user.profile.first_name }} {{ user.profile.last_name }}</samp>
-                            </h4>
-                            <article>
-                                <aside>
-                                    <h6>Details :</h6>
-                                    <p>
-                                        <span>Email Address :</span> {{ user.email }}
-                                    </p>
-                                    <p>
-                                        <span>Mobile Number :</span> {{ user.phone_number }}
-                                    </p>
-                                    <p>
-                                        <span>Gender :</span> {{ user.profile.gender }}
-                                    </p>
-                                    <p>
-                                        <span>Age :</span> {{ user.profile.age }}
-                                    </p>
-                                    <p>
-                                        <span>Date of Birth :</span> {{ user.profile.date_of_birth }}
-                                    </p>
-                                    <p>
-                                        <span>PAN Number :</span> {{ user.profile.pan_number }}
-                                    </p>
-                                    <p>
-                                        <span>Address :</span> {{ user.profile.address }}
-                                    </p>
-                                </aside>
-                            </article>
-                        </figcaption>
+                                <h4>
+                                    <span class="Strong">Name :</span> <samp>{{ user.profile.first_name }} {{ user.profile.last_name }}</samp>
+                                </h4>
+                                <article>
+                                    <aside>
+                                        <h6>Details :</h6>
+                                        <p>
+                                            <span>Email Address :</span> {{ user.email }}
+                                        </p>
+                                        <p>
+                                            <span>Mobile Number :</span> {{ user.phone_number }}
+                                        </p>
+                                        <p>
+                                            <span>Gender :</span> {{ user.profile.gender }}
+                                        </p>
+                                        <p>
+                                            <span>Age :</span> {{ user.profile.age }}
+                                        </p>
+                                        <p>
+                                            <span>Date of Birth :</span> {{ user.profile.date_of_birth }}
+                                        </p>
+                                        <p>
+                                            <span>PAN Number :</span> {{ user.profile.pan_number }}
+                                        </p>
+                                        <p>
+                                            <span>Address :</span> {{ user.profile.address }}
+                                        </p>
+                                    </aside>
+                                </article>
+                            </figcaption>
+                        </div>
                     </div>
                 </div>
             </div>

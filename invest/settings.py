@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import json
 import os
+import logging
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from djmoney.money import Money
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 with open("creds.json", "r", encoding="utf-8") as f:
@@ -53,11 +56,13 @@ INSTALLED_APPS = [
     "imagekit",
     "drf_spectacular",
     "django_extensions",
+    "djmoney",
     "adminpanel",
     "core",
     "api",
     "payment",
     "quizzes",
+    "wallets",
 ]
 
 MIDDLEWARE = [
@@ -200,3 +205,11 @@ if os.name == 'nt':
 else:
     # HOST = "invest-thrift.com"
     HOST = "3.109.192.153"
+
+## DJMONEY
+CURRENCIES = ('USD', 'EUR', 'INR')
+CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €'), ('INR', 'INR ₹')]
+DEFAULT_CURRENCY = 'INR'
+INITIAL_COIN_BALANCE = Money(1500.00, DEFAULT_CURRENCY)
+
+LOGGER = logging.getLogger(__name__)
