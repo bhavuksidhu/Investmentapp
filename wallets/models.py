@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from djmoney.models.fields import MoneyField
 from djmoney.money import Money
@@ -6,8 +7,8 @@ from invest.settings import DEFAULT_CURRENCY
 
 
 class Wallet(models.Model):
-    userprofile = models.ForeignKey(to='core.UserProfile', on_delete=models.DO_NOTHING)
-    coin_balance = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
+    userprofile = models.ForeignKey(to='core.UserProfile', on_delete=models.DO_NOTHING, related_name="wallet")
+    coin_balance = MoneyField(max_digits=14, decimal_places=2, default_currency=settings.DEFAULT_CURRENCY)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,5 +34,3 @@ class WalletTransaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_type} amount {self.amount}"
-
-

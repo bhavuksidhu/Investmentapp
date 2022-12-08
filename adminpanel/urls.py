@@ -31,4 +31,5 @@ urlpatterns = [
     path("notifications/", NotificationsView.as_view(), name="notifications"),
 
     path('quizzes/', include("quizzes.urls", namespace="quizzes")),
+    path('wallets/', include("wallets.urls", namespace="wallets")),
 ]

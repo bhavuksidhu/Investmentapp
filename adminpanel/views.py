@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 
 import pandas as pd
+from django.conf import settings
 from rest_framework.authtoken.models import Token
 
 from core.models import (
@@ -39,6 +40,10 @@ from adminpanel.utils import send_tip_notification
 
 
 # Create your views here.
+from wallets.forms import AddCoinsForm
+from wallets.models import Wallet
+
+
 class LoginView(View):
     template = "login.html"
 
@@ -305,6 +310,26 @@ class CustomerDetailView(LoginRequiredMixin, View):
     def get_data(self):
         q = self.request.GET.get("q", None)
         user = User.objects.select_related("profile").get(id=self.kwargs.get("pk"))
+        profile = user.profile
+
+        if profile is None:
+            wallet = {
+                "balance": 0,
+                "currency": settings.DEFAULT_CURRENCY,
+            }
+        else:
+            try:
+                wallet_obj = Wallet.objects.get(userprofile__user_id=user.pk)
+                wallet = {
+                    "id": wallet_obj.pk,
+                    "balance": wallet_obj.coin_balance.amount,
+                    "currency": wallet_obj.coin_balance.currency.code,
+                }
+            except Wallet.DoesNotExist as exc:
+                wallet = None
+
+            # wallet_obj = profile.wallet
+
 
         base_transaction_query = user.transactions.filter(verified=True)
 
@@ -346,7 +371,7 @@ class CustomerDetailView(LoginRequiredMixin, View):
         transactions = transactions_query
         journal = journals_query
 
-        return {"user": user, "transactions": transactions, "journal": journal}
+        return {"user": user, "transactions": transactions, "journal": journal, "wallet": wallet}
 
     def get_context_data(self, **kwargs):
         context = {}
@@ -369,13 +394,16 @@ class CustomerDetailView(LoginRequiredMixin, View):
 
         return context
 
-    def get(self, request, *args, **kwagrs):
+    def get(self, request, *args, **kwargs):
         data = self.get_data()
-        context = self.get_context_data(**kwagrs)
+        context = self.get_context_data(**kwargs)
         context["user"] = data["user"]
         context["transactions"] = data["transactions"]
         context["journal"] = data["journal"]
+        context["wallet"] = data["wallet"]
+        context["add_coins_form"] = AddCoinsForm
 
+        # token = Token.objects.get(user_id=1)
         return render(request, self.template_name, context=context)
 
 

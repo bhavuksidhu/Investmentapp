@@ -68,6 +68,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.email}, {self.phone_number}"
 
+    def profile(self):
+        try:
+            return UserProfile.objects.get(user_id=self.pk)
+        except UserProfile.DoesNotExist as exc:
+            return None
+
     class Meta:
         ordering = ("-created_at",)
 
@@ -95,10 +101,10 @@ class UserProfile(models.Model):
             - (today.timetuple()[1:3] < self.date_of_birth.timetuple()[1:3])
         )
 
-    @property
     def wallet(self):
         try:
             wallet = Wallet.objects.get(userprofile_id=self.pk)
+
         except Wallet.DoesNotExist:
             logger.info(f"Wallet for {self.last_name} does not exist, creating new.")
             wallet = Wallet.objects.create(

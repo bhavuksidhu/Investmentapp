@@ -22,9 +22,7 @@ class GetViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
-class GetPostViewSet(
-    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
-):
+class GetPostViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     def get_object(self):
         return self.get_queryset()
 
@@ -51,7 +49,7 @@ class GetPostViewSet(
             return Response(serializer.data)
     
     def dispatch(self, request, *args, **kwargs):
-        response =  super().dispatch(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
         if "status" in response.data:
             return response
         else:

@@ -45,7 +45,7 @@
                                     <td>{{ user.profile.pan_number }}</td>
                                     <td>{{ user.profile.age }}</td>
                                     <td>{{ user.profile.date_of_birth }}</td>
-                                    <td>{{ user.created_at }}</td>
+                                    <td>{{ user.created_at|date:"d-m-Y H:i" }}</td>
                                     <td>
                                         <a class="Blue" href="{% url "adminpanel:customer-detail" user.id %}">
                                             <i class="fa fa-eye"></i>

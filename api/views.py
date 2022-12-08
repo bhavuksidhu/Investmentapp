@@ -341,6 +341,7 @@ class UserProfileViewSet(GetPostViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+
         try:
             return UserProfile.objects.get(user=self.request.user)
         except UserProfile.DoesNotExist:
@@ -984,6 +985,7 @@ class SendVerififcationEmailView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 class CheckOldPassword(APIView):
     authentication_classes = (TokenAuthentication,)

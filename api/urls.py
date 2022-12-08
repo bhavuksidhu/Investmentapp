@@ -37,6 +37,7 @@ from api.views import (
 from api.zerodha_urls import urlpatterns as zerodha_urls
 from payment.views import SubscribeView
 from quizzes.views import QuizViewAPI
+from wallets.views import WalletViewAPI, WalletViewSetAPI
 
 app_name = "api"
 
@@ -79,6 +80,7 @@ router.register(
 router.register(r"static/faqs", FAQViewSet, basename="faqs")
 router.register(r"static/tip", TipViewSet, basename="tips")
 router.register(r"quizzes", QuizViewSet, basename="quizzes")
+# router.register(r"wallets", WalletViewSetAPI, basename="wallets")
 
 
 urlpatterns = [
@@ -95,7 +97,7 @@ urlpatterns = [
     path("verify/email/", VerifyEmailView.as_view(), name="email-verification"),
     path("subscription/subscribe/", SubscribeView.as_view(), name="subscribe"),
     path("quizzes/", QuizViewAPI.as_view(), name="quizzes"),
-    path("quizzes/", QuizViewAPI.as_view(), name="quizzes"),
+    # path("wallets/", WalletViewSetAPI.as_view(), name="wallet"),
     # Routers
     path("", include(router.urls)),
     path("zerodha/", include(zerodha_urls)),
