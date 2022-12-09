@@ -23,7 +23,7 @@ from drf_spectacular.utils import extend_schema_serializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 
-from quizzes.models import Quiz, WinnerConsent
+from quizzes.models import Quiz, WinnerConsent, QuizEnrollment, Answer
 from wallets.models import Wallet
 from .utils import PAN_REGEX
 
@@ -448,6 +448,20 @@ class QuizSerializer(serializers.ModelSerializer):
         model = Quiz
         fields = ("name", "start_date_time", "end_date_time", "active_start_time", "active_end_time",
                   "max_slots", "quiz_duration", "winner_instructions", "rules", "terms")
+
+
+class QuizEnrollmentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = QuizEnrollment
+        fields = ("userprofile", "quiz", "enrolled_at", "status", "notes")
+
+
+class QuizAnswerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Answer
+        fields = ("userprofile", "question", "duration", "answer",)
 
 
 class WalletSerializer(mixins.ListModelMixin, serializers.ModelSerializer):

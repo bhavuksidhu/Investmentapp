@@ -66,7 +66,7 @@ from api.serializers import (
     UserProfileSerializer,
     UserSettingSerializer,
     UserSubscriptionHistorySerializer,
-    UserSubscriptionSerializer, WinnerConsentSerializer,
+    UserSubscriptionSerializer, WinnerConsentSerializer, QuizSerializer, QuizEnrollmentSerializer, WalletSerializer,
 )
 from api.utils import NoDataException, StandardResultsSetPagination
 
@@ -1023,7 +1023,19 @@ class CheckOldPassword(APIView):
 
 
 class QuizViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = InsightSerializer
+    serializer_class = QuizSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
+class WalletViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = WalletSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
+class QuizEnrollmentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = QuizEnrollmentSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 

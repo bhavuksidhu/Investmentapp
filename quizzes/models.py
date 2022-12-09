@@ -53,6 +53,19 @@ class Quiz(models.Model):
         ordering = ["-created_at"]
 
 
+class QuizEnrollment(models.Model):
+    ENROLLMENT_STATUSES = [
+        ("ACTIVE", 'Active'),
+        ("INACTIVE", 'Inactive'),
+        ("COMPLETED", 'Completed')
+    ]
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
+    quiz = models.ForeignKey(Quiz, on_delete=models.DO_NOTHING)
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=25, choices=ENROLLMENT_STATUSES, default="ACTIVE")
+    notes = models.CharField(max_length=500, null=True, blank=True)
+
+
 class Prize(models.Model):
     quiz = models.ForeignKey(to=Quiz, on_delete=models.CASCADE)
     prize_metadata = models.JSONField(null=True, blank=True)
@@ -86,6 +99,13 @@ class QuestionOption(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     option = models.CharField(max_length=250)
     is_correct = models.BooleanField(default=False)
+
+
+class Answer(models.Model):
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
+    question = models.ForeignKey(Question, on_delete=models.DO_NOTHING)
+    duration = models.IntegerField()
+    answer = models.ForeignKey(QuestionOption, on_delete=models.DO_NOTHING)
 
 
 class WinnerConsent(models.Model):

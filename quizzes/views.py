@@ -2,19 +2,23 @@ import random
 from datetime import date
 
 import pandas
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from rest_framework import status as http_status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.views.generic import CreateView, ListView, DetailView
-from api.serializers import QuizSerializer
+from api.serializers import QuizSerializer, QuizEnrollmentSerializer, QuizAnswerSerializer
 from quizzes import utils as quiz_utils
-from quizzes.models import Quiz, Prize, QuestionFile, Question, QuestionOption
+from quizzes.models import Quiz, Prize, QuestionFile, Question, QuestionOption, QuizEnrollment
 from quizzes.forms import CreateQuizForm
 from django.contrib import messages
+
+from wallets.models import Wallet, WalletTransaction
 
 
 class QuizViewAPI(APIView):
@@ -101,6 +105,7 @@ class QuizViewAPI(APIView):
 
             quizzes.append({
                 "name": quiz.name,
+                "id": quiz.pk,
                 "start_date": quiz.start_date,
                 "start_time": f"{quiz.start_date}T{quiz.start_time}.000Z",
                 "end_date": quiz.end_date,
@@ -269,3 +274,55 @@ class QuizDetailView(LoginRequiredMixin, DetailView):
     model = Quiz
     template_name = "quizzes/quiz_details.html"
     permission_classes = (IsAuthenticated,)
+
+
+class QuizEnrollmentAPI(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer = QuizEnrollmentSerializer
+    model = QuizEnrollment
+
+    def post(self, request: Request, *args, **kwargs):
+        serializer_obj = self.serializer(data=request.data)
+        if serializer_obj.is_valid():
+            enrollment = serializer_obj.save()
+
+            wallet = Wallet.objects.get(userprofile__user_id=request.user.pk)
+
+            coin_balance = wallet.coin_balance - settings.ENROLLMENT_FEE
+            WalletTransaction.objects.create(
+                wallet_id=wallet.pk,
+                amount=settings.ENROLLMENT_FEE,
+                transaction_type="DEBIT",
+                notes="Quiz enrollment fee",
+                coin_balance=coin_balance
+            )
+            wallet.coin_balance = coin_balance
+            wallet.save()
+
+            resp = {
+                "message": "Enrollment successful",
+                "enrollment": {
+                    "id": enrollment.pk,
+                    "quiz": enrollment.quiz.pk,
+                    "enrolled_at": enrollment.enrolled_at,
+                    "status": enrollment.status,
+                    "notes": enrollment.notes
+                }
+            }
+
+            return Response(resp, status=http_status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "Enrollment failed"}, status=http_status.HTTP_400_BAD_REQUEST)
+
+
+class QuizAnswerAPI(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer = QuizAnswerSerializer
+    model = QuizEnrollment
+
+    def post(self, request: Request, *args, **kwargs):
+        serializer_obj = self.serializer(data=request.data)
+        if serializer_obj.is_valid():
+            answer = serializer_obj.save()

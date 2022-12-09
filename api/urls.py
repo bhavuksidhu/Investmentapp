@@ -32,12 +32,12 @@ from api.views import (
     CheckEmailPhonePanNumber,
     InvestmentInsightViewSet,
     VerifyEmailView,
-    QuizViewSet
+    QuizViewSet, QuizEnrollmentViewSet, WalletViewSet
 )
 from api.zerodha_urls import urlpatterns as zerodha_urls
 from payment.views import SubscribeView
-from quizzes.views import QuizViewAPI
-from wallets.views import WalletViewAPI, WalletViewSetAPI
+from quizzes.views import QuizViewAPI, QuizEnrollmentAPI, QuizAnswerAPI
+from wallets.views import WalletViewAPI
 
 app_name = "api"
 
@@ -45,9 +45,7 @@ router = DefaultRouter()
 
 router.register(r"profile", UserProfileViewSet, basename="profile")
 router.register(r"profile/user-data", BasicUserViewSet, basename="user-data")
-router.register(
-    r"profile/profile-photo", UserProfilePhotoViewSet, basename="profile-photo"
-)
+router.register(r"profile/profile-photo", UserProfilePhotoViewSet, basename="profile-photo")
 router.register(r"settings", UserSettingViewSet, basename="settings")
 router.register(r"notifications", NotificationViewSet, basename="notifications")
 
@@ -56,31 +54,30 @@ router.register(r"market/filter", MarketFilterViewSet, basename="market-filter")
 router.register(r"funds", GetFundsViewSet, basename="get-funds")
 
 #Transactions
-router.register(r"investment-insight/insights",InvestmentInsightViewSet,basename="investment-insight")
-router.register(r"investment-insight/transactions",TransactionViewSet,basename="transaction")
-router.register(r"trade",TradeViewSet,basename="trade")
-router.register(r"journal",JournalViewSet,basename="journal")
+router.register(r"investment-insight/insights", InvestmentInsightViewSet,basename="investment-insight")
+router.register(r"investment-insight/transactions", TransactionViewSet, basename="transaction")
+router.register(r"trade", TradeViewSet, basename="trade")
+router.register(r"journal", JournalViewSet, basename="journal")
 
 #Subscriptions
 # router.register(r"subscription/subscribe",SubscribeViewSet,basename="subscribe")
-router.register(r"subscription/detail",SubscriptionViewSet,basename="subscription-detail")
-router.register(r"subscription/history",SubscriptionHistoryViewSet,basename="subscription-history")
+router.register(r"subscription/detail", SubscriptionViewSet,basename="subscription-detail")
+router.register(r"subscription/history", SubscriptionHistoryViewSet,basename="subscription-history")
 
 #Static
 router.register(r"static/about-us", AboutUsViewSet, basename="about-us")
-router.register(
-    r"static/privacy-policy", PrivacyPolicyViewSet, basename="privacy-policy"
-)
-router.register(
-    r"static/terms-n-conditions", TermsNConditionsViewSet, basename="terms-n-conditions"
-)
-router.register(
-    r"static/contact-details", ContactDataViewSet, basename="contact-details"
-)
+router.register(r"static/privacy-policy", PrivacyPolicyViewSet, basename="privacy-policy")
+router.register(r"static/terms-n-conditions", TermsNConditionsViewSet, basename="terms-n-conditions")
+router.register(r"static/contact-details", ContactDataViewSet, basename="contact-details")
 router.register(r"static/faqs", FAQViewSet, basename="faqs")
 router.register(r"static/tip", TipViewSet, basename="tips")
+
+# Quizzes
 router.register(r"quizzes", QuizViewSet, basename="quizzes")
-# router.register(r"wallets", WalletViewSetAPI, basename="wallets")
+# router.register(r"quizzes/enrollment", QuizEnrollmentViewSet, basename="quizzes")
+
+# Wallets
+router.register(r"wallets", WalletViewSet, basename="quizzes")
 
 
 urlpatterns = [
@@ -96,7 +93,13 @@ urlpatterns = [
     path("verify/send-verification-email/", SendVerififcationEmailView.as_view(), name="send-verification-email"),
     path("verify/email/", VerifyEmailView.as_view(), name="email-verification"),
     path("subscription/subscribe/", SubscribeView.as_view(), name="subscribe"),
+
+    # Quizzes
     path("quizzes/", QuizViewAPI.as_view(), name="quizzes"),
+    path("quizzes/enroll", QuizEnrollmentAPI.as_view(), name="quiz-enrollment"),
+    path("quizzes/<int:pk>/answers", QuizAnswerAPI.as_view(), name="quiz-answers"),
+
+    # Wallets
     path("wallets/", WalletViewAPI.as_view(), name="wallet"),
     # Routers
     path("", include(router.urls)),
