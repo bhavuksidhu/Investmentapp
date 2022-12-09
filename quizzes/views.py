@@ -285,6 +285,15 @@ class QuizEnrollmentAPI(APIView):
     def post(self, request: Request, *args, **kwargs):
         serializer_obj = self.serializer(data=request.data)
         if serializer_obj.is_valid():
+
+            enrollments = QuizEnrollment.objects.filter(
+                quiz_id=request.data.get("quiz"),
+                userprofile_id=request.data.get("userprofile")
+            )
+
+            if enrollments.count() > 0:
+                return Response({"message": "Already enrolled"}, status=http_status.HTTP_400_BAD_REQUEST)
+
             enrollment = serializer_obj.save()
 
             wallet = Wallet.objects.get(userprofile__user_id=request.user.pk)
