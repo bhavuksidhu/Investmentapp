@@ -1,11 +1,10 @@
-import secrets
+import random
 from datetime import date
 
 import pandas
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -94,9 +93,11 @@ class QuizViewAPI(APIView):
                     "options": options,
                     "correct_option": question.correct_choice,
                 })
-
-                secure_random = secrets.SystemRandom()  # creates a secure random object.
-                random_questions = secure_random.sample(questions, 6)
+            #     Only get random questions if len > 6
+            if len(questions) > 6:
+                random_questions = random.sample(questions, 6)
+            else:
+                random_questions = questions
 
             quizzes.append({
                 "name": quiz.name,

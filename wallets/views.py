@@ -53,6 +53,18 @@ class WalletViewAPI(APIView):
         return Response(data=resp, status=response_code)
 
 
+class DeductCoinsViewAPI(LoginRequiredMixin, CreateView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer = WalletSerializer
+    model = Wallet
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer(data=request.data)
+        if serializer.is_valid():
+            pass
+
+
 class WalletView(LoginRequiredMixin, ListView):
     model = Wallet
     context_object_name = "wallets"
