@@ -127,4 +127,35 @@ class AddCoinsView(LoginRequiredMixin, CreateView):
             return render(request, self.template_name, context)
 
 
+class AddCoinsToAllView(LoginRequiredMixin, CreateView):
+    model = Wallet
+    context_object_name = "wallets"
+    permission_classes = (IsAdminUser,)
+    form_class = AddCoinsForm
+    template_name = "customer_management.html"
 
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+    
+        if form.is_valid():
+            all_users = UserProfile.objects.all().values_list("id",flat=True)
+            wallet_users = Wallet.objects.filter(userprofile__id__in = all_users)
+            added_amount = form.cleaned_data.get("amount")
+            for wallet in wallet_users:
+                current_balance = wallet.coin_balance
+                new_balance = current_balance + added_amount
+                WalletTransaction.objects.create(
+                    wallet_id= wallet.pk,
+                    amount=current_balance,
+                    transaction_type="CREDIT",
+                    notes=f"Coins added by {request.user.email}",
+                    coin_balance=new_balance
+                )
+                wallet.coin_balance = new_balance
+                wallet.save()
+            messages.success(request, "Amount added successfully", extra_tags="alert alert-success")
+            return redirect(to=f"/adminpanel/customer-management/")
+        else:
+            messages.error(request, "Form errors occurred", extra_tags="alert alert-danger")
+            context = {"form": self.form_class, "wallet": wallet}
+            return render(request, self.template_name, context)

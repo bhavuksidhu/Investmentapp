@@ -278,6 +278,7 @@ class CustomerManagementView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["q"] = self.request.GET.get("q", None)
+        context["add_coins_form"] = AddCoinsForm
         return context
 
     def post(self, request, *args, **kwargs):

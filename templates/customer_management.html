@@ -11,13 +11,42 @@
                     <div class="Search">
                         <form action={% url "adminpanel:customer-management"%} method="GET">
                             <input type="text"
-                                   placeholder="Enter Customer ID/Name/Email/Phone Number"
-                                   id="search_value" name="q" style="min-width:400px" {% if q %} value={{q}} {% endif %}>
+                            placeholder="Enter Customer ID/Name/Email/Phone Number"
+                            id="search_value" name="q" style="min-width:400px" {% if q %} value={{q}} {% endif %}>
                             <button id="search" type="submit">Search</button>
                             <button class="Reset" onclick="document.querySelector('#search_value').value=''">
                                 <i class="fa fa-refresh"></i>
                             </button>
                         </form>
+                    </div>
+                    {% include 'messages.html' %}
+                    <div class="AddButton">
+                        <a href="javascript:void(0)" data-toggle="modal" class="Button" data-target="#AddCoinsAll"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Coins</a>
+                        <div class="right_form">
+                            <div class="ModalBox">
+                                <div id="AddCoinsAll" class="modal fade in" style="display: none;" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <div class="Category">
+                                                    <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                                                    <h3>Add Coins</h3>
+                                                    <form action="{% url 'adminpanel:wallets:add-coins-to-all' %}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="form-group">
+                                                            <label>Enter Coins</label>
+                                                            {{ add_coins_form.amount }}
+                                                        </div>
+                                                        <button class="Button" type="submit">Add Coins</button>
+                                                    </form>
+                        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="TableList">
