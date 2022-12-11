@@ -1,4 +1,4 @@
-from dataclasses import field
+from rest_framework import mixins
 import re
 from mimetypes import guess_type
 
@@ -23,6 +23,8 @@ from drf_spectacular.utils import extend_schema_serializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 
+from quizzes.models import Quiz, WinnerConsent, QuizEnrollment, Answer
+from wallets.models import Wallet
 from .utils import PAN_REGEX
 
 ## UserSerializers
@@ -88,6 +90,7 @@ class BasicUserSerializer(serializers.ModelSerializer):
 @extend_schema_serializer(many=False)
 class UserProfileSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
     profile_photo = UploadedFileSerializer(allow_null=True, read_only=True)
+    wallet = serializers.SerializerMethodField('get_wallet')
 
     class Meta:
         model = UserProfile
@@ -99,6 +102,7 @@ class UserProfileSerializer(WritableNestedModelSerializer, serializers.ModelSeri
             "gender",
             "pan_number",
             "address",
+            "wallet",
         ]
         read_only_fields = [
             "first_name",
@@ -107,6 +111,15 @@ class UserProfileSerializer(WritableNestedModelSerializer, serializers.ModelSeri
             "gender",
             "pan_number",
         ]
+
+    def get_wallet(self, user_profile):
+        wallet = Wallet.objects.get(userprofile_id=user_profile.id)
+
+        return {
+            "id": wallet.pk,
+            "coin_balance": wallet.coin_balance.amount,
+            "currency": wallet.coin_balance.currency.code,
+        }
 
     def create(self, validated_data):
         request = self.context.get("request", None)
@@ -427,3 +440,39 @@ class ResetPasswordSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Email cannot be blank")
 
         return data
+
+
+class QuizSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Quiz
+        fields = ("name", "start_date_time", "end_date_time", "active_start_time", "active_end_time",
+                  "max_slots", "quiz_duration", "winner_instructions", "rules", "terms")
+
+
+class QuizEnrollmentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = QuizEnrollment
+        fields = ("userprofile", "quiz", "enrolled_at", "status", "notes")
+
+
+class QuizAnswerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Answer
+        fields = ("userprofile", "question", "duration", "answer",)
+
+
+class WalletSerializer(mixins.ListModelMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = Wallet
+        fields = ("userprofile", "coin_balance", "created_at", "updated_at")
+
+
+class WinnerConsentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WinnerConsent
+        fields = ("first_name", "last_name", "country_code", "phone_number", "email", "address",
+                  "terms_consent")

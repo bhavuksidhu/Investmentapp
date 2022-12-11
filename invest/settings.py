@@ -1,3 +1,4 @@
+
 """
 Django settings for invest project.
 
@@ -11,9 +12,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import json
 import os
+import logging
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from djmoney.money import Money
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 with open("creds.json", "r", encoding="utf-8") as f:
@@ -30,10 +34,13 @@ with open("creds.json", "r", encoding="utf-8") as f:
 SECRET_KEY = "859^*a+m2y*=hh#r6w7n0ak^$jw!q)wb+eqvc6+mlaflmt*dry"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1","localhost","invest-thrift.com","www.invest-thrift.com"]
+# if os.name == "nt":
+DEBUG = True
+# else:
+#     DEBUG = False
 
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "invest-thrift.com", "www.invest-thrift.com", "3.109.192.153"]
 
 # Application definition
 
@@ -44,15 +51,19 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "adminpanel",
-    "core",
-    "api",
-    "payment",
     "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
     "imagekit",
     "drf_spectacular",
+    "django_extensions",
+    "djmoney",
+    "adminpanel",
+    "core",
+    "api",
+    "payment",
+    "quizzes",
+    "wallets",
 ]
 
 MIDDLEWARE = [
@@ -63,7 +74,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    #"api.middleware.DenyInactiveUser"
+    # "api.middleware.DenyInactiveUser"
 ]
 
 ROOT_URLCONF = "invest.urls"
@@ -86,7 +97,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "invest.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -104,7 +114,7 @@ DATABASES = {
 REDIS_URL = 'redis://localhost:6379'
 
 CELERY_BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND=REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TIMEZONE = 'Asia/Kolkata'
 
 # Password validation
@@ -125,18 +135,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Kolkata"
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+USE_L10N = False
+USE_TZ = True  # if you plan to use timezone support
 
 USE_I18N = True
-
-USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -184,14 +193,25 @@ DEFAULT_FROM_EMAIL = 'investthrift@gmail.com'
 
 LOGIN_URL = '/adminpanel/login/'
 
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
-
 SUBSCRIPTION_AMOUNT = 69
 
-if os.name == 'nt':
-    HOST = "127.0.0.1:8000"
-else:
-    HOST = "invest-thrift.com"
+# TODO Change to True in prod
+# SECURE_SSL_REDIRECT = False
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
+# SECURE_BROWSER_XSS_FILTER = True
+
+# if os.name == 'nt':
+#     HOST = "127.0.0.1:8000"
+# else:
+#     # HOST = "invest-thrift.com"
+#     HOST = "3.109.192.153"
+
+## DJMONEY
+CURRENCIES = ('USD', 'EUR', 'INR')
+CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €'), ('INR', 'INR ₹')]
+DEFAULT_CURRENCY = 'INR'
+INITIAL_COIN_BALANCE = Money(1500.00, DEFAULT_CURRENCY)
+ENROLLMENT_FEE = Money(50.00, DEFAULT_CURRENCY)
+
+LOGGER = logging.getLogger(__name__)

@@ -1,8 +1,10 @@
 @charset "utf-8";
+
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
 body {
     margin: 0;
     padding: 0;
@@ -152,239 +154,80 @@ input[type="date"] {
 .Yellow {
     color: #feca05;
 }
-
-.Button:hover {
-    background-position: 0px 80px;
+.Button:hover { background-position: 0px 80px; }
+.Button.Cancel { background: rgb(217, 217, 217); color: rgb(0, 0, 0); margin: 0px 10px 0px 0px; }
+.Button {border: none;padding: 10px 30px;text-align: center;transition: all 0.5s ease-in-out 0s;font-weight: 500;display: inline-block;position: relative;font-size: 15px;font-weight: 600;color: #fff;text-transform: capitalize;letter-spacing: 0.5px;border-radius: 5px;box-shadow: none;outline: 0px !important;width: 100%;margin-top: 20px;background-image: linear-gradient(45deg, #278a4a, #28a745);}
+.Button:hover { background-position: 0px 80px; color: rgb(255, 255, 255); }
+.Button.Cancel { background: rgb(217, 217, 217); color: rgb(0, 0, 0); margin: 0px 10px 0px 0px; }
+.CheckBox {display: inline-block;position: relative;padding-left: 33px;cursor: pointer;font-size: 14px;user-select: none;font-weight: 500;color: #000;margin: 0px;min-height: 20px;}
+.CheckBox input { position: absolute; opacity: 0; cursor: pointer; height: 0px; width: 0px; }
+.CheckBox .checkmark {position: absolute;top: 0px;left: 0px;height: 20px;width: 23px;background-color: #4dc8e9;border: 1px solid #4dc8e9;border-radius: 5px;}
+.CheckBox:hover input ~ .checkmark {background: linear-gradient(45deg, rgb(77 200 233), rgb(160 226 250));border-color: rgb(77 200 233);}
+.CheckBox input:checked ~ .checkmark {background: white;}
+.CheckBox .checkmark::after {content: "";position: absolute;display: none;left: 8px;top: 2px;width: 5px;height: 11px;border-style: solid;border-color: #4dc8e9;border-image: initial;border-width: 0px 2px 2px 0px;transform: rotate(45deg);}
+.CheckBox input:checked ~ .checkmark::after { display: block; }
+.LoginPage{min-height: 100vh;display: flex;align-items: center;justify-content: center;background-image: linear-gradient(45deg, #319853, #14C38E);}
+.LoginPage .LoginBox{
+  width: 900px;
+  display: block;
+  background: #1c1c1c;
+  border-radius: 7px;
+  overflow: hidden;
 }
-
-.Button.Cancel {
-    background: rgb(217, 217, 217);
-    color: rgb(0, 0, 0);
-    margin: 0px 10px 0px 0px;
+.LoginBox .RightLogin figure{
+  width: 107px;
+  margin: 0 auto;
+  margin-bottom: 10px;
 }
-
-.Button {
-    border: none;
-    padding: 10px 30px;
-    text-align: center;
-    transition: all 0.5s ease-in-out 0s;
-    font-weight: 500;
-    display: inline-block;
-    position: relative;
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-    border-radius: 5px;
-    box-shadow: none;
-    outline: 0px !important;
-    width: 100%;
-    margin-top: 20px;
-    background-image: linear-gradient(45deg, #278a4a, #28a745);
+.LoginBox figure img{}
+.LoginPage .RightLogin h1{
+  font-size: 50px;
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+  padding-bottom: 20px;
 }
-
-.Button:hover {
-    background-position: 0px 80px;
-    color: rgb(255, 255, 255);
-}
-
-.Button.Cancel {
-    background: rgb(217, 217, 217);
-    color: rgb(0, 0, 0);
-    margin: 0px 10px 0px 0px;
-}
-
-.CheckBox {
-    display: inline-block;
-    position: relative;
-    padding-left: 33px;
-    cursor: pointer;
-    font-size: 14px;
-    user-select: none;
-    font-weight: 500;
-    color: #000;
-    margin: 0px;
-    min-height: 20px;
-}
-
-.CheckBox input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0px;
-    width: 0px;
-}
-
-.CheckBox .checkmark {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    height: 20px;
-    width: 23px;
-    background-color: #4dc8e9;
-    border: 1px solid #4dc8e9;
-    border-radius: 5px;
-}
-
-.CheckBox:hover input~.checkmark {
-    background: linear-gradient(45deg, rgb(77 200 233), rgb(160 226 250));
-    border-color: rgb(77 200 233);
-}
-
-.CheckBox input:checked~.checkmark {
-    background: white;
-}
-
-.CheckBox .checkmark::after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 8px;
-    top: 2px;
-    width: 5px;
-    height: 11px;
-    border-style: solid;
-    border-color: #4dc8e9;
-    border-image: initial;
-    border-width: 0px 2px 2px 0px;
-    transform: rotate(45deg);
-}
-
-.CheckBox input:checked~.checkmark::after {
-    display: block;
-}
-
-.LoginPage {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: linear-gradient(45deg, #319853, #14C38E);
-}
-
-.LoginPage .LoginBox {
-    width: 900px;
-    display: block;
-    background: #1c1c1c;
-    border-radius: 7px;
-    overflow: hidden;
-}
-
-.LoginBox .RightLogin figure {
-    width: 107px;
-    margin: 0 auto;
-    margin-bottom: 10px;
-}
-
-.LoginBox figure img {}
-
-.LoginPage .RightLogin h1 {
-    font-size: 50px;
-    color: #fff;
-    font-weight: 800;
-    text-align: center;
-    padding-bottom: 20px;
-}
-
-.LoginPage .RightLogin h3 {
-    font-size: 18px;
-    text-transform: capitalize;
-    font-weight: 500;
-    color: #fff;
-    text-align: center;
-    padding-bottom: 15px;
-    line-height: 27px;
-}
-
-.LoginPage .loginLeft {
+.LoginPage .RightLogin h3 {font-size: 18px;text-transform: capitalize;font-weight: 500;color: #fff;text-align: center;padding-bottom: 15px;line-height: 27px;}
+.LoginPage .loginLeft{
     background: #fff;
     width: 100%;
     min-height: 100%;
 }
-
-.LoginPage .loginLeft figure {
+.LoginPage .loginLeft figure{
     width: 320px;
     margin: 0px auto;
     padding-top: 50px;
 }
-
-.LoginPage p {
-    font-size: 17px;
-    font-weight: 500;
-    color: #319853;
-    text-align: center;
-    margin: 60px 0 10px 0;
-}
+.LoginPage  p {font-size: 17px;font-weight: 500;color: #319853;text-align: center;margin: 60px 0 10px 0;}
 
 .LoginPage .RightLogin form {
-    margin: 10px 0px 0px;
+margin: 10px 0px 0px;
 }
 
 .LoginPage .RightLogin form .form-group {
-    margin: 0px 0px 20px;
-    position: relative;
+margin: 0px 0px 20px;
+position: relative;
 }
 
-.LoginPage .RightLogin form .form-group label {
-    font-weight: 500;
-    color: #fff;
-    font-size: 15px;
-    display: block;
+.LoginPage .RightLogin form .form-group label {font-weight: 500;color: #fff;font-size: 15px;display: block;}
+.LoginPage .RightLogin{
+  padding: 30px 40px 30px 10px;
+  /* background: #000000e3; */
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.LoginPage .RightLogin form .form-group .form-control {box-shadow: none;/* border: 1px solid rgb(212, 212, 212); */border-radius: 3px;padding: 12px 45px 12px 10px;font-size: 15px;height: auto;background: #000;border: none;color: #fff;}
 
-.LoginPage .RightLogin {
-    padding: 30px 40px 30px 10px;
-    /* background: #000000e3; */
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+.LoginPage .RightLogin form .Checkboxs {display: flex;justify-content: end;align-items: center;}
 
-.LoginPage .RightLogin form .form-group .form-control {
-    box-shadow: none;
-    /* border: 1px solid rgb(212, 212, 212); */
-    border-radius: 3px;
-    padding: 12px 45px 12px 10px;
-    font-size: 15px;
-    height: auto;
-    background: #000;
-    border: none;
-    color: #fff;
-}
+.LoginPage .RightLogin form .Checkboxs a {color: #278a4a;text-transform: capitalize;font-weight: 500;}
 
-.LoginPage .RightLogin form .Checkboxs {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-}
+.LoginPage span {position: absolute;top: 35px;background: #1c1c1c;right: 5px;width: 35px;height: 35px;display: flex;align-items: center;justify-content: center;border-radius: 4px;}
 
-.LoginPage .RightLogin form .Checkboxs a {
-    color: #278a4a;
-    text-transform: capitalize;
-    font-weight: 500;
-}
-
-.LoginPage span {
-    position: absolute;
-    top: 35px;
-    background: #1c1c1c;
-    right: 5px;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-}
-
-.LoginPage span i {
-    font-size: 16px;
-    color: #ffffff;
-}
-
-.LoginPage .RightLogin .MainRight {
+.LoginPage span i {font-size: 16px;color: #ffffff;}
+.LoginPage .RightLogin .MainRight{
     width: 100%;
 }
 
@@ -549,7 +392,8 @@ input[type="date"] {
     display: none;
 }
 
-.SidenavBar .Logo img {}
+.SidenavBar .Logo img {
+}
 
 .SidenavBar ul {
     margin: 0;
@@ -577,14 +421,13 @@ input[type="date"] {
     position: absolute;
     top: 13px;
     left: 12px;
-}
+    }
 
 .SidenavBar ul li.active a,
 .SidenavBar ul li a:hover {
     background-color: #299e52;
     color: #fff;
 }
-
 .TitleBox {
     display: flex;
     align-items: center;
@@ -598,17 +441,17 @@ input[type="date"] {
     color: #000;
     text-transform: capitalize;
     font-size: 20px;
+
 }
 
-.TitleBox h6 {
-    font-size: 16px;
+.TitleBox h6{
+font-size: 16px;
     font-weight: 600;
 }
-
 .TitleBox h6 i {
     font-size: 20px;
-    font-weight: 700;
-}
+        font-weight: 700;
+    }
 
 .InnerBox {
     background-color: #fff;
@@ -628,27 +471,22 @@ input[type="date"] {
 }
 
 .Filter .form-group:last-child {}
-
 .Search {
     margin: 0;
     display: flex;
     margin-bottom: 20px;
 }
-
 .Search form {
     margin: 0;
     display: -webkit-box;
     display: flex;
 }
-
 .Search form button.Reset,
-.Filter .form-group button.Reset {
+.Filter .form-group button.Reset{
     padding: 9px 20px;
     margin-left: 5px;
 }
-
-.Search form input,
-.Search form select {
+.Search form input, .Search form select {
     margin: 0 0 0;
     border: 1px solid #ddd;
     box-shadow: none;
@@ -660,7 +498,6 @@ input[type="date"] {
     border-right: none;
     min-width: 215px;
 }
-
 .Search form button {
     padding: 7px 30px;
     display: inline-block;
@@ -675,7 +512,6 @@ input[type="date"] {
     outline: 0;
     border-radius: 0 5px 5px 0;
 }
-
 .form-group {}
 
 .Filter .form-group label {
@@ -689,8 +525,10 @@ input[type="date"] {
     padding: 5px 10px;
     font-size: 14px;
     font-weight: 500;
+
     border: 1px solid #c3c3c3;
     border-radius: 5px;
+
     box-shadow: none;
     min-width: 160px;
     min-height: 42px;
@@ -715,6 +553,7 @@ input[type="date"] {
 
 .form-control:focus {
     box-shadow: none;
+
 }
 
 .Box {
@@ -736,8 +575,7 @@ input[type="date"] {
     font-weight: 600;
     padding-bottom: 10px;
 }
-
-.Box .Shape span.Icon i {
+.Box .Shape span.Icon i{
     font-size: 55px;
     color: #fff;
     margin-right: 14px;
@@ -748,10 +586,12 @@ input[type="date"] {
     background-image: linear-gradient(to left, #127fbb 0, #6ac7be 100%);
 }
 
+
+
 .Box.BoxTwo {
     background-image: linear-gradient(to left, #f26623 0, #fad838 100%);
-}
 
+}
 .Box h1 {
     color: #fff;
     font-size: 30px;
@@ -759,12 +599,19 @@ input[type="date"] {
     font-weight: 700;
 }
 
+
 .OrderStatus {
     padding-top: 40px;
 }
 
-.AddButton a {
+.AddButton a{
     margin: 0;
+}
+.DosageBox {
+    border: 1px solid #299e52;
+    border-radius: 10px;
+    padding: 10px 20px 20px 20px;
+    background: #299e5214;
 }
 
 span.FirstCircle {
@@ -789,10 +636,8 @@ span.SecondCircle {
     right: 0;
     top: 40px;
 }
-
-.DashboardBox {}
-
-.DashboardBox h2 {
+.DashboardBox{}
+.DashboardBox h2{
     font-size: 22px;
     color: #000;
     text-transform: capitalize;
@@ -829,6 +674,8 @@ span.SecondCircle {
     font-size: 15px;
 }
 
+
+
 .TableList {
     overflow: auto;
 }
@@ -864,7 +711,12 @@ span.SecondCircle {
     color: #404040;
     text-align: center;
 }
-
+.TableList table tr td a.AddCoins{
+    display: inline-block;
+    padding-left: 9px;
+    font-size: 17px;
+    color: #299e52;
+}
 .TableList table tr td a:hover {
     color: #000
 }
@@ -891,9 +743,8 @@ span.SecondCircle {
     height: 50px;
     border-radius: 50%;
     border: 2px solid #00a9a7;
-    overflow: hidden;
-    margin: 0;
-}
+    overflow: hidden
+;margin: 0;}
 
 .TableList table tr td figure img {
     width: 100%;
@@ -957,6 +808,7 @@ span.SecondCircle {
 }
 
 .TableList table tr td a.Reset {
+
     background: #17a2b8;
     color: #fff;
     border-radius: 6px;
@@ -970,6 +822,7 @@ span.SecondCircle {
 .TableList table tr td figcaption {
     width: 150px;
     height: 86px;
+
     border: 3px solid #60e0df;
     border-radius: 6px;
     overflow: hidden;
@@ -1020,16 +873,17 @@ span.SecondCircle {
 }
 
 .Pagination ul li.active a {
+
     background-color: #c1c1c1;
     color: #fff;
-    border: 1px solid #c1c1c1;
-}
+border: 1px solid #c1c1c1;}
 
 .Pagination ul li:first-child a,
 .Pagination ul li:last-child a {
     width: auto;
     padding: 7px 15px;
 }
+
 
 .Switch {
     position: relative;
@@ -1118,7 +972,6 @@ span.SecondCircle {
     background-color: #fff;
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0 0 8px #b9b9b9
 }
 
 .CustomerBox+.CustomerBox {
@@ -1135,7 +988,7 @@ span.SecondCircle {
     border-radius: 5px;
     overflow: hidden;
     padding: 10px 10px 0 0;
-}
+    }
 
 .CustomerBox .CustomerHead figure .Rates {
     position: absolute;
@@ -1156,17 +1009,13 @@ span.SecondCircle {
 
 .CustomerBox .CustomerHead figcaption {
     width: calc(100% - 125px);
-    padding: 0 0 0 10px;
-}
+    padding: 0 0 0 10px;}
 
 .CustomerBox .CustomerHead figcaption h4 span.Strong {
     font-size: 14px;
     font-weight: 600;
     color: #000;
-    float: none;
-    width: 150px;
-    display: inline-block;
-}
+    float: none;width: 150px;display: inline-block;}
 
 .CustomerBox .CustomerHead figcaption h4 a {
     color: #000;
@@ -1187,12 +1036,19 @@ span.SecondCircle {
 }
 
 .CustomerBox .CustomerHead figcaption h4 samp {
-    color: grey;
-    font-weight: 400;
-    padding-left: 10px;
-    font-size: 14px;
-    font-family: 'Poppins';
-    padding-right: 10px;
+
+color: grey;
+
+font-weight: 400;
+
+padding-left: 10px;
+
+font-size: 14px;
+
+font-family: 'Poppins';
+
+padding-right: 10px;
+
 }
 
 .CustomerBox .CustomerHead article {
@@ -1212,8 +1068,8 @@ span.SecondCircle {
     font-size: 14px;
     font-weight: 400;
     color: #626262;
-    line-height: 25px;
-}
+    line-height: 25px;}
+
 
 .BackPage a {
     font-size: 17px;
@@ -1224,45 +1080,44 @@ span.SecondCircle {
 .BackPage a i {
     margin-right: 10px;
 }
-
-.CustomerBox h6.Register {
+ .CustomerBox h6.Register {
     font-size: 14px;
     color: #000;
     text-align: end;
     margin-bottom: 10px;
 }
-
-.CustomerBox .MainHeading {
+.CustomerBox .MainHeading{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-
 .CustomerBox .MainActions {
     display: flex;
     align-items: center;
 }
-
 .MainActions p {
     font-size: 15px;
     font-weight: 500;
     padding-right: 7px;
     color: #000;
 }
-
 .MainActions p span {
     font-size: 16px;
     font-weight: 500;
     padding-right: 7px;
     color: #989494;
 }
-
 .CustomerBox .CustomerHead article aside p span {
     display: inline-block;
     width: 200px;
 }
-
-.CustomerBox .TableList {
+.CustomerBox .CustomerHead article aside p a{
+    display: inline-block;
+    padding-left: 16px;
+    font-size: 20px;
+    color: #299e52;
+}
+.CustomerBox .TableList{
     margin-top: 30px;
 }
 
@@ -1282,8 +1137,7 @@ span.SecondCircle {
 .StaticBoxArea .card .card-header {
     background: none;
     padding: 0;
-    cursor: pointer;
-}
+cursor: pointer;}
 
 .StaticBoxArea .card .card-header a.card-link {
     cursor: pointer;
@@ -1350,43 +1204,38 @@ span.SecondCircle {
     margin-top: 15px
 }
 
-.Save {
+ .Save {
     text-align: center;
 }
-
-.Save .Button {
+.Save .Button{
     width: auto;
     padding: 10px 60px;
     background: #299e52;
 }
 
+
 .CommonForm .form-group {
     margin: 0 0 20px 0;
     position: relative;
 }
-
-.CommonForm .form-group span {
+.CommonForm .form-group span{
     position: absolute;
     top: 10px;
     font-size: 14px;
     right: 30px;
     color: #6c757d;
 }
-
-.CommonForm .form-group span i {}
+.CommonForm .form-group  span i{}
 
 .CommonForm .form-group .form-group {
     margin: 0 0 0 0
 }
-
-.ButtonMain {
+.ButtonMain{
     text-align: center;
 }
-
-.ButtonMain .Button {
+.ButtonMain .Button{
     width: auto;
 }
-
 .CommonForm .form-group label {
     display: block;
     color: #000;
@@ -1404,12 +1253,13 @@ span.SecondCircle {
     font-weight: 400;
     font-size: 14px;
 }
-
-.FlexMain {
+.FlexMain{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+
+
 
 .ModalBox .modal-dialog {
     max-width: 450px;
@@ -1433,19 +1283,16 @@ span.SecondCircle {
 .ModalBox .modal-dialog .Decline {
     margin: 0
 }
-
-.ModalBox .modal-dialog .Category p {
+.ModalBox .modal-dialog .Category  p{
     font-size: 16px;
     color: #6c757d;
     text-align: center;
 }
-
-.ModalBox .modal-dialog .Category figure {
+.ModalBox .modal-dialog .Category figure{
     width: 90px;
     margin: 0 auto;
     padding-bottom: 20px;
 }
-
 .ModalBox .modal-dialog .Decline h3 {
     font-family: "Roboto";
     font-weight: 700;
@@ -1504,6 +1351,7 @@ span.SecondCircle {
     font-weight: 500;
     color: #000;
     font-size: 15px;
+
 }
 
 .ModalBox .modal-dialog .Category .form-group .form-control {
@@ -1531,17 +1379,15 @@ span.SecondCircle {
 }
 
 .ModalBox .modal-dialog .Category .AttachFile i {
+
     font-size: 20px;
 }
-
-.ModalBox .Button {
+.ModalBox .Button{
     width: 100%;
 }
-
-.ModalBox .Button.width {
+.ModalBox .Button.width{
     width: 100%;
 }
-
 .ReplyButton {
     border: none;
     padding: 10px 30px;
@@ -1563,12 +1409,10 @@ span.SecondCircle {
     margin-top: 20px;
     margin-left: 20px;
 }
-
-.InnerBox2.InnerBox {
+.InnerBox2.InnerBox{
     margin-bottom: 0;
     padding-bottom: 0;
 }
-
 .InnerTabs .nav-tabs {
     border-bottom: 1px solid gainsboro;
     margin: 0 0 25px 0
@@ -1596,17 +1440,11 @@ span.SecondCircle {
     color: #4dc8e9;
     border-bottom: 2px solid #4dc8e9 !important;
 }
-
-.SecondTabs .highcharts-title {
+.SecondTabs .highcharts-title{
     display: none;
 }
-
-.CommissionBox {
-    text-align: center;
-    padding: 30px;
-}
-
-.CommissionBox article {
+.CommissionBox{text-align: center;padding: 30px;}
+.CommissionBox article{
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1615,29 +1453,25 @@ span.SecondCircle {
     background: #e3f4e7;
     border-left: 6px solid #299e52;
 }
-
-.CommissionBox article h4 {
+.CommissionBox article h4{
     font-size: 22px;
     color: #000;
     padding-right: 30px;
 }
-
-.CommissionBox article h4 span {
+.CommissionBox article h4 span{
     font-size: 20px;
     color: #000;
     font-weight: 500;
     padding-left: 10px;
 }
 
-.CommissionBox article p a {
+.CommissionBox article  p  a{
     font-size: 30px;
     color: #299e52;
     margin-left: 40px;
 }
-
-.CommissionBox article p a i {}
-
-.ModalBox .form-group span {
+.CommissionBox article  p  a i{}
+.ModalBox .form-group span{
     position: absolute;
     top: 4px;
     right: 5px;
@@ -1645,26 +1479,21 @@ span.SecondCircle {
     font-weight: 500;
     color: #000;
 }
-
 .Box.BoxThree {
-    background-image: linear-gradient(45deg, #f93a5a, #f7778c);
+    background-image: linear-gradient(45deg,#f93a5a,#f7778c);
 }
-
-.Navigation a.Notification {
+.Navigation a.Notification{
     color: #28a745;
     font-size: 20px;
 }
-
-.card-header span {}
-
-.card-header span a {
+.card-header span{}
+.card-header span a{
     position: absolute;
     right: 56px;
     top: 15px;
     color: #000;
     font-size: 14px;
 }
-
 .CommonForm2.CommonForm h4 {
     font-size: 16px;
     padding: 15px 20px;
@@ -1675,35 +1504,40 @@ span.SecondCircle {
     font-family: 'Roboto';
     margin: 0 0 20px -10px;
 }
-
-.AttachFile h3 {
+.CommonForm h4{
+    font-size: 23px;
+    font-family: 'Roboto';
+    text-align: left;
+    margin-bottom: 20px;
+    color: #000;
+}
+ .AttachFile h3{
     font-size: 23px;
     font-family: 'Roboto';
     text-align: center;
     margin-bottom: 20px;
 }
 
-.AttachFile input {
+ .AttachFile input {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     opacity: 0;
-    cursor: pointer;
-}
-
-.AttachFile .FileMAIN {
+cursor: pointer;}
+.AttachFile .FileMAIN{
     position: relative;
 }
+.Download a{
 
-.Download a {
-    width: 290px;
-    padding: 12px;
-    margin: 0;
+width: 290px;
+
+padding: 12px;
+
+margin: 0;
 }
-
-.AttachFile .FileMAIN span {
+ .AttachFile .FileMAIN span {
     font-weight: 500;
     background: #FFF;
     display: inline-block;
@@ -1714,13 +1548,12 @@ span.SecondCircle {
     border: 1px solid #b1b1b1;
     color: #000;
     width: 290px;
+    position: initial;
 }
-
-.AttachFile .FileMAIN span i {
+.AttachFile .FileMAIN span i{
     padding-right: 10px;
 }
-
-.Download i {
+.Download i{
     padding-right: 10px;
 }
 
@@ -1730,16 +1563,12 @@ span.SecondCircle {
     font-weight: 600;
     margin-bottom: 10px;
 }
-
-.Download p {
+.Download p{
     text-transform: capitalize;
     color: #747474;
     font-size: 15px;
 }
-
-.Download {
-    padding: 20px 0;
-}
+.Download {padding: 20px 0;}
 
 .NotificationArea {
     padding-top: 20px;
@@ -1751,6 +1580,7 @@ span.SecondCircle {
     margin: 0 0 25px 0;
     position: relative
 }
+
 
 .NotificationArea ul li:last-child {
     border: none;
@@ -1787,8 +1617,8 @@ span.SecondCircle {
     color: #777E90;
     font-weight: 500
 }
-
-span.TostMessage {
+span.TostMessage{
+    background: #299e52;
     display: inline-block;
     padding: 13px 22px;
     color: #fff;
@@ -1797,5 +1627,167 @@ span.TostMessage {
     top: 10px;
     right: 10px;
 }
+span.TostMessage p{}
+.DetailsMain{
+    margin-top: 20px;
+}
+.DetailsMain h4{
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 5px 0;
+}
+.DetailsMain p{
+    font-size: 15px;
+    font-weight: 400;
+    color: #626262;
+    line-height: 25px;
+    text-align: justify;
+}
+.DetailsMain+.DetailsMain{
+    margin-top: 20px;
+}
+.PriceBox{
+    margin: 20px 0;
+}
+.PriceBox h4{
+    font-size: 23px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 18px 0;
+}
+.PriceBox  .PriceInner{}
+.PriceInner h5{
+    font-size: 18px;
+    font-weight: 500;
+    color: #299e52;
+    margin: 0 0 11px 0;
+    text-align: center;
+}
+.PriceInner h5 span{
+    color: #000;
+}
+.PriceInner figure{
+    width: 100%;
+    border: 2px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.DownloadQuizFile{
+    margin: 20px 0;
+}
+.DownloadQuizFile h4{
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 13px 0;
+}
+.DownloadQuizFile figure{
+    width: 55px;
+    margin: 0 auto;
+}
+.DownloadQuizFile p{
+    font-size: 16px;
+    font-weight: 500;
+    color: #299e52;
+    margin: 0 0 11px 0;
+    text-align: center;
+}
 
-span.TostMessage p {}
+.Participant figure{
+    width: 161px;
+    margin-bottom: 0;
+}
+.Participant ul{
+    margin-top: 10px;
+}
+.Participant ul li{
+    display: flex;
+    background: #299e5214;
+    padding: 10px;
+    border-radius: 9px;
+}
+.Participant ul li+li{
+    margin-top: 20px;
+}
+.Participant figcaption{
+    margin-left: 14px;
+}
+.Participant aside{}
+.Participant aside p{
+    font-size: 14px;
+    color: #6d6d6d;
+    font-weight: 500;
+    line-height: 25px;
+}
+.Participant aside p span{
+    color: #000;
+}
+.Participant aside p  a{
+    font-size: 14px;
+    margin: 0;
+    background: #299e52;
+    padding:  4px 10px;
+    border-radius: 18px;
+    color: #fff;
+    margin-left: 17px;
+}
+.FiterFlaxMain{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.StoreBanners ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+.StoreBanners ul li {
+    width: 300px;
+    margin-right: 10px;
+}
+
+ .UploadImagesLeft input{position: absolute;top: 0;left: 0;height: 100% !important;width: 100%;cursor: pointer;opacity: 0;}
+
+/*
+ {
+    position: relative;
+    display: flex;
+    margin-bottom: 25px;
+    width: 290px;
+    min-height: 200px;
+} */
+.UploadImages{background-color:#f7f8f8;border:1px dotted #b9b9b9;text-align:center;padding:30px 0;position:relative;margin-top: 20px;}
+.CommonForm .form-group .UploadImages span{display:inline-block;width:70px;position: initial;}
+.UploadImages h6{font-weight:400;font-size:15px;margin:0 0 3px 0}
+.UploadImages p{font-size:13px;color:#9a9797}
+.UploadImages input{position:absolute;top:0;left:0;height:100%;width:100%;cursor:pointer;opacity:0}
+.DosageBox .AttachFile .FileMAIN span {
+    font-weight: 500;
+    background: #FFF;
+    display: inline-block;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #b1b1b1;
+    color: #000;
+    width: 100%;
+    position: initial;
+    right: 0;
+    left: 0;
+}
+
+/**
+    BY OTUOMA
+ */
+
+.TableList table tr td span.text-uppercase{
+    text-transform: uppercase;
+    display: inline;
+    color: #404040;
+}
+.CustomerBox .CustomerHead article aside p span.text-uppercase {
+  display: inline;
+  width: auto;
+}
+.errorlist{color: firebrick; font-weight: bold; margin-top: 12px;}

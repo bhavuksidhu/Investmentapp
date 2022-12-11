@@ -22,8 +22,8 @@ PAYU_CREDS_SALT = settings.PAYU_CREDS["salt"]
 SUBSCRIPTION_AMOUNT = settings.SUBSCRIPTION_AMOUNT
 
 PAYU_BASE_URL = "https://secure.payu.in/_payment"
-PAYU_S_RETURN_URL = f"https://{settings.HOST}/payments/success/"
-PAYU_F_RETURN_URL = f"https://{settings.HOST}/payments/faliure/"
+# PAYU_S_RETURN_URL = f"https://{settings.HOST}/payments/success/"
+# PAYU_F_RETURN_URL = f"https://{settings.HOST}/payments/faliure/"
 
 
 def create_order(

@@ -66,9 +66,10 @@ from api.serializers import (
     UserProfileSerializer,
     UserSettingSerializer,
     UserSubscriptionHistorySerializer,
-    UserSubscriptionSerializer,
+    UserSubscriptionSerializer, WinnerConsentSerializer, QuizSerializer, QuizEnrollmentSerializer, WalletSerializer,
 )
 from api.utils import NoDataException, StandardResultsSetPagination
+from wallets.models import Wallet, WalletTransaction
 
 from .custom_viewsets import GetPostViewSet, GetViewSet, ListGetUpdateViewSet
 
@@ -135,7 +136,6 @@ class ResetPasswordView(APIView):
 
 class RegisterView(APIView):
     serializer_class = RegisterUserSerializer
-
     @extend_schema(
         request=inline_serializer(
             name="register_request",
@@ -172,16 +172,20 @@ class RegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token = str(Token.objects.get_or_create(user=user)[0])
+            token = Token.objects.get_or_create(user=user)[0]
+            token_user = token.user.profile 
+            Wallet_object = Wallet.objects.create(userprofile=token_user,coin_balance = "50000")
+            Wallet_tran = WalletTransaction.objects.create(wallet_id = Wallet_object.id,transaction_type = "Credit",coin_balance = "50000",notes = "Added 50,000 Coins as a Signup Bonus.")
             AdminNotification.objects.create(
                 notification_type="NEW_USER",
                 title=f"New user signed-up!",
                 content=f"A new user has signed up, ID : CU{user.id}.",
             )
+            
             return Response(
                 {
                     "errors": None,
-                    "token": token,
+                    "token": str(token),
                     "status": status.HTTP_200_OK,
                 },
                 status=status.HTTP_200_OK,
@@ -341,6 +345,7 @@ class UserProfileViewSet(GetPostViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+
         try:
             return UserProfile.objects.get(user=self.request.user)
         except UserProfile.DoesNotExist:
@@ -792,10 +797,7 @@ class InvestmentInsightViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class TradeViewSet(
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet,
-):
+class TradeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = TradeSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -932,7 +934,6 @@ class VerifyEmailView(View):
         else:
             return HttpResponseNotFound("Invalid URL")
 
-
 class SendVerififcationEmailView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -989,6 +990,7 @@ class SendVerififcationEmailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 class CheckOldPassword(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -1022,3 +1024,28 @@ class CheckOldPassword(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
+
+
+class QuizViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = QuizSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
+class WalletViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = WalletSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
+class QuizEnrollmentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = QuizEnrollmentSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
+class WinnerConsentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = WinnerConsentSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+

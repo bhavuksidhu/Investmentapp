@@ -28,16 +28,18 @@
                     </li>
                 </ul>
             </div>
+            {% include 'messages.html' %}
             <div class="tab-content">
                 <div class="tab-pane {% if active_tab == 'personal' %}active{% else %}fade{% endif %}"
                      id="Personal">
                     <div class="CustomerBox">
                         <h6 class="Register">
-                            <span>Registered on {{ user.created_at }}</span>
+                            <span>Registered on {{ user.created_at|date:"d-m-Y H:i" }}</span>
                         </h6>
+
                         <div class="CustomerHead">
                             <figure>
-                                <img src="{{ user.profile.profile_photo.url }}">
+                                <img src="{{ user.profile.profile_photo.url }}" />
                             </figure>
                             <figcaption>
                                 <div class="MainHeading">
@@ -60,36 +62,50 @@
                                     </label> {% endcomment %}
                                 </div>
                             </div>
-                            <h4>
-                                <span class="Strong">Name :</span> <samp>{{ user.profile.first_name }} {{ user.profile.last_name }}</samp>
-                            </h4>
-                            <article>
-                                <aside>
-                                    <h6>Details :</h6>
-                                    <p>
-                                        <span>Email Address :</span> {{ user.email }}
-                                    </p>
-                                    <p>
-                                        <span>Mobile Number :</span> {{ user.phone_number }}
-                                    </p>
-                                    <p>
-                                        <span>Gender :</span> {{ user.profile.gender }}
-                                    </p>
-                                    <p>
-                                        <span>Age :</span> {{ user.profile.age }}
-                                    </p>
-                                    <p>
-                                        <span>Date of Birth :</span> {{ user.profile.date_of_birth }}
-                                    </p>
-                                    <p>
-                                        <span>PAN Number :</span> {{ user.profile.pan_number }}
-                                    </p>
-                                    <p>
-                                        <span>Address :</span> {{ user.profile.address }}
-                                    </p>
-                                </aside>
-                            </article>
-                        </figcaption>
+                                <h4>
+                                    <span class="Strong">Name :</span> <samp>{{ user.profile.first_name }} {{ user.profile.last_name }}</samp>
+                                </h4>
+                                <article>
+                                    <aside>
+                                        <h6>Details :</h6>
+                                        <p>
+                                            <span>Email Address :</span> {{ user.email }}
+                                        </p>
+                                        <p>
+                                            <span>Mobile Number :</span> {{ user.phone_number }}
+                                        </p>
+                                        <p>
+                                            <span>Gender :</span> {{ user.profile.gender }}
+                                        </p>
+                                        <p>
+                                            <span>Age :</span> {{ user.profile.age }}
+                                        </p>
+                                        <p>
+                                            <span>Date of Birth :</span> {{ user.profile.date_of_birth }}
+                                        </p>
+                                        <p>
+                                            <span>PAN Number :</span> {{ user.profile.pan_number }}
+                                        </p>
+
+                                        <p>
+                                            <span>Available Coins in Wallet :</span>
+                                            {% if wallet %}
+                                                {{ wallet.currency }} {{ wallet.balance }}
+                                            {% else %}
+                                                0.00
+                                            {% endif %}
+                                            <a href="javascript:void(0)" data-toggle="modal" data-target="#AddCoins">
+                                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                            </a>
+
+                                        </p>
+                                        <p>
+                                            <span>Address :</span> {{ user.profile.address }}
+                                        </p>
+                                    </aside>
+                                </article>
+                            </figcaption>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -266,6 +282,47 @@
         </div>
     </div>
 </div>
+
+    <div class="ModalBox">
+        <div id="AddCoins" class="modal fade in" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Category">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>Add Coins</h3>
+                            <form action="{% url 'adminpanel:wallets:add-coins' pk=user.id %}" method="post">{% csrf_token %}
+                                <div class="form-group">
+                                    <label>Enter Coins</label>
+                                    {{ add_coins_form.amount }}
+                                </div>
+                                <button class="Button" type="submit">Add Coins</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Delete" class="modal fade in" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="Decline">
+                            <a href="javascript:void(0);" class="CloseModal" data-dismiss="modal">×</a>
+                            <h3>Delete</h3>
+                            <p>Are you sure you want to Delete this Customers ?</p>
+                            <h4>
+                                <a href="javascript:void(0);" data-dismiss="modal">no</a>
+                                <a href="javascript:void(0);" data-dismiss="modal">Yes</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 <script>
     $('input[type="date"]').on("change", function (e) {
         let transaction_from_date = Date.parse(document.querySelector('input[name="transaction_from_date"]').value)
@@ -301,5 +358,6 @@
         document.querySelector("#journal_active").value="journal"
         document.getElementById("journal_form").submit();
     });
+
 </script>
 {% endblock %}

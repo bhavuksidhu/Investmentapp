@@ -1,0 +1,133 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Quizz Management: {{ quiz.name }} {% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>{{  quiz.name }}</h4>
+                <div class="BackPage">
+                    <a href="{% url 'adminpanel:quizzes:list-quizzes' %}">
+                        <i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back
+                    </a>
+                </div>
+            </div>
+            {% include "messages.html" %}
+
+            <div class="CustomerBox">
+                <h6 class="Register"><span>Create on {{ quiz.created_at|date:"d M Y" }}</span></h6>
+
+                <div class="CustomerHead">
+                    <figcaption>
+                        <div class="MainHeading">
+                            <h4><span class="Strong">Quiz Id :</span> <samp> {{ quiz.pk }}</samp> </h4>
+                            <div class="MainActions">
+
+                                <!--TODO logic for different colors for each status and checkbox -->
+                                <p>Status : <span>{{ quiz.status }}</span></p>
+                                <label class="Switch">
+                                    <input type="checkbox" checked="">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <h4><span class="Strong">Quiz Name :</span> <samp> {{ quiz.name }}</samp></h4>
+                        <article>
+                            <aside>
+                                <h6> Details :</h6>
+                                <p><span>Start Date &amp; Time :</span>
+                                    {{ quiz.start_date|date:"d/m/Y" }} &amp;
+                                    <span class="text-uppercase">{{ quiz.start_time }}</span>
+                                </p>
+                                <p><span>End Date &amp; Time :</span>
+                                    {{ quiz.end_date|date:"d/m/Y" }} &amp;
+                                    <span class="text-uppercase">{{ quiz.end_time }}</span>
+                                </p>
+                                <p><span>Max Slots :</span>{{ quiz.max_slots }}</p>
+                                <p><span>Quiz Duration :</span> {{ quiz.quiz_duration }} Days</p>
+                                <p><span>Quiz Active Hours :</span>
+                                    <span class="text-uppercase">
+                                        {{ quiz.active_start_time }}
+                                    </span> to
+                                    <span class="text-uppercase">
+                                        {{ quiz.active_end_time }}
+                                    </span>
+                                </p>
+                            </aside>
+                        </article>
+                    </figcaption>
+                </div>
+                <div class="PriceBox">
+                    <h4>Prizes</h4>
+                    <div class="row">
+                        {% if quiz.prizes|length > 0 %}
+                            {% for prize in quiz.prizes %}
+                                <div class="col-sm-4">
+                                    <div class="PriceInner">
+                                        {% if forloop.counter == 1 %}
+                                            <h5> <span>First Prize:</span> {{ prize.name }}</h5>
+                                        {% elif forloop.counter == 2 %}
+                                            <h5> <span>Second Prize:</span> {{ prize.name }}</h5>
+                                        {% elif forloop.counter == 3 %}
+                                            <h5> <span>Third Prize:</span> {{ prize.name }}</h5>
+                                        {% else %}
+                                            <h5>{{ prize.name }}</h5>
+                                        {% endif %} 
+
+                                        <figure>
+                                            <img src="{{ prize.image.url }}" alt="{{ prize.image.name }}">
+                                        </figure>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                            <div class="alert alert-info ml-4">
+                                No Prizes have been added to this Quiz
+                                <!--TODO Implement Adding Quiz prize here-->
+                                <a href="{% url 'adminpanel:quizzes:quiz-details' pk=quiz.pk %}" class="btn btn-link">
+                                    Add Prize
+                                </a>
+                            </div>
+                        {% endif %}
+                </div>
+                <div class="DetailsMain">
+                    <h4>Instructions For Winners</h4>
+                    <p>{{ quiz.winner_instructions }}</p>
+                </div>
+                <div class="DetailsMain">
+                    <h4>Rules To Play Quiz</h4>
+                    <p>{{ quiz.rules }}</p>
+                </div>
+                <div class="DetailsMain">
+                    <h4>Terms And Conditions</h4>
+                    <p>{{ quiz.terms }}</p>
+                </div>
+                <div class="DownloadQuizFile">
+                    <h4>Quiz Question File</h4>
+                    {% if quiz.question_files.count > 0 %}
+                        <div class="row">
+                            {% for question_file in quiz.question_files %}
+                                <div class="col-sm-2">
+                                    <p>Day {{ forloop.counter }}</p>
+                                    <a href="{{ question_file.file.url }}" download="{{ question_file.file.url }}" >
+                                        <figure>
+                                            <img src="/media/images/Download.png" alt="{{ question_file.file.name }}">
+                                        </figure>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">Quiz does not have Questions
+                            <a href="" class="btn btn-link">Add Question Files</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+                <div class="ButtonMain">
+                    <a href="quiz-participant-list.html" class="Button">Participant List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

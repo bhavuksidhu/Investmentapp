@@ -1,0 +1,351 @@
+{% extends "logged_in_base.html" %}
+{% block title %}Quiz Management: Create New {% endblock %}
+{% block content %}
+    <div class="WrapperArea">
+        <div class="WrapperBox">
+            <div class="TitleBox">
+                <h4>Add Quiz </h4>
+                <div class="BackPage">
+                    <a href="{% url 'adminpanel:quizzes:list-quizzes' %}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>Back</a>
+                </div>
+            </div>
+            {% include "messages.html" %}
+
+            <div class="CommonTabs ">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="Ongoing">
+                        <div class="InnerBox">
+                            <form action="{% url 'adminpanel:quizzes:create-quiz' %}" method="post" enctype="multipart/form-data" id="quiz_form">
+                                {% csrf_token %}
+                                <div class="text-danger" style="display: block;">
+                                    {{ form.non_field_errors }}
+                                </div>
+                                <div class="CommonForm">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="{{ form.name.id_for_label }}">Quiz Name</label>
+                                                <span class="text-danger">{{ form.name.errors }}</span>
+                                                {{ form.name }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label for="{{ form.start_date.id_for_label }}">Start Date & Time</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Date</label>
+                                                                <span class="text-danger">{{ form.start_date.errors }}</span>
+                                                                {{ form.start_date }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Time</label>
+                                                                <span class="text-danger">{{ form.start_time.errors }}</span>
+                                                                {{ form.start_time }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label for="{{ form.end_date.id_for_label }}">End Date &amp; Time</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Date</label>
+                                                                <span class="text-danger">{{ form.end_date.errors }}</span>
+                                                                {{ form.end_date }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Time</label>
+                                                                <span class="text-danger">{{ form.end_time.errors }}</span>
+                                                                {{ form.end_time }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Quiz Active Hours</label>
+                                                <div class="DosageBox">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Start Time</label>
+                                                                <span class="text-danger">{{ form.active_start_time.errors }}</span>
+                                                                {{ form.active_start_time }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>End Time</label>
+                                                                <span class="text-danger">{{ form.active_end_time.errors }}</span>
+                                                                {{ form.active_end_time }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Prices</label>
+                                                <div class="StoreBanners DosageBox">
+                                                    <ul>
+                                                        <li>
+                                                            <label>First Prize</label>
+                                                            <span class="text-danger">{{ form.first_prize_name.errors }}</span>
+                                                                {{ form.first_prize_name }}
+                                                            <div class="UploadImages">
+                                                                <span>
+                                                                    <img id="{{ form.first_prize_image.id_for_label }}_img"
+                                                                         src="/media/images/camera2.png" alt="Prize Image" />
+                                                                </span>
+                                                                <h6 id="{{ form.first_prize_image.id_for_label }}_name">Add image</h6>
+                                                                <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
+                                                                {{ form.first_prize_image.errors }}
+                                                                {{ form.first_prize_image }}
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <label>Second Prize</label>
+                                                            {{ form.second_prize_name.errors }}
+                                                                {{ form.second_prize_name }}
+                                                            <div class="UploadImages">
+                                                                <span>
+                                                                    <img id="{{ form.second_prize_image.id_for_label }}_img"
+                                                                         src="/media/images/camera2.png" alt="Prize Image" />
+                                                                </span>
+                                                                <h6 id="{{ form.second_prize_image.id_for_label }}_name">Add image</h6>
+                                                                <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
+                                                                {{ form.second_prize_image.errors }}
+                                                                {{ form.second_prize_image }}
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <label>Third Prize</label>
+                                                            {{ form.third_prize_name.errors }}
+                                                                {{ form.third_prize_name }}
+                                                            <div class="UploadImages">
+                                                                <span>
+                                                                    <img id="{{ form.third_prize_image.id_for_label }}_img"
+                                                                         src="/media/images/camera2.png" alt="Prize Image" />
+                                                                </span>
+                                                                <h6 id="{{ form.third_prize_image.id_for_label }}_name">Add image</h6>
+                                                                <p>Image Size : 300 x 250 px / Image formats : jpg, png / 5MB Max.</p>
+                                                                {{ form.third_prize_image.errors }}
+                                                                {{ form.third_prize_image }}
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Max. Slots</label>
+                                                {{ form.max_slots.errors }}
+                                                {{ form.max_slots }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Quiz Duration</label>
+                                                {{ form.quiz_duration.errors }}
+                                                {{ form.quiz_duration }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Instructions For Winners</label>
+                                                {{ form.winner_instructions.errors }}
+                                                {{ form.winner_instructions }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Rules To Play Quiz</label>
+                                                {{ form.rules.errors }}
+                                                {{ form.rules }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Terms And Conditions</label>
+                                                {{ form.terms.errors }}
+                                                {{ form.terms }}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Quiz Question Files</label>
+                                                <div class="DosageBox">
+                                                    <div class="row" id="quiz_question_wrapper"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ButtonMain">
+                                    <button class="Button" type="submit"> Add Quiz</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block page_js %}
+<script>
+    const form_elem = document.getElementById("quiz_form");
+    let diffDays = 0;
+
+    function addQuestionButton(day_number) {
+
+        let col_sm_4 = document.createElement("div");
+        col_sm_4.setAttribute("class", "col-sm-4");
+
+        let question_label = document.createElement("label");
+        question_label.setAttribute("class", "mt-4")
+        question_label.textContent = "Day " + day_number
+
+        col_sm_4.appendChild(question_label);
+
+        let file_wrapper = document.createElement("div");
+        file_wrapper.setAttribute("class", "AttachFile");
+
+        let file_main = document.createElement("div");
+        file_main.setAttribute("class", "FileMAIN");
+
+        let spn = document.createElement("span");
+        let i = document.createElement("i");
+        i.setAttribute("class", "fa fa-upload");
+        i.setAttribute("aria-hidden", "true");
+        spn.appendChild(i);
+        spn.append("Upload");
+
+        let file_input = document.createElement("input");
+        file_input.setAttribute("type", "file");
+        file_input.setAttribute("accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        file_input.setAttribute("id", "question_file_day_"+day_number);
+        file_input.setAttribute("name", "question_file_day_"+day_number);
+        file_input.setAttribute("required", "");
+        form_elem.appendChild(file_input);
+
+        spn.appendChild(file_input);
+        file_main.appendChild(spn)
+
+
+        let file_name = document.createElement("div");
+        file_name.setAttribute("id", "question_file_day_"+day_number+"_name");
+        file_main.appendChild(file_name);
+
+        file_input.addEventListener("change", (evt)=>{
+            document.getElementById("question_file_day_"+day_number+"_name").textContent = file_input.files[0].name;
+        });
+
+        file_wrapper.appendChild(file_main);
+
+        col_sm_4.appendChild(file_wrapper);
+
+        $("#quiz_question_wrapper").append(col_sm_4);
+    }
+    $(document).ready(()=>{
+
+        $("#quiz_question_wrapper").html("Set start date and end date above to upload daily quizzes.");
+        if (document.getElementById("id_end_date").value !== null){
+            document.getElementById("id_end_date").value = null;
+        }
+
+        document.getElementById("id_first_prize_image").onchange = function () {
+            document.getElementById("id_first_prize_image_name").textContent = this.files[0].name;
+            let oFReader = new FileReader();
+            oFReader.readAsDataURL(this.files[0]);
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("id_first_prize_image_img").src = oFREvent.target.result;
+            };
+        };
+        document.getElementById("id_second_prize_image").onchange = function () {
+          document.getElementById("id_second_prize_image_name").textContent = this.files[0].name;
+          let oFReader = new FileReader();
+            oFReader.readAsDataURL(this.files[0]);
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("id_second_prize_image_img").src = oFREvent.target.result;
+            };
+        };
+        document.getElementById("id_third_prize_image").onchange = function () {
+          document.getElementById("id_third_prize_image_name").textContent = this.files[0].name;
+          let oFReader = new FileReader();
+            oFReader.readAsDataURL(this.files[0]);
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("id_third_prize_image_img").src = oFREvent.target.result;
+            };
+        };
+
+        // calculate difference in days
+
+        let start_date = document.getElementById("id_start_date");
+        let end_date = document.getElementById("id_end_date");
+        $("#id_end_date").change((ev)=>{
+            if (start_date.value !== null && end_date.value !== null){
+                const date1 = new Date(start_date.value);
+                const date2 = new Date(end_date.value);
+
+                let oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+                diffDays = (date2.getTime() - date1.getTime()) / (oneDay);
+                if (diffDays < 0){
+                    console.log(diffDays);
+                    window.alert("End date must be greater than start date");
+                }else{
+                    console.log(diffDays)
+
+                    let quiz_duration = document.getElementById("id_quiz_duration")
+                    quiz_duration.value = diffDays;
+                    quiz_duration.disabled = true;
+                    $("#quiz_question_wrapper").html("");
+
+                    for (let i = 0; i < diffDays; i++) {
+                        addQuestionButton(i+1);
+                    }
+                }
+            }
+        });
+    });
+
+    $(form_elem).one("submit", (e) => {
+        e.preventDefault();
+        let formData = new FormData(form_elem);
+        {#document.getElementById("id_quiz_duration").value = diffDays;#}
+
+        console.log(form_elem.elements.quiz_duration.value);
+
+        $("<input type='hidden' value="+diffDays+" />")
+            .attr("name", "quiz_duration")
+            .appendTo("#quiz_form");
+
+        for (let i = 0; i < diffDays; i++) {
+            $("#question_file_day_"+i+1)
+            .appendTo("#quiz_form");
+        }
+
+        $(form_elem).submit();
+
+    });
+</script>
+{% endblock page_js %}

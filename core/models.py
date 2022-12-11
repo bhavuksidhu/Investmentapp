@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, timedelta
+from django.conf import settings
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -8,10 +9,14 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from djmoney.money import Money
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
 # Create your models here.
+from wallets.models import Wallet, WalletTransaction
+
+logger = settings.LOGGER
 
 
 class UploadedFile(models.Model):
@@ -48,7 +53,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True, null=True)
     is_email_verified = models.BooleanField(default=False)
-    firebase_token = models.TextField(default="", unique=True)
+    # firebase_token = models.TextField(default="", unique=True)
+    firebase_token = models.TextField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -61,6 +67,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.email}, {self.phone_number}"
+
+    def profile(self):
+        try:
+            return UserProfile.objects.get(user_id=self.pk)
+        except UserProfile.DoesNotExist as exc:
+            return None
 
     class Meta:
         ordering = ("-created_at",)
@@ -88,6 +100,27 @@ class UserProfile(models.Model):
             - self.date_of_birth.year
             - (today.timetuple()[1:3] < self.date_of_birth.timetuple()[1:3])
         )
+
+    def wallet(self):
+        try:
+            wallet = Wallet.objects.get(userprofile_id=self.pk)
+
+        except Wallet.DoesNotExist:
+            logger.info(f"Wallet for {self.last_name} does not exist, creating new.")
+            wallet = Wallet.objects.create(
+                userprofile_id=self.pk,
+                coin_balance=settings.INITIAL_COIN_BALANCE
+            )
+            WalletTransaction.objects.create(
+                wallet=wallet,
+                amount=settings.INITIAL_COIN_BALANCE,
+                coin_balance=settings.INITIAL_COIN_BALANCE,
+                notes="Initial coin balance"
+            )
+
+            wallet.coin_balance = settings.INITIAL_COIN_BALANCE
+            wallet.save()
+        return wallet
 
 
 class UserSetting(models.Model):
@@ -259,3 +292,6 @@ class MarketQuote(models.Model):
 class EmailVerificationRecord(models.Model):
     uid = models.UUIDField(editable=False, default=uuid.uuid4, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+
